@@ -61,99 +61,120 @@ export const InteractiveFarmMapScreen: React.FC = () => {
   const zoneDetails: Record<FarmZoneId, FarmZoneDetail> = {
     overview: {
       id: 'overview',
-      name: 'Visão Geral da Fazenda',
-      category: 'Toda a Propriedade',
+      name: language === 'en' ? 'Farm Overview' : 'Visão Geral da Fazenda',
+      category: language === 'en' ? 'Whole Property' : 'Toda a Propriedade',
       area: '12.5 ha',
       health: 94,
       moisture: 78,
       ndviIndex: 0.82,
-      ndviStatus: 'Vigor Geral Saudável',
-      stage: 'Operação Ativa',
-      telemetryNote: 'Todos os 6 setores rurais operando com índices ideais de solo e irrigação.',
+      ndviStatus: language === 'en' ? 'Healthy Overall Vigour' : 'Vigor Geral Saudável',
+      stage: language === 'en' ? 'Active Operation' : 'Operação Ativa',
+      telemetryNote:
+        language === 'en'
+          ? 'All 6 rural zones operating with optimal soil and irrigation indices.'
+          : 'Todos os 6 setores rurais operando com índices ideais de solo e irrigação.',
       statusColor: '#10B981',
       icon: 'map-marker-radius',
     },
     house: {
       id: 'house',
-      name: 'Sede da Fazenda',
-      category: 'Infraestrutura & Gestão',
+      name: language === 'en' ? 'Farm Headquarters' : 'Sede da Fazenda',
+      category: language === 'en' ? 'Infrastructure & Management' : 'Infraestrutura & Gestão',
       area: '0.8 ha',
       health: 99,
       moisture: 65,
       ndviIndex: 0.15,
-      ndviStatus: 'Área Construída / Solo',
-      stage: 'Sede Principal',
-      telemetryNote: 'Residência, garagem de tratores, oficina técnica e escritório central.',
+      ndviStatus: language === 'en' ? 'Built Area / Soil' : 'Área Construída / Solo',
+      stage: language === 'en' ? 'Main Headquarters' : 'Sede Principal',
+      telemetryNote:
+        language === 'en'
+          ? 'Residence, tractor garage, technical workshop, and central management office.'
+          : 'Residência, garagem de tratores, oficina técnica e escritório central.',
       statusColor: '#3B82F6',
       icon: 'home',
     },
     tomatoes: {
       id: 'tomatoes',
-      name: 'Talhão de Tomates',
-      category: 'Hortifrúti / Olericultura',
+      name: language === 'en' ? 'Tomato Plot' : 'Talhão de Tomates',
+      category: language === 'en' ? 'Horticulture / Fruit Crops' : 'Hortifrúti / Olericultura',
       area: '4.2 ha',
       health: 92,
       moisture: 82,
       ndviIndex: 0.88,
-      ndviStatus: 'Alta Densidade Foliar',
-      stage: 'Frutificação / Maturação',
-      telemetryNote: 'Irrigação por gotejamento programada para 16:00. Estimativa de colheita em 12 dias.',
+      ndviStatus: language === 'en' ? 'High Canopy Density' : 'Alta Densidade Foliar',
+      stage: language === 'en' ? 'Fruiting / Maturation' : 'Frutificação / Maturação',
+      telemetryNote:
+        language === 'en'
+          ? 'Drip irrigation scheduled for 16:00. Harvest estimated in 12 days.'
+          : 'Irrigação por gotejamento programada para 16:00. Estimativa de colheita em 12 dias.',
       statusColor: '#EF4444',
       icon: 'food-apple',
     },
     vegetables: {
       id: 'vegetables',
-      name: 'Horta & Legumes',
-      category: 'Olericultura Folhosa',
+      name: language === 'en' ? 'Vegetable Garden' : 'Horta & Legumes',
+      category: language === 'en' ? 'Leafy Vegetable Crops' : 'Olericultura Folhosa',
       area: '2.0 ha',
       health: 95,
       moisture: 88,
       ndviIndex: 0.94,
-      ndviStatus: 'Vigor Vegetativo Máximo',
-      stage: 'Colheita Contínua',
-      telemetryNote: 'Canteiros de alface, cenoura e brócolis. Colheita diária para cooperativa.',
+      ndviStatus: language === 'en' ? 'Peak Vegetative Vigour' : 'Vigor Vegetativo Máximo',
+      stage: language === 'en' ? 'Continuous Harvest' : 'Colheita Contínua',
+      telemetryNote:
+        language === 'en'
+          ? 'Lettuce, carrot, and broccoli beds. Daily harvest for local cooperative.'
+          : 'Canteiros de alface, cenoura e brócolis. Colheita diária para cooperativa.',
       statusColor: '#10B981',
       icon: 'sprout',
     },
     corn: {
       id: 'corn',
-      name: 'Lavoura de Milho',
-      category: 'Grãos & Cereais',
+      name: language === 'en' ? 'Corn Field' : 'Lavoura de Milho',
+      category: language === 'en' ? 'Grains & Cereals' : 'Grãos & Cereais',
       area: '3.5 ha',
       health: 89,
       moisture: 74,
       ndviIndex: 0.74,
-      ndviStatus: 'Floração em Desenvolvimento',
-      stage: 'Floração Ativa',
-      telemetryNote: 'Milho safrinha híbrido. Pulverização foliar contra lagarta do cartucho agendada.',
+      ndviStatus: language === 'en' ? 'Flowering in Progress' : 'Floração em Desenvolvimento',
+      stage: language === 'en' ? 'Active Flowering' : 'Floração Ativa',
+      telemetryNote:
+        language === 'en'
+          ? 'Off-season hybrid corn. Foliar spraying against fall armyworm scheduled.'
+          : 'Milho safrinha híbrido. Pulverização foliar contra lagarta do cartucho agendada.',
       statusColor: '#F59E0B',
       icon: 'corn',
     },
     animals: {
       id: 'animals',
-      name: 'Pasto & Pecuária',
-      category: 'Bovinocultura de Leite',
+      name: language === 'en' ? 'Pasture & Livestock' : 'Pasto & Pecuária',
+      category: language === 'en' ? 'Dairy Cattle Farming' : 'Bovinocultura de Leite',
       area: '1.8 ha',
       health: 97,
       moisture: 70,
       ndviIndex: 0.62,
-      ndviStatus: 'Pastagem Brachiaria Estável',
-      stage: 'Pastejo Rotacionado',
-      telemetryNote: '48 cabeças de gado holandês. Bebedouros limpos e cerca elétrica ativa.',
+      ndviStatus: language === 'en' ? 'Stable Brachiaria Pasture' : 'Pastagem Brachiaria Estável',
+      stage: language === 'en' ? 'Rotational Grazing' : 'Pastejo Rotacionado',
+      telemetryNote:
+        language === 'en'
+          ? '48 heads of Holstein dairy cattle. Clean troughs and active electric fencing.'
+          : '48 cabeças de gado holandês. Bebedouros limpos e cerca elétrica ativa.',
       statusColor: '#F97316',
       icon: 'cow',
     },
     storage: {
       id: 'storage',
-      name: 'Represa & Armazenamento',
-      category: 'Recursos Hídricos & Silos',
+      name: language === 'en' ? 'Dam & Grain Silos' : 'Represa & Armazenamento',
+      category: language === 'en' ? 'Water Resources & Storage' : 'Recursos Hídricos & Silos',
       area: '0.2 ha',
       health: 98,
       moisture: 96,
       ndviIndex: -0.25,
-      ndviStatus: 'Espelho d\'Água / Silos',
-      stage: 'Nível em 92%',
-      telemetryNote: 'Reservatório com 9.200 L de água e 2 silos verticais de grãos.',
+      ndviStatus: language === 'en' ? "Water Surface / Silos" : "Espelho d'Água / Silos",
+      stage: language === 'en' ? 'Storage at 92%' : 'Nível em 92%',
+      telemetryNote:
+        language === 'en'
+          ? 'Reservoir holding 9,200 L of fresh water and 2 vertical grain silos.'
+          : 'Reservatório com 9.200 L de água e 2 silos verticais de grãos.',
       statusColor: '#06B6D4',
       icon: 'water-pump',
     },
@@ -266,7 +287,7 @@ export const InteractiveFarmMapScreen: React.FC = () => {
               isDark && mapLayer !== 'standard' && { color: '#94A3B8' },
             ]}
           >
-            Padrão
+            {language === 'en' ? 'Standard' : 'Padrão'}
           </Text>
         </TouchableOpacity>
 
@@ -287,7 +308,7 @@ export const InteractiveFarmMapScreen: React.FC = () => {
               isDark && mapLayer !== 'ndvi' && { color: '#94A3B8' },
             ]}
           >
-            Satélite NDVI
+            {language === 'en' ? 'NDVI Satellite' : 'Satélite NDVI'}
           </Text>
         </TouchableOpacity>
 
@@ -308,7 +329,7 @@ export const InteractiveFarmMapScreen: React.FC = () => {
               isDark && mapLayer !== 'moisture' && { color: '#94A3B8' },
             ]}
           >
-            Umidade Solo
+            {language === 'en' ? 'Soil Moisture' : 'Umidade Solo'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -363,7 +384,7 @@ export const InteractiveFarmMapScreen: React.FC = () => {
             <Circle cx="88" cy="78" r="3" fill="#1E293B" />
             <Rect x="14" y="6" width="72" height="18" rx="9" fill="#FFFFFF" opacity="0.95" />
             <SvgText x="20" y="19" fill="#1E293B" fontSize="9" fontWeight="bold">
-              {mapLayer === 'ndvi' ? '0.15 NDVI' : mapLayer === 'moisture' ? '65% Solo' : 'Sede'}
+              {mapLayer === 'ndvi' ? '0.15 NDVI' : mapLayer === 'moisture' ? (language === 'en' ? '65% Soil' : '65% Solo') : (language === 'en' ? 'HQ' : 'Sede')}
             </SvgText>
           </G>
 
@@ -394,7 +415,11 @@ export const InteractiveFarmMapScreen: React.FC = () => {
             ))}
             <Rect x="60" y="6" width="90" height="18" rx="9" fill="#FFFFFF" opacity="0.95" />
             <SvgText x="68" y="19" fill="#1E293B" fontSize="9" fontWeight="bold">
-              {mapLayer === 'ndvi' ? 'Tomates · 0.88' : mapLayer === 'moisture' ? 'Tomates · 82%' : 'Tomates'}
+              {mapLayer === 'ndvi'
+                ? (language === 'en' ? 'Tomatoes · 0.88' : 'Tomates · 0.88')
+                : mapLayer === 'moisture'
+                ? (language === 'en' ? 'Tomatoes · 82%' : 'Tomates · 82%')
+                : (language === 'en' ? 'Tomatoes' : 'Tomates')}
             </SvgText>
           </G>
 
@@ -421,7 +446,11 @@ export const InteractiveFarmMapScreen: React.FC = () => {
             ))}
             <Rect x="12" y="6" width="76" height="18" rx="9" fill="#FFFFFF" opacity="0.95" />
             <SvgText x="18" y="19" fill="#1E293B" fontSize="9" fontWeight="bold">
-              {mapLayer === 'ndvi' ? 'Horta · 0.94' : mapLayer === 'moisture' ? 'Horta · 88%' : 'Horta'}
+              {mapLayer === 'ndvi'
+                ? (language === 'en' ? 'Garden · 0.94' : 'Horta · 0.94')
+                : mapLayer === 'moisture'
+                ? (language === 'en' ? 'Garden · 88%' : 'Horta · 88%')
+                : (language === 'en' ? 'Garden' : 'Horta')}
             </SvgText>
           </G>
 
@@ -458,7 +487,11 @@ export const InteractiveFarmMapScreen: React.FC = () => {
             <Circle cx="194" cy="62" r="3.5" fill="#1E293B" />
             <Rect x="70" y="6" width="76" height="18" rx="9" fill="#FFFFFF" opacity="0.95" />
             <SvgText x="78" y="19" fill="#1E293B" fontSize="9" fontWeight="bold">
-              {mapLayer === 'ndvi' ? 'Milho · 0.74' : mapLayer === 'moisture' ? 'Milho · 74%' : 'Milho'}
+              {mapLayer === 'ndvi'
+                ? (language === 'en' ? 'Corn · 0.74' : 'Milho · 0.74')
+                : mapLayer === 'moisture'
+                ? (language === 'en' ? 'Corn · 74%' : 'Milho · 74%')
+                : (language === 'en' ? 'Corn' : 'Milho')}
             </SvgText>
           </G>
 
@@ -493,7 +526,11 @@ export const InteractiveFarmMapScreen: React.FC = () => {
             <Rect x="85" y="65" width="22" height="10" rx="3" fill="#38BDF8" />
             <Rect x="44" y="6" width="80" height="18" rx="9" fill="#FFFFFF" opacity="0.95" />
             <SvgText x="50" y="19" fill="#1E293B" fontSize="9" fontWeight="bold">
-              {mapLayer === 'ndvi' ? 'Pasto · 0.62' : mapLayer === 'moisture' ? 'Pasto · 70%' : 'Animais'}
+              {mapLayer === 'ndvi'
+                ? (language === 'en' ? 'Pasture · 0.62' : 'Pasto · 0.62')
+                : mapLayer === 'moisture'
+                ? (language === 'en' ? 'Pasture · 70%' : 'Pasto · 70%')
+                : (language === 'en' ? 'Livestock' : 'Animais')}
             </SvgText>
           </G>
 
@@ -519,7 +556,11 @@ export const InteractiveFarmMapScreen: React.FC = () => {
             <Rect x="64" y="32" width="30" height="28" rx="3" fill="#64748B" />
             <Rect x="36" y="6" width="82" height="18" rx="9" fill="#FFFFFF" opacity="0.95" />
             <SvgText x="42" y="19" fill="#1E293B" fontSize="9" fontWeight="bold">
-              {mapLayer === 'ndvi' ? 'Represa / Silos' : mapLayer === 'moisture' ? 'Represa · 96%' : 'Armazém'}
+              {mapLayer === 'ndvi'
+                ? (language === 'en' ? 'Dam / Silos' : 'Represa / Silos')
+                : mapLayer === 'moisture'
+                ? (language === 'en' ? 'Dam · 96%' : 'Represa · 96%')
+                : (language === 'en' ? 'Storage' : 'Armazém')}
             </SvgText>
           </G>
         </Svg>
@@ -532,25 +573,37 @@ export const InteractiveFarmMapScreen: React.FC = () => {
           />
           <Text style={styles.exploreText}>
             {mapLayer === 'ndvi'
-              ? 'Satélite Sentinel-2 · Vigor Vegetativo NDVI (0.0 a 1.0)'
+              ? (language === 'en'
+                  ? 'Sentinel-2 Satellite · NDVI Vegetative Vigour (0.0 to 1.0)'
+                  : 'Satélite Sentinel-2 · Vigor Vegetativo NDVI (0.0 a 1.0)')
               : mapLayer === 'moisture'
-              ? 'Telemetria FDR LoRaWAN · Umidade do Solo (%)'
-              : 'Toque em uma área para explorar · 6 zonas rurais · 4 culturas'}
+              ? (language === 'en'
+                  ? 'LoRaWAN FDR Telemetry · Soil Moisture (%)'
+                  : 'Telemetria FDR LoRaWAN · Umidade do Solo (%)')
+              : (language === 'en'
+                  ? 'Tap an area to explore · 6 farm zones · 4 crops'
+                  : 'Toque em uma área para explorar · 6 zonas rurais · 4 culturas')}
           </Text>
         </View>
 
         <View style={styles.legendBar}>
           {mapLayer === 'ndvi' ? (
             <Text style={styles.legendText}>
-              Legenda NDVI: 0.15 (Solo/Construção) ── 0.62 (Pastagem) ── 0.94 (Biomassa Máxima)
+              {language === 'en'
+                ? 'NDVI Legend: 0.15 (Soil/Building) ── 0.62 (Pasture) ── 0.94 (Max Biomass)'
+                : 'Legenda NDVI: 0.15 (Solo/Construção) ── 0.62 (Pastagem) ── 0.94 (Biomassa Máxima)'}
             </Text>
           ) : mapLayer === 'moisture' ? (
             <Text style={styles.legendText}>
-              Legenda Solo: 50% (Déficit Hídrico) ── 75% (Ideal) ── 95% (Capacidade de Campo)
+              {language === 'en'
+                ? 'Soil Legend: 50% (Water Deficit) ── 75% (Optimal) ── 95% (Field Capacity)'
+                : 'Legenda Solo: 50% (Déficit Hídrico) ── 75% (Ideal) ── 95% (Capacidade de Campo)'}
             </Text>
           ) : (
             <Text style={styles.legendText}>
-              Zonas: Verde (Lavoura) · Marrom (Solo Preparado) · Azul (Represa) · Laranja (Pecuária)
+              {language === 'en'
+                ? 'Zones: Green (Crops) · Brown (Prepared Soil) · Blue (Dam) · Orange (Livestock)'
+                : 'Zonas: Verde (Lavoura) · Marrom (Solo Preparado) · Azul (Represa) · Laranja (Pecuária)'}
             </Text>
           )}
         </View>
@@ -570,22 +623,22 @@ export const InteractiveFarmMapScreen: React.FC = () => {
 
           <View style={[styles.healthBadge, { backgroundColor: activeDetail.statusColor + '15' }]}>
             <Text style={[styles.healthBadgeText, { color: activeDetail.statusColor }]}>
-              {activeDetail.health}% Saúde
+              {activeDetail.health}% {language === 'en' ? 'Health' : 'Saúde'}
             </Text>
           </View>
         </View>
 
         <View style={styles.metricsRow}>
           <View style={[styles.metricItem, isDark && styles.metricItemDark]}>
-            <Text style={styles.metricLabel}>Área Total</Text>
+            <Text style={styles.metricLabel}>{language === 'en' ? 'Total Area' : 'Área Total'}</Text>
             <Text style={[styles.metricVal, isDark && styles.metricValDark]}>{activeDetail.area}</Text>
           </View>
           <View style={[styles.metricItem, isDark && styles.metricItemDark]}>
-            <Text style={styles.metricLabel}>Umidade Solo</Text>
+            <Text style={styles.metricLabel}>{language === 'en' ? 'Soil Moisture' : 'Umidade Solo'}</Text>
             <Text style={[styles.metricVal, isDark && styles.metricValDark]}>{activeDetail.moisture}%</Text>
           </View>
           <View style={[styles.metricItem, isDark && styles.metricItemDark]}>
-            <Text style={styles.metricLabel}>Vigor NDVI</Text>
+            <Text style={styles.metricLabel}>{language === 'en' ? 'NDVI Vigour' : 'Vigor NDVI'}</Text>
             <Text style={[styles.metricVal, isDark && styles.metricValDark]}>{activeDetail.ndviIndex.toFixed(2)}</Text>
           </View>
         </View>
@@ -599,7 +652,7 @@ export const InteractiveFarmMapScreen: React.FC = () => {
             activeOpacity={0.8}
           >
             <MaterialCommunityIcons name="water-pump" size={16} color="#059669" />
-            <Text style={styles.actionBtnText}>Ligar Pivô</Text>
+            <Text style={styles.actionBtnText}>{language === 'en' ? 'Start Pivot' : 'Ligar Pivô'}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -608,7 +661,7 @@ export const InteractiveFarmMapScreen: React.FC = () => {
             activeOpacity={0.8}
           >
             <MaterialCommunityIcons name="bug-outline" size={16} color="#EF4444" />
-            <Text style={styles.actionBtnText}>Amostragem</Text>
+            <Text style={styles.actionBtnText}>{language === 'en' ? 'Scouting' : 'Amostragem'}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -617,7 +670,7 @@ export const InteractiveFarmMapScreen: React.FC = () => {
             activeOpacity={0.8}
           >
             <MaterialCommunityIcons name="spray" size={16} color="#3B82F6" />
-            <Text style={styles.actionBtnText}>Pulverização</Text>
+            <Text style={styles.actionBtnText}>{language === 'en' ? 'Spraying' : 'Pulverização'}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -626,7 +679,7 @@ export const InteractiveFarmMapScreen: React.FC = () => {
             activeOpacity={0.8}
           >
             <MaterialCommunityIcons name="cash-multiple" size={16} color="#F59E0B" />
-            <Text style={styles.actionBtnText}>DRE Safra</Text>
+            <Text style={styles.actionBtnText}>{language === 'en' ? 'Crop P&L' : 'DRE Safra'}</Text>
           </TouchableOpacity>
         </View>
       </View>

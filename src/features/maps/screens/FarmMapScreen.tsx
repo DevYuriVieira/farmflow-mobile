@@ -16,15 +16,21 @@ import { Screen } from '../../../components/Screen';
 import { LoadingState } from '../../../components/LoadingState';
 import { AppNavigationProp } from '../../../navigation/types';
 import { colors, radii, spacing, typography } from '../../../theme';
-import { formatHectares } from '../../../utils/formatters';
+import { formatHectares, getFarmDisplayName } from '../../../utils/formatters';
+import { usePreferences } from '../../../contexts/PreferencesContext';
 
 export const FarmMapScreen: React.FC = () => {
   const navigation = useNavigation<AppNavigationProp>();
+  const { language } = usePreferences();
   const { data: farms, isLoading } = useFarms();
   const [selectedFarm, setSelectedFarm] = useState<Farm | null>(null);
 
   if (isLoading) {
-    return <LoadingState message="Carregando coordenadas das fazendas..." />;
+    return (
+      <LoadingState
+        message={language === 'en' ? 'Loading farm coordinates...' : 'Carregando coordenadas das fazendas...'}
+      />
+    );
   }
 
   const farmsWithCoords = farms?.filter(
@@ -38,9 +44,13 @@ export const FarmMapScreen: React.FC = () => {
   return (
     <Screen withTopInset={false}>
       <View style={styles.header}>
-        <Text style={styles.title}>Mapeamento das Fazendas</Text>
+        <Text style={styles.title}>
+          {language === 'en' ? 'Farm GPS Mapping' : 'Mapeamento das Fazendas'}
+        </Text>
         <Text style={styles.subtitle}>
-          {farmsWithCoords.length} propriedades com georreferenciamento ativo
+          {language === 'en'
+            ? `${farmsWithCoords.length} properties with active georeferencing`
+            : `${farmsWithCoords.length} propriedades com georreferenciamento ativo`}
         </Text>
       </View>
 
@@ -99,7 +109,7 @@ export const FarmMapScreen: React.FC = () => {
           <View style={styles.bottomCard}>
             <View style={styles.bottomCardHeader}>
               <View style={styles.bottomCardTitleWrapper}>
-                <Text style={styles.bottomCardTitle}>{activeFarm.name}</Text>
+                <Text style={styles.bottomCardTitle}>{getFarmDisplayName(activeFarm, language)}</Text>
                 <View style={styles.locationRow}>
                   <MaterialCommunityIcons name="map-marker" size={14} color={colors.primaryLight} />
                   <Text style={styles.locationText}>{activeFarm.location}</Text>
@@ -112,15 +122,19 @@ export const FarmMapScreen: React.FC = () => {
                 }
                 style={styles.openDetailBtn}
               >
-                <Text style={styles.openDetailBtnText}>Ver Ficha</Text>
+                <Text style={styles.openDetailBtnText}>
+                  {language === 'en' ? 'View Details' : 'Ver Ficha'}
+                </Text>
                 <MaterialCommunityIcons name="chevron-right" size={16} color={colors.textInverse} />
               </TouchableOpacity>
             </View>
 
             <View style={styles.coordsBadgeRow}>
               <View style={styles.coordPill}>
-                <Text style={styles.coordPillLabel}>Área Total:</Text>
-                <Text style={styles.coordPillValue}>{formatHectares(activeFarm.totalAreaHectares)}</Text>
+                <Text style={styles.coordPillLabel}>
+                  {language === 'en' ? 'Total Area:' : 'Área Total:'}
+                </Text>
+                <Text style={styles.coordPillValue}>{formatHectares(activeFarm.totalAreaHectares, language)}</Text>
               </View>
               <View style={styles.coordPill}>
                 <Text style={styles.coordPillLabel}>Lat/Lng:</Text>
@@ -132,7 +146,9 @@ export const FarmMapScreen: React.FC = () => {
           </View>
         ) : (
           <View style={styles.noFarmSelectedCard}>
-            <Text style={styles.noFarmText}>Nenhuma fazenda com coordenadas selecionada.</Text>
+            <Text style={styles.noFarmText}>
+              {language === 'en' ? 'No farm with coordinates selected.' : 'Nenhuma fazenda com coordenadas selecionada.'}
+            </Text>
           </View>
         )}
 
@@ -160,7 +176,7 @@ export const FarmMapScreen: React.FC = () => {
                     isSelected && styles.farmSelectorTextActive,
                   ]}
                 >
-                  {farm.name}
+                  {getFarmDisplayName(farm, language)}
                 </Text>
               </TouchableOpacity>
             );
