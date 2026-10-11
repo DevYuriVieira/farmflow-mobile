@@ -36,7 +36,16 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "name": "FarmFlow — Gestão Agrícola",
+      "shortName": "FarmFlow",
+      "description": "Sistema Inteligente de Gestão Agrícola e Monitoramento de Safras",
+      "themeColor": "#22C55E",
+      "backgroundColor": "#07150E",
+      "display": "standalone",
+      "orientation": "any",
+      "lang": "pt-BR",
+      "startUrl": "/"
     },
     "plugins": [
       [
