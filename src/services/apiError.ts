@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import { AxiosError, isAxiosError } from 'axios';
 import { ApiErrorPayload } from '../types/api.types';
 
 export class AppError extends Error {
@@ -22,7 +22,7 @@ export function normalizeError(error: unknown): AppError {
     return error;
   }
 
-  if (axios.isAxiosError(error)) {
+  if (isAxiosError(error)) {
     const axiosErr = error as AxiosError<ApiErrorPayload>;
     if (!axiosErr.response) {
       if (axiosErr.code === 'ECONNABORTED') {
