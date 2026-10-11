@@ -22,7 +22,7 @@ import { Screen } from '../../../components/Screen';
 import { LoadingState } from '../../../components/LoadingState';
 import { AppNavigationProp } from '../../../navigation/types';
 import { colors, radii, spacing, typography } from '../../../theme';
-import { cropTypeLabels, formatHectares } from '../../../utils/formatters';
+import { getCropLabel, formatHectares } from '../../../utils/formatters';
 
 export const ReportsScreen: React.FC = () => {
   const navigation = useNavigation<AppNavigationProp>();
@@ -57,7 +57,7 @@ export const ReportsScreen: React.FC = () => {
 
   const cropDistribution = new Map<string, number>();
   plantations?.forEach((p) => {
-    const label = cropTypeLabels[p.cropType];
+    const label = getCropLabel(p.cropType, language);
     cropDistribution.set(label, (cropDistribution.get(label) || 0) + p.areaHectares);
   });
 
@@ -72,6 +72,7 @@ export const ReportsScreen: React.FC = () => {
         totalArea,
         completionRate,
         userName: user?.name,
+        language,
       });
       showSuccess(language === 'en' ? 'PDF report ready to share!' : 'Relatório PDF gerado com sucesso!');
     } catch {
@@ -194,7 +195,7 @@ export const ReportsScreen: React.FC = () => {
               {language === 'en' ? 'Total Area' : 'Área Total'}
             </Text>
             <Text style={[styles.summaryValue, isDark && styles.summaryValueDark]}>
-              {formatHectares(totalArea)}
+              {formatHectares(totalArea, language)}
             </Text>
           </View>
 
@@ -232,7 +233,7 @@ export const ReportsScreen: React.FC = () => {
                 <View style={styles.cropRowLabels}>
                   <Text style={[styles.cropName, isDark && styles.cropNameDark]}>{crop}</Text>
                   <Text style={[styles.cropHa, isDark && styles.cropHaDark]}>
-                    {formatHectares(ha)} ({Math.round(pct)}%)
+                    {formatHectares(ha, language)} ({Math.round(pct)}%)
                   </Text>
                 </View>
                 <View style={[styles.progressBarTrack, isDark && styles.progressBarTrackDark]}>
@@ -271,7 +272,7 @@ export const ReportsScreen: React.FC = () => {
             </Text>
             <Text style={[styles.metricVal, isDark && styles.metricValDark]}>
               {plantations && plantations.length > 0
-                ? formatHectares(totalArea / plantations.length)
+                ? formatHectares(totalArea / plantations.length, language)
                 : '0 ha'}
             </Text>
           </View>
@@ -315,7 +316,9 @@ export const ReportsScreen: React.FC = () => {
               style={[styles.precisionBtn, styles.csvBtn]}
             >
               <MaterialCommunityIcons name="file-delimited" size={16} color="#FFFFFF" />
-              <Text style={styles.precisionBtnText}>Planilha CSV</Text>
+              <Text style={styles.precisionBtnText}>
+                {language === 'en' ? 'CSV Sheet' : 'Planilha CSV'}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -5,7 +5,14 @@ import { Platform } from 'react-native';
 import { Farm } from '../types/farm.types';
 import { Plantation } from '../types/plantation.types';
 import { FarmActivity } from '../types/activity.types';
-import { cropTypeLabels, plantationStatusLabels } from '../utils/formatters';
+import {
+  getCropLabel,
+  getPlantationStatusLabel,
+  getActivityTypeLabel,
+  getPlantationName,
+  getActivityTitle,
+  getFarmDisplayName,
+} from '../utils/formatters';
 
 export interface ReportData {
   farm?: Farm;
@@ -14,12 +21,14 @@ export interface ReportData {
   totalArea: number;
   completionRate: number;
   userName?: string;
+  language?: 'pt' | 'en';
 }
 
 export async function generateAndSharePdfReport(data: ReportData): Promise<{ uri: string }> {
-  const farmName = data.farm?.name || 'Fazenda Agroprodutiva';
-  const farmLocation = data.farm?.location || 'Região Agrícola';
-  const currentDate = new Date().toLocaleDateString('pt-BR', {
+  const lang = data.language || 'pt';
+  const farmName = data.farm ? getFarmDisplayName(data.farm, lang) : (lang === 'en' ? 'Agroproductive Farm' : 'Fazenda Agroprodutiva');
+  const farmLocation = data.farm?.location || (lang === 'en' ? 'Agricultural Region' : 'Região Agrícola');
+  const currentDate = new Date().toLocaleDateString(lang === 'en' ? 'en-US' : 'pt-BR', {
     day: '2-digit',
     month: 'long',
     year: 'numeric',
@@ -29,12 +38,12 @@ export async function generateAndSharePdfReport(data: ReportData): Promise<{ uri
     .map(
       (p) => `
       <tr>
-        <td style="padding: 10px; border-bottom: 1px solid #E2E8F0; font-weight: 600; color: #1E293B;">${p.name}</td>
-        <td style="padding: 10px; border-bottom: 1px solid #E2E8F0; color: #059669; font-weight: 600;">${cropTypeLabels[p.cropType]}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #E2E8F0; font-weight: 600; color: #1E293B;">${getPlantationName(p, lang)}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #E2E8F0; color: #059669; font-weight: 600;">${getCropLabel(p.cropType, lang)}</td>
         <td style="padding: 10px; border-bottom: 1px solid #E2E8F0; text-align: right; color: #334155;">${p.areaHectares} ha</td>
         <td style="padding: 10px; border-bottom: 1px solid #E2E8F0; text-align: center;">
           <span style="background-color: #ECFDF5; color: #047857; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold;">
-            ${plantationStatusLabels[p.status]}
+            ${getPlantationStatusLabel(p.status, lang)}
           </span>
         </td>
       </tr>
@@ -47,11 +56,11 @@ export async function generateAndSharePdfReport(data: ReportData): Promise<{ uri
     .map(
       (a) => `
       <tr>
-        <td style="padding: 8px 10px; border-bottom: 1px solid #E2E8F0; color: #1E293B;">${a.title}</td>
-        <td style="padding: 8px 10px; border-bottom: 1px solid #E2E8F0; color: #64748B; font-size: 12px;">${a.type}</td>
+        <td style="padding: 8px 10px; border-bottom: 1px solid #E2E8F0; color: #1E293B;">${getActivityTitle(a, lang)}</td>
+        <td style="padding: 8px 10px; border-bottom: 1px solid #E2E8F0; color: #64748B; font-size: 12px;">${getActivityTypeLabel(a.type, lang)}</td>
         <td style="padding: 8px 10px; border-bottom: 1px solid #E2E8F0; text-align: center;">
           <span style="color: ${a.completed ? '#10B981' : '#F59E0B'}; font-weight: bold; font-size: 12px;">
-            ${a.completed ? '✓ Concluído' : '⏳ Pendente'}
+            ${a.completed ? (lang === 'en' ? '✓ Completed' : '✓ Concluído') : (lang === 'en' ? '⏳ Pending' : '⏳ Pendente')}
           </span>
         </td>
       </tr>
