@@ -76,6 +76,10 @@
     "test:visual": "playwright test e2e/playwright/farmflow-visual-regression.spec.ts",
     "test:visual:update": "playwright test e2e/playwright/farmflow-visual-regression.spec.ts --update-snapshots",
     "test:visual:cypress": "cypress run --spec 'cypress/e2e/farmflow_visual_regression.cy.ts'",
+    "test:k6": "k6 run k6/scenarios/load_test.js",
+    "test:k6:stress": "k6 run k6/scenarios/stress_test.js",
+    "test:k6:spike": "k6 run k6/scenarios/spike_test.js",
+    "test:k6:sync": "k6 run k6/scenarios/offline_sync_test.js",
     "typecheck": "tsc --noEmit",
     "lint": "expo lint"
   },

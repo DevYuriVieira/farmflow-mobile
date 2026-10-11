@@ -11,6 +11,7 @@ Este documento descreve a arquitetura e a estratégia de garantia da qualidade (
 | **Jest** | Unidade, Integração, Sistema, Aceitação, Regressão, Funcional, Não-Funcional, Caixa Branca e Caixa Preta | `__tests__/` |
 | **Playwright** | E2E Moderno (Chromium, Mobile Emulation, Multi-page e visual traces) | `e2e/playwright/` |
 | **Cypress** | E2E Browser Testing, interceptação e jornadas completas de usuário | `cypress/e2e/` |
+| **k6** | Performance, Carga, Estresse, Pico IoT e Sincronização em Lote | `k6/` |
 
 ---
 
@@ -125,27 +126,33 @@ Este documento descreve a arquitetura e a estratégia de garantia da qualidade (
 ## ⚡ 6. Scripts Disponíveis no `package.json`
 
 ```bash
-# === Suíte Principal Jest ===
-npm test                    # Executa as 16 suítes Jest (108 testes)
-npm run test:unit           # Testes de Unidade, Componente e Observabilidade
-npm run test:integration    # Testes de Integração
-npm run test:system         # Testes de Sistema (E2E Domain)
-npm run test:acceptance     # Testes de Aceitação (BDD)
-npm run test:regression     # Confirmação, Regressão e Manutenção
-npm run test:functional     # Testes Funcionais
-npm run test:non-functional # Performance e Acessibilidade
-npm run test:blackbox       # Caixa Preta (Equivalência & Limites)
-npm run test:whitebox       # Caixa Branca (Estrutural & Ramos)
-npm run test:coverage       # Gera relatório de cobertura em HTML/LCOV
+# Main Jest Test Suite
+npm test
+npm run test:unit
+npm run test:integration
+npm run test:system
+npm run test:acceptance
+npm run test:regression
+npm run test:functional
+npm run test:non-functional
+npm run test:blackbox
+npm run test:whitebox
+npm run test:coverage
 
-# === Testes E2E & Regressão Visual no Navegador ===
-npm run test:e2e            # Executa Playwright E2E
-npm run test:e2e:playwright # Executa Playwright E2E
-npm run test:e2e:cypress    # Executa Cypress E2E em modo headless
-npm run test:e2e:cypress:open # Abre a interface gráfica do Cypress
-npm run test:visual         # Executa Regressão Visual com Playwright
-npm run test:visual:update  # Atualiza baselines visuais de comparação
-npm run test:visual:cypress # Executa capturas multi-viewport no Cypress
+# Browser E2E & Visual Regression Tests
+npm run test:e2e
+npm run test:e2e:playwright
+npm run test:e2e:cypress
+npm run test:e2e:cypress:open
+npm run test:visual
+npm run test:visual:update
+npm run test:visual:cypress
+
+# Load, Stress & Performance Testing (k6)
+npm run test:k6
+npm run test:k6:stress
+npm run test:k6:spike
+npm run test:k6:sync
 ```
 
 ---
