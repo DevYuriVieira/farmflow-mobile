@@ -8,13 +8,13 @@ export interface SprayApplication {
   targetPest: string;
   productName: string;
   activeIngredient: string;
-  dosePerHectare: string; // Ex: 0.5 L/ha ou 250 g/ha
-  sprayVolumeLPerHa: number; // Ex: 150 L/ha
-  totalTreatedAreaHa: number; // Ex: 32 ha
-  nozzleType: string; // Ex: "Ponta Indução de Ar (AIXR 11002)"
-  appliedAt: string; // Data ISO
-  withdrawalPeriodDays: number; // Período de carência em dias
-  harvestSafeDate: string; // Data liberada para colheita segura
+  dosePerHectare: string;
+  sprayVolumeLPerHa: number;
+  totalTreatedAreaHa: number;
+  nozzleType: string;
+  appliedAt: string;
+  withdrawalPeriodDays: number;
+  harvestSafeDate: string;
   temperatureC: number;
   humidityPercent: number;
   windSpeedKmH: number;

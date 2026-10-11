@@ -5,7 +5,6 @@ import {
 
 describe('Agricultural Spraying & Drift Risk Calculations', () => {
   it('identifies LOW drift risk under optimal meteorological conditions', () => {
-    // Vento calmo (5 km/h), umidade alta (65%), temperatura moderada (24°C)
     const risk = calculateDriftRisk(5, 65, 24);
     expect(risk).toBe('LOW');
   });
@@ -16,7 +15,6 @@ describe('Agricultural Spraying & Drift Risk Calculations', () => {
   });
 
   it('detects HIGH drift risk when relative humidity drops below 50%', () => {
-    // Risco alto de evaporação rápida de gotas pequenas
     const risk = calculateDriftRisk(6, 42, 28);
     expect(risk).toBe('HIGH');
   });
@@ -32,7 +30,6 @@ describe('Agricultural Spraying & Drift Risk Calculations', () => {
   });
 
   it('calculates total tank spray volume correctly for treated field area', () => {
-    // 120 L/ha aplicados em 45 hectares = 5400 Litros de calda
     const totalVolume = calculateTotalSprayVolumeLiters(120, 45);
     expect(totalVolume).toBe(5400);
   });

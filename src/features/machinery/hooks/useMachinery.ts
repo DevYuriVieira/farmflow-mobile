@@ -19,7 +19,7 @@ const INITIAL_MACHINES: AgriculturalMachine[] = [
     coolantTempC: 86,
     operator: 'Rogério Batista',
     currentField: 'Talhão 01 — Soja Sul',
-    nextMaintenanceInHours: 79.5, // Revisão de 1.500h próxima
+    nextMaintenanceInHours: 79.5,
     lastMaintenanceDate: '2026-08-15',
   },
   {
@@ -38,7 +38,7 @@ const INITIAL_MACHINES: AgriculturalMachine[] = [
     coolantTempC: 89,
     operator: 'Carlos Mendes',
     currentField: 'Talhão 03 — Milho',
-    nextMaintenanceInHours: 20.0, // Alerta crítico de revisão preventiva!
+    nextMaintenanceInHours: 20.0,
     lastMaintenanceDate: '2026-09-02',
   },
   {

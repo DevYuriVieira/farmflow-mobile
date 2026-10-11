@@ -21,7 +21,7 @@ export interface ScoutingRecord {
   pestId: string;
   pestName: string;
   severity: PestSeverity;
-  affectedPlantsPercent: number; // Ex: 15% das plantas com sintomas
+  affectedPlantsPercent: number;
   locationNote: string;
   latitude?: number;
   longitude?: number;

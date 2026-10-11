@@ -109,7 +109,7 @@ describe('Zod Schemas Validation Tests', () => {
         areaHectares: 120,
         status: 'GROWING',
         plantedAt: '2026-09-15',
-        expectedHarvestAt: '2026-08-10', // earlier!
+        expectedHarvestAt: '2026-08-10',
       };
       const result = plantationSchema.safeParse(invalid);
       expect(result.success).toBe(false);

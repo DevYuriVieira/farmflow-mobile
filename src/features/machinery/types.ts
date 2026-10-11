@@ -4,19 +4,19 @@ export type MachineOperationalStatus = 'OPERATING' | 'IDLE' | 'MAINTENANCE';
 export interface AgriculturalMachine {
   id: string;
   name: string;
-  code: string; // Ex: TRAT-01, PULV-01
+  code: string;
   category: MachineCategory;
   modelYear: number;
-  hoursWorked: number; // Horímetro total
+  hoursWorked: number;
   status: MachineOperationalStatus;
-  fuelLevelPercent: number; // 0 a 100%
-  fuelConsumptionLPerHour: number; // L/h
-  currentSpeedKmH: number; // km/h
+  fuelLevelPercent: number;
+  fuelConsumptionLPerHour: number;
+  currentSpeedKmH: number;
   engineRpm: number;
   oilPressureBar: number;
   coolantTempC: number;
   operator: string;
   currentField: string;
-  nextMaintenanceInHours: number; // Horas restantes para próxima revisão
+  nextMaintenanceInHours: number;
   lastMaintenanceDate: string;
 }
