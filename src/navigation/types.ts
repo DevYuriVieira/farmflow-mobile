@@ -31,6 +31,7 @@ export type AppDrawerParamList = {
   Calculators: undefined;
   Alerts: undefined;
   PestScouting: undefined;
+  PestDiagnosis: undefined;
   FarmFinances: undefined;
   MarketCommodities: undefined;
   IrrigationSilos: undefined;

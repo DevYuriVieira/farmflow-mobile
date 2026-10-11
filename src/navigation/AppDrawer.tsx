@@ -31,6 +31,7 @@ import { WeatherConditionsScreen } from '../features/weather/screens/WeatherCond
 import { CalculatorsScreen } from '../features/calculators/screens/CalculatorsScreen';
 import { AlertsListScreen } from '../features/alerts/screens/AlertsListScreen';
 import { PestScoutingScreen } from '../features/scouting/screens/PestScoutingScreen';
+import { PestDiagnosisScreen } from '../features/scouting/screens/PestDiagnosisScreen';
 import { FarmFinancesScreen } from '../features/finances/screens/FarmFinancesScreen';
 import { MarketCommoditiesScreen } from '../features/market/screens/MarketCommoditiesScreen';
 import { IrrigationSilosScreen } from '../features/telemetry/screens/IrrigationSilosScreen';
@@ -47,7 +48,8 @@ const Drawer = createDrawerNavigator<AppDrawerParamList>();
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation, state }) => {
   const insets = useSafeAreaInsets();
   const { user, signOut } = useAuth();
-  const { language } = usePreferences();
+  const { language, highContrastFieldMode, toggleHighContrastFieldMode, touchTargetMinHeight } =
+    usePreferences();
 
   const currentRoute = state.routes[state.index].name;
 
@@ -62,6 +64,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
     { name: 'MarketCommodities', label: language === 'en' ? 'Live Commodity Markets' : 'Cotações Agro ao Vivo', icon: 'trending-up' },
     { name: 'FarmFinances', label: language === 'en' ? 'Crop Financials & ROI' : 'Finanças & Lucro da Safra', icon: 'cash-multiple' },
     { name: 'PestScouting', label: language === 'en' ? 'Pest Scouting & Health' : 'Monitoramento de Pragas', icon: 'bug-outline' },
+    { name: 'PestDiagnosis', label: language === 'en' ? 'AI Pest Diagnosis' : 'Diagnóstico IA & Prescrição', icon: 'bug-check-outline' },
     { name: 'IrrigationSilos', label: language === 'en' ? 'Pivots & Silos IoT' : 'Telemetria de Pivôs & Silos', icon: 'water-pump' },
     { name: 'Alerts', label: language === 'en' ? 'Field Alerts & Risks' : 'Alertas & Riscos', icon: 'bell-alert-outline' },
     { name: 'Calculators', label: language === 'en' ? 'Calculators & Spray' : 'Calculadoras Agrícolas', icon: 'calculator-variant-outline' },
@@ -125,6 +128,32 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 
       <TouchableOpacity
         activeOpacity={0.75}
+        onPress={() => void toggleHighContrastFieldMode()}
+        style={[
+          styles.fieldModeButton,
+          {
+            backgroundColor: highContrastFieldMode ? '#FACC15' : 'rgba(250, 204, 21, 0.12)',
+            minHeight: touchTargetMinHeight,
+          },
+        ]}
+      >
+        <MaterialCommunityIcons
+          name="tractor"
+          size={20}
+          color={highContrastFieldMode ? '#000000' : '#FACC15'}
+        />
+        <Text
+          style={[
+            styles.fieldModeText,
+            { color: highContrastFieldMode ? '#000000' : '#FACC15' },
+          ]}
+        >
+          {highContrastFieldMode ? 'Modo Cabine Ativo (Anti-Reflexo)' : 'Modo Cabine / Sol Forte'}
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        activeOpacity={0.75}
         onPress={() => signOut()}
         style={styles.logoutRow}
       >
@@ -158,6 +187,7 @@ export const AppDrawer: React.FC = () => {
       <Drawer.Screen name="MarketCommodities" component={MarketCommoditiesScreen} />
       <Drawer.Screen name="FarmFinances" component={FarmFinancesScreen} />
       <Drawer.Screen name="PestScouting" component={PestScoutingScreen} />
+      <Drawer.Screen name="PestDiagnosis" component={PestDiagnosisScreen} />
       <Drawer.Screen name="IrrigationSilos" component={IrrigationSilosScreen} />
       <Drawer.Screen name="Alerts" component={AlertsListScreen} />
       <Drawer.Screen name="Calculators" component={CalculatorsScreen} />
@@ -273,6 +303,22 @@ const styles = StyleSheet.create({
   menuItemTextActive: {
     color: '#4ADE80',
     fontWeight: '700',
+  },
+  fieldModeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+    borderRadius: radii.md,
+    marginHorizontal: spacing.sm,
+    marginBottom: spacing.xs,
+    borderWidth: 1,
+    borderColor: '#FACC15',
+    gap: spacing.sm,
+  },
+  fieldModeText: {
+    ...typography.captionMedium,
+    fontWeight: '700',
+    fontSize: 12,
   },
   logoutRow: {
     flexDirection: 'row',
