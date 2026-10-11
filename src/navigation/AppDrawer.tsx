@@ -51,11 +51,11 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 
   const currentRoute = state.routes[state.index].name;
 
-  const menuItems: Array<{
+  const menuItems: {
     name: keyof AppDrawerParamList;
     label: string;
     icon: keyof typeof MaterialCommunityIcons.glyphMap;
-  }> = [
+  }[] = [
     { name: 'MainTabs', label: language === 'en' ? 'Dashboard & Fields' : 'Painel & Talhões', icon: 'view-dashboard-outline' },
     { name: 'SprayDiary', label: language === 'en' ? 'Spray Diary & MAPA' : 'Caderno de Pulverização', icon: 'spray' },
     { name: 'MachineryFleet', label: language === 'en' ? 'Fleet & Machinery' : 'Máquinas & Frota Agrícola', icon: 'tractor' },

@@ -35,7 +35,7 @@ export const WeatherConditionsScreen: React.FC = () => {
     );
     loop.start();
     return () => loop.stop();
-  }, [activeWeather]);
+  }, [activeWeather, windAnim]);
 
   const windRotate = windAnim.interpolate({
     inputRange: [0, 1],

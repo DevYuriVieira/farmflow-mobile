@@ -276,7 +276,7 @@ export const InteractiveFarmHero: React.FC<InteractiveFarmHeroProps> = ({
 
   /* deterministic rain drops (tile repeated twice vertically for seamless loop) */
   const drops = useMemo(() => {
-    const arr: Array<{ x: number; y: number; l: number }> = [];
+    const arr: { x: number; y: number; l: number }[] = [];
     let seed = 7;
     const rnd = () => {
       seed = (seed * 9301 + 49297) % 233280;
