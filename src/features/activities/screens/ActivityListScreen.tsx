@@ -22,7 +22,7 @@ import { EmptyState } from '../../../components/EmptyState';
 import { ErrorState } from '../../../components/ErrorState';
 import { AppNavigationProp } from '../../../navigation/types';
 import { colors, radii, spacing, typography } from '../../../theme';
-import { activityTypeLabels } from '../../../utils/formatters';
+import { getActivityTypeLabel, getFarmDisplayName } from '../../../utils/formatters';
 
 export const ActivityListScreen: React.FC = () => {
   const navigation = useNavigation<AppNavigationProp>();
@@ -46,7 +46,8 @@ export const ActivityListScreen: React.FC = () => {
   const toggleCompleteMutation = useToggleActivityComplete();
 
   const getFarmName = (farmId: string): string => {
-    return farms?.find((f) => f.id === farmId)?.name || 'Fazenda';
+    const f = farms?.find((farm) => farm.id === farmId);
+    return f ? getFarmDisplayName(f, language) : (language === 'en' ? 'Farm' : 'Fazenda');
   };
 
   const handleBack = () => {
@@ -180,7 +181,7 @@ export const ActivityListScreen: React.FC = () => {
                     isSelected && (isDark ? styles.typeChipTextActiveDark : styles.typeChipTextActive),
                   ]}
                 >
-                  {activityTypeLabels[type]}
+                  {getActivityTypeLabel(type, language)}
                 </Text>
               </TouchableOpacity>
             );

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FarmActivity, ActivityType } from '../types/activity.types';
 import { colors, radii, spacing, typography } from '../theme';
-import { activityTypeLabels } from '../utils/formatters';
+import { getActivityTypeLabel, getActivityTitle, getActivityDescription } from '../utils/formatters';
 import { formatTimePtBr, formatDatePtBr } from '../utils/dates';
 import { usePreferences } from '../contexts/PreferencesContext';
 import { triggerHaptic } from '../utils/haptics';
@@ -81,7 +81,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
             ]}
             numberOfLines={1}
           >
-            {activity.title} {language === 'en' ? 'at' : 'às'} {formatTimePtBr(activity.scheduledAt)}
+            {getActivityTitle(activity, language)} {language === 'en' ? 'at' : 'às'} {formatTimePtBr(activity.scheduledAt)}
           </Text>
         </TouchableOpacity>
       </View>
@@ -122,13 +122,13 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
             ]}
             numberOfLines={1}
           >
-            {activity.title}
+            {getActivityTitle(activity, language)}
           </Text>
           <Text
             style={[styles.description, isDark && styles.descriptionDark]}
             numberOfLines={2}
           >
-            {activity.description}
+            {getActivityDescription(activity, language)}
           </Text>
         </View>
 
@@ -144,7 +144,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
       <View style={[styles.metaRow, isDark && styles.metaRowDark]}>
         <View style={[styles.metaBadge, isDark && styles.metaBadgeDark]}>
           <Text style={[styles.metaBadgeText, isDark && styles.metaBadgeTextDark]}>
-            {activityTypeLabels[activity.type]}
+            {getActivityTypeLabel(activity.type, language)}
           </Text>
         </View>
 

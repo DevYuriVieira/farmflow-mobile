@@ -26,7 +26,7 @@ import { Screen } from '../../../components/Screen';
 import { TextField } from '../../../components/TextField';
 import { Button } from '../../../components/Button';
 import { colors, radii, spacing, typography } from '../../../theme';
-import { activityTypeLabels } from '../../../utils/formatters';
+import { getActivityTypeLabel, getFarmDisplayName, getPlantationName } from '../../../utils/formatters';
 
 type RouteProps = RouteProp<AppDrawerParamList, 'ActivityForm'>;
 
@@ -141,7 +141,7 @@ export const ActivityFormScreen: React.FC = () => {
                           isSelected && styles.chipTextActive,
                         ]}
                       >
-                        {farm.name}
+                        {getFarmDisplayName(farm, language)}
                       </Text>
                     </TouchableOpacity>
                   );
@@ -198,7 +198,7 @@ export const ActivityFormScreen: React.FC = () => {
                               isSelected && styles.chipTextActive,
                             ]}
                           >
-                            {p.name}
+                            {getPlantationName(p, language)}
                           </Text>
                         </TouchableOpacity>
                       );
@@ -236,7 +236,7 @@ export const ActivityFormScreen: React.FC = () => {
                           isSelected && styles.chipTextActive,
                         ]}
                       >
-                        {activityTypeLabels[type]}
+                        {getActivityTypeLabel(type, language)}
                       </Text>
                     </TouchableOpacity>
                   );
@@ -251,8 +251,8 @@ export const ActivityFormScreen: React.FC = () => {
             name="title"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextField
-                label="Título da Atividade"
-                placeholder="Ex: Irrigação matinal do pivô 02"
+                label={language === 'en' ? 'Activity Title' : 'Título da Atividade'}
+                placeholder={language === 'en' ? 'e.g. Morning pivot irrigation' : 'Ex: Irrigação matinal do pivô 02'}
                 leftIcon="clipboard-text-outline"
                 value={value}
                 onBlur={onBlur}
@@ -267,8 +267,12 @@ export const ActivityFormScreen: React.FC = () => {
             name="description"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextField
-                label="Descrição Detalhada e Instruções"
-                placeholder="Ex: Aplicar lâmina d'água de 8mm e checar pressão dos bicos..."
+                label={language === 'en' ? 'Detailed Description & Instructions' : 'Descrição Detalhada e Instruções'}
+                placeholder={
+                  language === 'en'
+                    ? 'e.g. Apply 8mm water depth and inspect nozzle pressure...'
+                    : "Ex: Aplicar lâmina d'água de 8mm e checar pressão dos bicos..."
+                }
                 leftIcon="text"
                 multiline
                 numberOfLines={3}
@@ -285,7 +289,7 @@ export const ActivityFormScreen: React.FC = () => {
             name="scheduledAt"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextField
-                label="Data e Horário Previsto (ISO ou Formato)"
+                label={language === 'en' ? 'Scheduled Date & Time (ISO or Format)' : 'Data e Horário Previsto (ISO ou Formato)'}
                 placeholder="Ex: 2026-10-10T08:00:00Z"
                 leftIcon="clock-outline"
                 value={value}
@@ -297,7 +301,11 @@ export const ActivityFormScreen: React.FC = () => {
           />
 
           <Button
-            title={isEditing ? 'Salvar Alterações' : 'Agendar Atividade'}
+            title={
+              isEditing
+                ? (language === 'en' ? 'Save Changes' : 'Salvar Alterações')
+                : (language === 'en' ? 'Schedule Activity' : 'Agendar Atividade')
+            }
             onPress={handleSubmit(onSubmit)}
             loading={isSubmitting}
             size="lg"

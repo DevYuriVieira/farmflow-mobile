@@ -23,7 +23,7 @@ import { LoadingState } from '../../../components/LoadingState';
 import { ErrorState } from '../../../components/ErrorState';
 import { AppDrawerParamList, AppNavigationProp } from '../../../navigation/types';
 import { colors, radii, spacing, typography } from '../../../theme';
-import { activityTypeLabels } from '../../../utils/formatters';
+import { getActivityTypeLabel, getActivityTitle, getActivityDescription } from '../../../utils/formatters';
 import { formatDateTimePtBr } from '../../../utils/dates';
 
 type RouteProps = RouteProp<AppDrawerParamList, 'ActivityDetail'>;
@@ -168,37 +168,53 @@ export const ActivityDetailScreen: React.FC = () => {
           />
           <Text style={[styles.statusBannerText, activity.completed && styles.statusBannerTextDone]}>
             {activity.completed
-              ? `Concluída em ${formatDateTimePtBr(activity.completedAt)}`
-              : 'Atividade Pendente — Toque para Concluir'}
+              ? (language === 'en'
+                  ? `Completed on ${formatDateTimePtBr(activity.completedAt)}`
+                  : `Concluída em ${formatDateTimePtBr(activity.completedAt)}`)
+              : (language === 'en'
+                  ? 'Pending Activity — Tap to Complete'
+                  : 'Atividade Pendente — Toque para Concluir')}
           </Text>
         </TouchableOpacity>
 
-        <Text style={styles.title}>{activity.title}</Text>
-        <Text style={styles.description}>{activity.description}</Text>
+        <Text style={styles.title}>{getActivityTitle(activity, language)}</Text>
+        <Text style={styles.description}>{getActivityDescription(activity, language)}</Text>
 
         <View style={styles.grid}>
           <View style={styles.gridCard}>
             <MaterialCommunityIcons name="calendar-clock" size={20} color={colors.primaryLight} />
-            <Text style={styles.gridLabel}>Data e Hora Agendada</Text>
+            <Text style={styles.gridLabel}>
+              {language === 'en' ? 'Scheduled Date & Time' : 'Data e Hora Agendada'}
+            </Text>
             <Text style={styles.gridValue}>{formatDateTimePtBr(activity.scheduledAt)}</Text>
           </View>
 
           <View style={styles.gridCard}>
             <MaterialCommunityIcons name="tag-outline" size={20} color={colors.accentLime} />
-            <Text style={styles.gridLabel}>Tipo de Atividade</Text>
-            <Text style={styles.gridValue}>{activityTypeLabels[activity.type]}</Text>
+            <Text style={styles.gridLabel}>
+              {language === 'en' ? 'Activity Type' : 'Tipo de Atividade'}
+            </Text>
+            <Text style={styles.gridValue}>{getActivityTypeLabel(activity.type, language)}</Text>
           </View>
 
           <View style={styles.gridCard}>
             <MaterialCommunityIcons name="home-outline" size={20} color={colors.accentGold} />
-            <Text style={styles.gridLabel}>Fazenda</Text>
-            <Text style={styles.gridValue}>{farm?.name || 'Não vinculada'}</Text>
+            <Text style={styles.gridLabel}>
+              {language === 'en' ? 'Farm' : 'Fazenda'}
+            </Text>
+            <Text style={styles.gridValue}>
+              {farm?.name || (language === 'en' ? 'Unassigned' : 'Não vinculada')}
+            </Text>
           </View>
 
           <View style={styles.gridCard}>
             <MaterialCommunityIcons name="sprout-outline" size={20} color={colors.accentBlue} />
-            <Text style={styles.gridLabel}>Talhão</Text>
-            <Text style={styles.gridValue}>{plantation?.name || 'Geral da Fazenda'}</Text>
+            <Text style={styles.gridLabel}>
+              {language === 'en' ? 'Field' : 'Talhão'}
+            </Text>
+            <Text style={styles.gridValue}>
+              {plantation?.name || (language === 'en' ? 'General Farm' : 'Geral da Fazenda')}
+            </Text>
           </View>
         </View>
 
@@ -208,7 +224,9 @@ export const ActivityDetailScreen: React.FC = () => {
           style={styles.calendarSyncBtn}
         >
           <MaterialCommunityIcons name="calendar-sync" size={20} color={colors.primaryLight} />
-          <Text style={styles.calendarSyncBtnText}>Sincronizar com Google Agenda</Text>
+          <Text style={styles.calendarSyncBtnText}>
+            {language === 'en' ? 'Sync with Google Calendar' : 'Sincronizar com Google Agenda'}
+          </Text>
         </TouchableOpacity>
       </View>
     </Screen>

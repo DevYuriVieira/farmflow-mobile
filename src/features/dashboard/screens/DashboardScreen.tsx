@@ -28,6 +28,7 @@ import { LoadingState } from '../../../components/LoadingState';
 import { PlantationFormModal } from '../../plantations/screens/PlantationFormModal';
 import { AppNavigationProp } from '../../../navigation/types';
 import { radii, spacing } from '../../../theme';
+import { getFarmDisplayName } from '../../../utils/formatters';
 
 export const DashboardScreen: React.FC = () => {
   const navigation = useNavigation<AppNavigationProp>();
@@ -212,7 +213,7 @@ export const DashboardScreen: React.FC = () => {
             </Text>
             <View style={styles.farmNameRow}>
               <Text style={[styles.farmNameText, isDark && styles.farmNameTextDark]} numberOfLines={1}>
-                {weatherData?.locationName || (activeFarm?.name || 'Fazenda Santa Fé')}
+                {weatherData?.locationName || (activeFarm ? getFarmDisplayName(activeFarm, language) : (language === 'en' ? 'Santa Fé Farm' : 'Fazenda Santa Fé'))}
               </Text>
               <MaterialCommunityIcons name="chevron-down" size={18} color={isDark ? '#F1F5F9' : '#1E293B'} />
             </View>
