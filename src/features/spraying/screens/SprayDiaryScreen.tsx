@@ -120,20 +120,26 @@ export const SprayDiaryScreen: React.FC = () => {
               color={isGrace ? '#EF4444' : '#10B981'}
             />
             <Text style={[styles.statusBadgeText, { color: isGrace ? '#EF4444' : '#10B981' }]}>
-              {isGrace ? `Carência: ${daysLeft}d restantes` : 'Liberado p/ Colheita'}
+              {isGrace
+                ? (language === 'en' ? `Grace: ${daysLeft}d left` : `Carência: ${daysLeft}d restantes`)
+                : (language === 'en' ? 'Cleared for Harvest' : 'Liberado p/ Colheita')}
             </Text>
           </View>
         </View>
 
         <View style={styles.infoGrid}>
           <View style={styles.infoCol}>
-            <Text style={styles.infoLabel}>Ingrediente Ativo</Text>
+            <Text style={styles.infoLabel}>
+              {language === 'en' ? 'Active Ingredient' : 'Ingrediente Ativo'}
+            </Text>
             <Text style={[styles.infoVal, isDark && styles.infoValDark]} numberOfLines={1}>
               {item.activeIngredient}
             </Text>
           </View>
           <View style={styles.infoCol}>
-            <Text style={styles.infoLabel}>Dose / Calda</Text>
+            <Text style={styles.infoLabel}>
+              {language === 'en' ? 'Dose / Volume' : 'Dose / Calda'}
+            </Text>
             <Text style={[styles.infoVal, isDark && styles.infoValDark]}>
               {item.dosePerHectare} · {item.sprayVolumeLPerHa} L/ha
             </Text>
@@ -142,13 +148,17 @@ export const SprayDiaryScreen: React.FC = () => {
 
         <View style={styles.infoGrid}>
           <View style={styles.infoCol}>
-            <Text style={styles.infoLabel}>Ponta de Pulverização</Text>
+            <Text style={styles.infoLabel}>
+              {language === 'en' ? 'Spray Nozzle' : 'Ponta de Pulverização'}
+            </Text>
             <Text style={[styles.infoVal, isDark && styles.infoValDark]} numberOfLines={1}>
               {item.nozzleType}
             </Text>
           </View>
           <View style={styles.infoCol}>
-            <Text style={styles.infoLabel}>Condições de Aplicação</Text>
+            <Text style={styles.infoLabel}>
+              {language === 'en' ? 'Application Weather' : 'Condições de Aplicação'}
+            </Text>
             <Text style={[styles.infoVal, isDark && styles.infoValDark]}>
               {item.windSpeedKmH} km/h · {item.humidityPercent}% RH · {item.temperatureC}°C
             </Text>
@@ -161,7 +171,8 @@ export const SprayDiaryScreen: React.FC = () => {
 
         <View style={styles.cardFooter}>
           <Text style={[styles.dateText, isDark && styles.dateTextDark]}>
-            Aplicado em {new Date(item.appliedAt).toLocaleDateString('pt-BR')} · {item.operatorName}
+            {language === 'en' ? 'Applied on ' : 'Aplicado em '}
+            {new Date(item.appliedAt).toLocaleDateString(language === 'en' ? 'en-US' : 'pt-BR')} · {item.operatorName}
           </Text>
 
           <TouchableOpacity
@@ -177,7 +188,15 @@ export const SprayDiaryScreen: React.FC = () => {
   };
 
   if (isLoading) {
-    return <LoadingState message="Carregando caderno de pulverização..." />;
+    return (
+      <LoadingState
+        message={
+          language === 'en'
+            ? 'Loading spray diary...'
+            : 'Carregando caderno de pulverização...'
+        }
+      />
+    );
   }
 
   return (
@@ -219,25 +238,39 @@ export const SprayDiaryScreen: React.FC = () => {
         <View style={styles.kpiContainer}>
           <View style={[styles.kpiCard, isDark && styles.kpiCardDark]}>
             <Text style={[styles.kpiNumber, { color: '#EF4444' }]}>{inGraceCount}</Text>
-            <Text style={[styles.kpiLabel, isDark && styles.kpiLabelDark]}>Em Carência</Text>
-            <Text style={styles.kpiSub}>Colheita restrita</Text>
+            <Text style={[styles.kpiLabel, isDark && styles.kpiLabelDark]}>
+              {language === 'en' ? 'In Grace Period' : 'Em Carência'}
+            </Text>
+            <Text style={styles.kpiSub}>
+              {language === 'en' ? 'Harvest restricted' : 'Colheita restrita'}
+            </Text>
           </View>
           <View style={[styles.kpiCard, isDark && styles.kpiCardDark]}>
             <Text style={[styles.kpiNumber, { color: '#10B981' }]}>{safeCount}</Text>
-            <Text style={[styles.kpiLabel, isDark && styles.kpiLabelDark]}>Liberados</Text>
-            <Text style={styles.kpiSub}>Sem resíduo ativo</Text>
+            <Text style={[styles.kpiLabel, isDark && styles.kpiLabelDark]}>
+              {language === 'en' ? 'Safe to Harvest' : 'Liberados'}
+            </Text>
+            <Text style={styles.kpiSub}>
+              {language === 'en' ? 'No active residue' : 'Sem resíduo ativo'}
+            </Text>
           </View>
           <View style={[styles.kpiCard, isDark && styles.kpiCardDark]}>
             <Text style={[styles.kpiNumber, { color: '#3B82F6' }]}>{applications.length}</Text>
-            <Text style={[styles.kpiLabel, isDark && styles.kpiLabelDark]}>Aplicações</Text>
-            <Text style={styles.kpiSub}>Safra atual</Text>
+            <Text style={[styles.kpiLabel, isDark && styles.kpiLabelDark]}>
+              {language === 'en' ? 'Applications' : 'Aplicações'}
+            </Text>
+            <Text style={styles.kpiSub}>
+              {language === 'en' ? 'Current crop' : 'Safra atual'}
+            </Text>
           </View>
         </View>
 
         <View style={[styles.sprayWindowBanner, isDark && styles.sprayWindowBannerDark]}>
           <MaterialCommunityIcons name="weather-windy" size={18} color="#059669" />
           <Text style={[styles.sprayWindowText, isDark && styles.sprayWindowTextDark]}>
-            Janela de Pulverização Ideal: Vento 3 a 10 km/h · UR &gt; 55% · Temp &lt; 30°C
+            {language === 'en'
+              ? 'Ideal Spray Window: Wind 3 to 10 km/h · RH > 55% · Temp < 30°C'
+              : 'Janela de Pulverização Ideal: Vento 3 a 10 km/h · UR > 55% · Temp < 30°C'}
           </Text>
         </View>
       </View>
@@ -251,8 +284,12 @@ export const SprayDiaryScreen: React.FC = () => {
         ListEmptyComponent={
           <EmptyState
             icon="spray"
-            title="Nenhuma Aplicação Registrada"
-            description="Cadastre as pulverizações realizadas para controlar o período de carência de cada talhão."
+            title={language === 'en' ? 'No Applications Recorded' : 'Nenhuma Aplicação Registrada'}
+            description={
+              language === 'en'
+                ? 'Record crop sprays to monitor safety and withdrawal intervals for each field.'
+                : 'Cadastre as pulverizações realizadas para controlar o período de carência de cada talhão.'
+            }
           />
         }
       />

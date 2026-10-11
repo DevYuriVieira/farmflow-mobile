@@ -321,7 +321,13 @@ export const PestScoutingScreen: React.FC = () => {
                 </View>
                 <View style={[styles.badge, { backgroundColor: isDark ? '#1E293B' : '#F1F5F9', borderColor: '#94A3B8' }]}>
                   <Text style={[styles.badgeText, { color: isDark ? '#CBD5E1' : '#475569' }]}>
-                    {item.crop === 'SOY' ? 'Soja' : item.crop === 'CORN' ? 'Milho' : item.crop === 'COFFEE' ? 'Café' : 'Geral'}
+                    {item.crop === 'SOY'
+                      ? (language === 'en' ? 'Soybeans' : 'Soja')
+                      : item.crop === 'CORN'
+                      ? (language === 'en' ? 'Corn' : 'Milho')
+                      : item.crop === 'COFFEE'
+                      ? (language === 'en' ? 'Coffee' : 'Café')
+                      : (language === 'en' ? 'General' : 'Geral')}
                   </Text>
                 </View>
               </View>

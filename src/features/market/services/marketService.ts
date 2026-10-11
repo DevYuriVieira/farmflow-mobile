@@ -63,6 +63,40 @@ export const INITIAL_QUOTES: CommodityQuote[] = [
   },
 ];
 
+export const COMMODITY_TRANSLATIONS: Record<
+  string,
+  { name: { pt: string; en: string }; unit: { pt: string; en: string } }
+> = {
+  'comm-soy': {
+    name: { pt: 'Soja em Grão', en: 'Soybeans' },
+    unit: { pt: 'sc 60kg', en: '60kg bag' },
+  },
+  'comm-corn': {
+    name: { pt: 'Milho Amarelo', en: 'Yellow Corn' },
+    unit: { pt: 'sc 60kg', en: '60kg bag' },
+  },
+  'comm-coffee': {
+    name: { pt: 'Café Arábica Tipo 6', en: 'Arabica Coffee' },
+    unit: { pt: 'sc 60kg', en: '60kg bag' },
+  },
+  'comm-cattle': {
+    name: { pt: 'Boi Gordo', en: 'Live Cattle' },
+    unit: { pt: '@ 15kg', en: '15kg arroba' },
+  },
+  'comm-wheat': {
+    name: { pt: 'Trigo Paraná', en: 'Paraná Wheat' },
+    unit: { pt: 'sc 60kg', en: '60kg bag' },
+  },
+};
+
+export function getCommodityName(id: string, fallback: string, lang: 'pt' | 'en' = 'pt'): string {
+  return COMMODITY_TRANSLATIONS[id]?.name[lang] || fallback;
+}
+
+export function getCommodityUnit(id: string, fallback: string, lang: 'pt' | 'en' = 'pt'): string {
+  return COMMODITY_TRANSLATIONS[id]?.unit[lang] || fallback;
+}
+
 export const marketService = {
   async getMarketSummary(): Promise<MarketSummary> {
     // Simulated live market feed with slight random delta

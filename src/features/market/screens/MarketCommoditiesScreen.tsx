@@ -11,7 +11,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Svg, { Path } from 'react-native-svg';
 
 import { CommodityQuote } from '../types';
-import { marketService, INITIAL_QUOTES } from '../services/marketService';
+import { marketService, INITIAL_QUOTES, getCommodityName, getCommodityUnit } from '../services/marketService';
 import { Screen } from '../../../components/Screen';
 import { colors, radii, spacing, typography } from '../../../theme';
 import { usePreferences } from '../../../contexts/PreferencesContext';
@@ -96,13 +96,15 @@ export const MarketCommoditiesScreen: React.FC = () => {
         <View style={[styles.simCard, isDark && styles.simCardDark]}>
           <View style={styles.simHeader}>
             <MaterialCommunityIcons name="calculator" size={18} color="#059669" />
-            <Text style={styles.simTitle}>Simulador de Venda de Safra</Text>
+            <Text style={styles.simTitle}>
+              {language === 'en' ? 'Crop Harvest Sales Simulator' : 'Simulador de Venda de Safra'}
+            </Text>
           </View>
 
           <View style={styles.simInputsRow}>
             <View style={{ flex: 1 }}>
               <Text style={[styles.simInputLabel, isDark && styles.simInputLabelDark]}>
-                Quantidade ({selectedCommodity.unit})
+                {language === 'en' ? 'Quantity' : 'Quantidade'} ({getCommodityUnit(selectedCommodity.id, selectedCommodity.unit, language)})
               </Text>
               <TextInput
                 style={[styles.simInput, isDark && styles.simInputDark]}
@@ -115,20 +117,22 @@ export const MarketCommoditiesScreen: React.FC = () => {
               <Text style={[styles.simInputLabel, isDark && styles.simInputLabelDark]}>Commodity</Text>
               <View style={[styles.simCommodityPill, isDark && styles.simCommodityPillDark]}>
                 <Text style={[styles.simCommodityText, isDark && styles.simCommodityTextDark]}>
-                  {selectedCommodity.name} (R$ {selectedCommodity.priceBrl.toFixed(2)})
+                  {getCommodityName(selectedCommodity.id, selectedCommodity.name, language)} (R$ {selectedCommodity.priceBrl.toFixed(2)})
                 </Text>
               </View>
             </View>
           </View>
 
           <View style={styles.simResultBox}>
-            <Text style={styles.simResultLabel}>Valor Bruto Total Estimado:</Text>
+            <Text style={styles.simResultLabel}>
+              {language === 'en' ? 'Estimated Total Gross Value:' : 'Valor Bruto Total Estimado:'}
+            </Text>
             <Text style={styles.simResultValue}>R$ {totalLotValue.toLocaleString('pt-BR')}</Text>
           </View>
         </View>
 
         <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>
-          Indicadores do Mercado Agrícola
+          {language === 'en' ? 'Agricultural Market Indicators' : 'Indicadores do Mercado Agrícola'}
         </Text>
 
         {quotes.map((item) => {
@@ -152,8 +156,12 @@ export const MarketCommoditiesScreen: React.FC = () => {
             >
               <View style={styles.quoteRowTop}>
                 <View style={{ flex: 1 }}>
-                  <Text style={[styles.quoteName, isDark && styles.quoteNameDark]}>{item.name}</Text>
-                  <Text style={styles.quoteRef}>{item.marketReference} · {item.unit}</Text>
+                  <Text style={[styles.quoteName, isDark && styles.quoteNameDark]}>
+                    {getCommodityName(item.id, item.name, language)}
+                  </Text>
+                  <Text style={styles.quoteRef}>
+                    {item.marketReference} · {getCommodityUnit(item.id, item.unit, language)}
+                  </Text>
                 </View>
 
                 <View style={styles.sparklineWrap}>
@@ -198,9 +206,9 @@ export const MarketCommoditiesScreen: React.FC = () => {
                   </Text>
                 </View>
                 <View style={styles.rangeRow}>
-                  <Text style={styles.rangeText}>Mín: R$ {item.lowBrl.toFixed(1)}</Text>
+                  <Text style={styles.rangeText}>{language === 'en' ? 'Min' : 'Mín'}: R$ {item.lowBrl.toFixed(1)}</Text>
                   <Text style={styles.rangeText}>·</Text>
-                  <Text style={styles.rangeText}>Máx: R$ {item.highBrl.toFixed(1)}</Text>
+                  <Text style={styles.rangeText}>{language === 'en' ? 'Max' : 'Máx'}: R$ {item.highBrl.toFixed(1)}</Text>
                 </View>
               </View>
             </TouchableOpacity>

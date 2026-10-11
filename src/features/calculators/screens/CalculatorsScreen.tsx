@@ -247,7 +247,7 @@ export const CalculatorsScreen: React.FC = () => {
                     ]}
                   >
                     <Text style={[styles.cropChipText, selectedCrop === crop && styles.cropChipTextActive]}>
-                      {crop === 'SOY' ? 'Soja' : crop === 'CORN' ? 'Milho' : 'Café'}
+                      {crop === 'SOY' ? (language === 'en' ? 'Soybeans' : 'Soja') : crop === 'CORN' ? (language === 'en' ? 'Corn' : 'Milho') : (language === 'en' ? 'Coffee' : 'Café')}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -353,7 +353,9 @@ export const CalculatorsScreen: React.FC = () => {
                     ]}
                   >
                     <Text style={[styles.cropChipText, yieldCrop === crop && styles.cropChipTextActive]}>
-                      {crop === 'SOY' ? 'Soja (Vagens)' : 'Milho (Espigas)'}
+                      {crop === 'SOY'
+                        ? (language === 'en' ? 'Soybeans (Pods)' : 'Soja (Vagens)')
+                        : (language === 'en' ? 'Corn (Ears)' : 'Milho (Espigas)')}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -361,7 +363,9 @@ export const CalculatorsScreen: React.FC = () => {
 
               <View style={styles.inputGrid}>
                 <View style={styles.inputCol}>
-                  <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>Espaçamento Linhas (m)</Text>
+                  <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>
+                    {language === 'en' ? 'Row Spacing (m)' : 'Espaçamento Linhas (m)'}
+                  </Text>
                   <TextInput
                     style={[styles.input, isDark && styles.inputDark]}
                     keyboardType="numeric"
@@ -370,7 +374,9 @@ export const CalculatorsScreen: React.FC = () => {
                   />
                 </View>
                 <View style={styles.inputCol}>
-                  <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>Plantas / Metro</Text>
+                  <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>
+                    {language === 'en' ? 'Plants / Meter' : 'Plantas / Metro'}
+                  </Text>
                   <TextInput
                     style={[styles.input, isDark && styles.inputDark]}
                     keyboardType="numeric"
@@ -383,7 +389,9 @@ export const CalculatorsScreen: React.FC = () => {
               <View style={styles.inputGrid}>
                 <View style={styles.inputCol}>
                   <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>
-                    {yieldCrop === 'SOY' ? 'Vagens / Planta' : 'Espigas / Planta'}
+                    {yieldCrop === 'SOY'
+                      ? (language === 'en' ? 'Pods / Plant' : 'Vagens / Planta')
+                      : (language === 'en' ? 'Ears / Plant' : 'Espigas / Planta')}
                   </Text>
                   <TextInput
                     style={[styles.input, isDark && styles.inputDark]}
@@ -394,7 +402,9 @@ export const CalculatorsScreen: React.FC = () => {
                 </View>
                 <View style={styles.inputCol}>
                   <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>
-                    {yieldCrop === 'SOY' ? 'Grãos / Vagem' : 'Grãos / Espiga'}
+                    {yieldCrop === 'SOY'
+                      ? (language === 'en' ? 'Grains / Pod' : 'Grãos / Vagem')
+                      : (language === 'en' ? 'Grains / Ear' : 'Grãos / Espiga')}
                   </Text>
                   <TextInput
                     style={[styles.input, isDark && styles.inputDark]}
@@ -407,7 +417,9 @@ export const CalculatorsScreen: React.FC = () => {
 
               <View style={styles.inputGrid}>
                 <View style={styles.inputCol}>
-                  <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>Peso 1000 Grãos (PMG em g)</Text>
+                  <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>
+                    {language === 'en' ? '1000-Grain Weight (TSW in g)' : 'Peso 1000 Grãos (PMG em g)'}
+                  </Text>
                   <TextInput
                     style={[styles.input, isDark && styles.inputDark]}
                     keyboardType="numeric"
@@ -421,24 +433,34 @@ export const CalculatorsScreen: React.FC = () => {
             <View style={[styles.resultCard, isDark && styles.resultCardDark]}>
               <View style={styles.resultHeader}>
                 <MaterialCommunityIcons name="scale" size={20} color="#10B981" />
-                <Text style={styles.resultHeaderTitle}>Estimativa de Colheita</Text>
+                <Text style={styles.resultHeaderTitle}>
+                  {language === 'en' ? 'Harvest Yield Estimate' : 'Estimativa de Colheita'}
+                </Text>
               </View>
 
               <View style={styles.highlightYield}>
                 <Text style={styles.highlightYieldNumber}>{yieldResult.estimatedBagsPerHa}</Text>
-                <Text style={styles.highlightYieldUnit}>Sacas (60kg) por hectare</Text>
+                <Text style={styles.highlightYieldUnit}>
+                  {language === 'en' ? 'Bags (60kg) per hectare' : 'Sacas (60kg) por hectare'}
+                </Text>
                 <View style={styles.benchmarkPill}>
-                  <Text style={styles.benchmarkText}>Classificação: {yieldResult.benchmarkRating}</Text>
+                  <Text style={styles.benchmarkText}>
+                    {language === 'en' ? 'Rating: ' : 'Classificação: '}{yieldResult.benchmarkRating}
+                  </Text>
                 </View>
               </View>
 
               <View style={styles.resultGrid}>
                 <View style={styles.resultItem}>
-                  <Text style={styles.resultItemLabel}>População Total</Text>
+                  <Text style={styles.resultItemLabel}>
+                    {language === 'en' ? 'Total Population' : 'População Total'}
+                  </Text>
                   <Text style={styles.resultItemValue}>{yieldResult.plantPopulationPerHa.toLocaleString()} pl/ha</Text>
                 </View>
                 <View style={styles.resultItem}>
-                  <Text style={styles.resultItemLabel}>Produção Total</Text>
+                  <Text style={styles.resultItemLabel}>
+                    {language === 'en' ? 'Total Output' : 'Produção Total'}
+                  </Text>
                   <Text style={styles.resultItemValue}>{yieldResult.estimatedKgPerHa.toLocaleString()} kg/ha</Text>
                 </View>
               </View>

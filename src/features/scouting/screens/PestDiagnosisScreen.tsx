@@ -24,7 +24,7 @@ import { useScouting } from '../hooks/useScouting';
 
 export const PestDiagnosisScreen: React.FC = () => {
   const navigation = useNavigation();
-  const { themeColors, touchTargetMinHeight, highContrastFieldMode } = usePreferences();
+  const { themeColors, touchTargetMinHeight, highContrastFieldMode, language } = usePreferences();
   const { addRecord } = useScouting();
 
   const [selectedDiagnosis, setSelectedDiagnosis] = useState<PestDiagnosisResult>(PEST_CATALOG[0]);
@@ -270,7 +270,7 @@ export const PestDiagnosisScreen: React.FC = () => {
           <View style={styles.metricRow}>
             <View style={styles.metricItem}>
               <Text style={[styles.metricLabel, { color: themeColors.textMuted }]}>
-                Confiança IA
+                {language === 'en' ? 'AI Confidence' : 'Confiança IA'}
               </Text>
               <Text style={[styles.metricValue, { color: themeColors.success }]}>
                 {selectedDiagnosis.confidencePercent}%
@@ -278,15 +278,21 @@ export const PestDiagnosisScreen: React.FC = () => {
             </View>
             <View style={styles.metricItem}>
               <Text style={[styles.metricLabel, { color: themeColors.textMuted }]}>
-                Cultura Alvo
+                {language === 'en' ? 'Target Crop' : 'Cultura Alvo'}
               </Text>
               <Text style={[styles.metricValue, { color: themeColors.textPrimary }]}>
-                {selectedDiagnosis.cropType}
+                {selectedDiagnosis.cropType === 'Soja'
+                  ? (language === 'en' ? 'Soybeans' : 'Soja')
+                  : selectedDiagnosis.cropType === 'Milho'
+                  ? (language === 'en' ? 'Corn' : 'Milho')
+                  : selectedDiagnosis.cropType === 'Café'
+                  ? (language === 'en' ? 'Coffee' : 'Café')
+                  : selectedDiagnosis.cropType}
               </Text>
             </View>
             <View style={styles.metricItem}>
               <Text style={[styles.metricLabel, { color: themeColors.textMuted }]}>
-                Janela Limite
+                {language === 'en' ? 'Urgency Window' : 'Janela Limite'}
               </Text>
               <Text style={[styles.metricValue, { color: themeColors.danger }]}>
                 {selectedDiagnosis.urgencyHours}h
@@ -296,7 +302,7 @@ export const PestDiagnosisScreen: React.FC = () => {
 
           {/* Symptoms */}
           <Text style={[styles.subHeading, { color: themeColors.textPrimary }]}>
-            Sintomatologia Identificada:
+            {language === 'en' ? 'Identified Symptoms:' : 'Sintomatologia Identificada:'}
           </Text>
           {selectedDiagnosis.symptoms.map((symptom, idx) => (
             <View key={idx} style={styles.symptomRow}>

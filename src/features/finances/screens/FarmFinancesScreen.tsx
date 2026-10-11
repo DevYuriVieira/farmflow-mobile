@@ -100,7 +100,11 @@ export const FarmFinancesScreen: React.FC = () => {
               ]}
             >
               <Text style={[styles.cropPillText, crop === c && styles.cropPillTextActive]}>
-                {c === 'SOY' ? 'Soja (sc 60kg)' : c === 'CORN' ? 'Milho (sc 60kg)' : 'Café (sc 60kg)'}
+                {c === 'SOY'
+                  ? (language === 'en' ? 'Soybeans (60kg bag)' : 'Soja (sc 60kg)')
+                  : c === 'CORN'
+                  ? (language === 'en' ? 'Corn (60kg bag)' : 'Milho (sc 60kg)')
+                  : (language === 'en' ? 'Coffee (60kg bag)' : 'Café (sc 60kg)')}
               </Text>
             </TouchableOpacity>
           ))}
@@ -109,43 +113,57 @@ export const FarmFinancesScreen: React.FC = () => {
 
       <View style={styles.content}>
         <View style={[styles.heroCard, isDark && styles.heroCardDark]}>
-          <Text style={styles.heroLabel}>Lucro Líquido Projetado</Text>
+          <Text style={styles.heroLabel}>
+            {language === 'en' ? 'Projected Net Profit' : 'Lucro Líquido Projetado'}
+          </Text>
           <Text style={styles.heroAmount}>
             R$ {result.totalNetProfit.toLocaleString('pt-BR')}
           </Text>
           <Text style={styles.heroSubtext}>
-            R$ {result.netProfitPerHectare.toLocaleString('pt-BR')} por hectare · ROI de {result.roiPercent}%
+            R$ {result.netProfitPerHectare.toLocaleString('pt-BR')}{' '}
+            {language === 'en' ? 'per hectare · ROI of' : 'por hectare · ROI de'} {result.roiPercent}%
           </Text>
 
           <View style={styles.breakEvenBanner}>
             <MaterialCommunityIcons name="target" size={18} color="#059669" />
             <Text style={styles.breakEvenText}>
-              Ponto de Equilíbrio (Break-Even): <Text style={{ fontWeight: '800' }}>{result.breakEvenBagsPerHa} sacas/ha</Text>
+              {language === 'en' ? 'Break-Even Point:' : 'Ponto de Equilíbrio (Break-Even):'}{' '}
+              <Text style={{ fontWeight: '800' }}>
+                {result.breakEvenBagsPerHa} {language === 'en' ? 'bags/ha' : 'sacas/ha'}
+              </Text>
             </Text>
           </View>
         </View>
 
         <View style={styles.kpiGrid}>
           <View style={[styles.kpiCard, isDark && styles.kpiCardDark]}>
-            <Text style={styles.kpiLabel}>Custo por Hectare</Text>
+            <Text style={styles.kpiLabel}>
+              {language === 'en' ? 'Cost per Hectare' : 'Custo por Hectare'}
+            </Text>
             <Text style={[styles.kpiValue, isDark && styles.kpiValueDark]}>
               R$ {result.costPerHectare.toLocaleString('pt-BR')}
             </Text>
           </View>
           <View style={[styles.kpiCard, isDark && styles.kpiCardDark]}>
-            <Text style={styles.kpiLabel}>Investimento Total</Text>
+            <Text style={styles.kpiLabel}>
+              {language === 'en' ? 'Total Investment' : 'Investimento Total'}
+            </Text>
             <Text style={[styles.kpiValue, isDark && styles.kpiValueDark]}>
               R$ {result.totalInvestment.toLocaleString('pt-BR')}
             </Text>
           </View>
           <View style={[styles.kpiCard, isDark && styles.kpiCardDark]}>
-            <Text style={styles.kpiLabel}>Receita Bruta Esperada</Text>
+            <Text style={styles.kpiLabel}>
+              {language === 'en' ? 'Expected Gross Revenue' : 'Receita Bruta Esperada'}
+            </Text>
             <Text style={[styles.kpiValue, { color: '#059669' }]}>
               R$ {result.totalGrossRevenue.toLocaleString('pt-BR')}
             </Text>
           </View>
           <View style={[styles.kpiCard, isDark && styles.kpiCardDark]}>
-            <Text style={styles.kpiLabel}>Retorno sobre Custo</Text>
+            <Text style={styles.kpiLabel}>
+              {language === 'en' ? 'Return on Cost' : 'Retorno sobre Custo'}
+            </Text>
             <Text style={[styles.kpiValue, { color: result.roiPercent >= 0 ? '#10B981' : '#EF4444' }]}>
               +{result.roiPercent}%
             </Text>
@@ -153,11 +171,15 @@ export const FarmFinancesScreen: React.FC = () => {
         </View>
 
         <View style={[styles.card, isDark && styles.cardDark]}>
-          <Text style={[styles.cardTitle, isDark && styles.cardTitleDark]}>Preço de Venda e Área</Text>
+          <Text style={[styles.cardTitle, isDark && styles.cardTitleDark]}>
+            {language === 'en' ? 'Sale Price & Area' : 'Preço de Venda e Área'}
+          </Text>
 
           <View style={styles.inputGrid}>
             <View style={styles.inputCol}>
-              <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>Área Total (ha)</Text>
+              <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>
+                {language === 'en' ? 'Total Area (ha)' : 'Área Total (ha)'}
+              </Text>
               <TextInput
                 style={[styles.input, isDark && styles.inputDark]}
                 keyboardType="numeric"
@@ -166,7 +188,9 @@ export const FarmFinancesScreen: React.FC = () => {
               />
             </View>
             <View style={styles.inputCol}>
-              <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>Produtividade (sc/ha)</Text>
+              <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>
+                {language === 'en' ? 'Yield (bags/ha)' : 'Produtividade (sc/ha)'}
+              </Text>
               <TextInput
                 style={[styles.input, isDark && styles.inputDark]}
                 keyboardType="numeric"
@@ -175,7 +199,9 @@ export const FarmFinancesScreen: React.FC = () => {
               />
             </View>
             <View style={styles.inputCol}>
-              <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>Preço da Saca (R$)</Text>
+              <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>
+                {language === 'en' ? 'Bag Price (R$)' : 'Preço da Saca (R$)'}
+              </Text>
               <TextInput
                 style={[styles.input, isDark && styles.inputDark]}
                 keyboardType="numeric"
@@ -186,12 +212,14 @@ export const FarmFinancesScreen: React.FC = () => {
           </View>
 
           <Text style={[styles.cardTitle, { marginTop: spacing.md }, isDark && styles.cardTitleDark]}>
-            Composição de Custos Operacionais (R$/ha)
+            {language === 'en' ? 'Operating Costs Breakdown (R$/ha)' : 'Composição de Custos Operacionais (R$/ha)'}
           </Text>
 
           <View style={styles.inputGrid}>
             <View style={styles.inputCol}>
-              <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>Sementes</Text>
+              <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>
+                {language === 'en' ? 'Seeds' : 'Sementes'}
+              </Text>
               <TextInput
                 style={[styles.input, isDark && styles.inputDark]}
                 keyboardType="numeric"
@@ -200,7 +228,9 @@ export const FarmFinancesScreen: React.FC = () => {
               />
             </View>
             <View style={styles.inputCol}>
-              <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>Fertilizantes</Text>
+              <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>
+                {language === 'en' ? 'Fertilizers' : 'Fertilizantes'}
+              </Text>
               <TextInput
                 style={[styles.input, isDark && styles.inputDark]}
                 keyboardType="numeric"
@@ -212,7 +242,9 @@ export const FarmFinancesScreen: React.FC = () => {
 
           <View style={styles.inputGrid}>
             <View style={styles.inputCol}>
-              <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>Defensivos Químicos</Text>
+              <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>
+                {language === 'en' ? 'Chemical Crop Protection' : 'Defensivos Químicos'}
+              </Text>
               <TextInput
                 style={[styles.input, isDark && styles.inputDark]}
                 keyboardType="numeric"
@@ -221,7 +253,9 @@ export const FarmFinancesScreen: React.FC = () => {
               />
             </View>
             <View style={styles.inputCol}>
-              <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>Tratores & Diesel</Text>
+              <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>
+                {language === 'en' ? 'Machinery & Fuel' : 'Tratores & Diesel'}
+              </Text>
               <TextInput
                 style={[styles.input, isDark && styles.inputDark]}
                 keyboardType="numeric"
@@ -230,7 +264,9 @@ export const FarmFinancesScreen: React.FC = () => {
               />
             </View>
             <View style={styles.inputCol}>
-              <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>Mão de Obra</Text>
+              <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>
+                {language === 'en' ? 'Labor & Operations' : 'Mão de Obra'}
+              </Text>
               <TextInput
                 style={[styles.input, isDark && styles.inputDark]}
                 keyboardType="numeric"
