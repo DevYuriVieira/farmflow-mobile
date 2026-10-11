@@ -1,0 +1,59 @@
+{
+  "expo": {
+    "name": "FarmFlow",
+    "slug": "FarmFlow",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#07150E",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.farmflow.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "O FarmFlow precisa de acesso à câmera para escanear QR codes de lotes e registrar fotos de plantações.",
+        "NSPhotoLibraryUsageDescription": "O FarmFlow precisa de acesso à galeria para selecionar fotos das lavouras e talhões.",
+        "NSLocationWhenInUseUsageDescription": "O FarmFlow utiliza localização para exibir suas fazendas e talhões no mapa agrícola."
+      }
+    },
+    "android": {
+      "package": "com.farmflow.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#07150E",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE"
+      ],
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O FarmFlow precisa de acesso às suas fotos para registrar o progresso das lavouras."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#22C55E"
+        }
+      ],
+      "expo-secure-store",
+      "expo-font"
+    ]
+  }
+}
