@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Farm } from '../types/farm.types';
 import { colors, radii, spacing, typography } from '../theme';
-import { formatHectares } from '../utils/formatters';
+import { formatHectares, getFarmDisplayName } from '../utils/formatters';
 import { usePreferences } from '../contexts/PreferencesContext';
 
 export interface FarmCardProps {
@@ -38,7 +38,7 @@ export const FarmCard: React.FC<FarmCardProps> = ({
       <View style={styles.header}>
         <View style={styles.titleWrapper}>
           <Text style={[styles.name, isDark && styles.nameDark]} numberOfLines={1}>
-            {farm.name}
+            {getFarmDisplayName(farm, language)}
           </Text>
           <View style={styles.locationRow}>
             <MaterialCommunityIcons
@@ -80,7 +80,7 @@ export const FarmCard: React.FC<FarmCardProps> = ({
             {language === 'en' ? 'Total Area' : 'Área Total'}
           </Text>
           <Text style={[styles.statValue, isDark && styles.statValueDark]}>
-            {formatHectares(farm.totalAreaHectares)}
+            {formatHectares(farm.totalAreaHectares, language)}
           </Text>
         </View>
         <View style={[styles.statDivider, isDark && styles.statDividerDark]} />

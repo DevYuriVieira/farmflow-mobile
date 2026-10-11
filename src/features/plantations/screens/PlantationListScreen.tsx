@@ -182,10 +182,21 @@ export const PlantationListScreen: React.FC = () => {
       </View>
 
       {isLoading ? (
-        <LoadingState message="Carregando talhões agrícolas..." />
+        <LoadingState
+          message={
+            language === 'en'
+              ? 'Loading agricultural fields...'
+              : 'Carregando talhões agrícolas...'
+          }
+        />
       ) : isError ? (
         <ErrorState
-          message={error?.message || 'Falha ao buscar dados dos talhões.'}
+          message={
+            error?.message ||
+            (language === 'en'
+              ? 'Failed to fetch field data.'
+              : 'Falha ao buscar dados dos talhões.')
+          }
           onRetry={refetch}
         />
       ) : (
@@ -200,9 +211,13 @@ export const PlantationListScreen: React.FC = () => {
           ListEmptyComponent={
             <EmptyState
               icon="sprout"
-              title="Nenhum Talhão Encontrado"
-              description="Cadastre seu primeiro talhão agrícola ou ajuste os filtros de busca."
-              actionTitle="Adicionar Talhão"
+              title={language === 'en' ? 'No Fields Found' : 'Nenhum Talhão Encontrado'}
+              description={
+                language === 'en'
+                  ? 'Register your first crop field or adjust search filters.'
+                  : 'Cadastre seu primeiro talhão agrícola ou ajuste os filtros de busca.'
+              }
+              actionTitle={language === 'en' ? 'Add Field' : 'Adicionar Talhão'}
               onActionPress={() => setModalVisible(true)}
             />
           }

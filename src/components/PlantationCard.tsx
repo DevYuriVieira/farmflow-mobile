@@ -9,7 +9,7 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Plantation } from '../types/plantation.types';
 import { colors, radii, spacing, typography } from '../theme';
-import { cropTypeLabels, plantationStatusLabels, formatHectares } from '../utils/formatters';
+import { getCropLabel, getPlantationStatusLabel, formatHectares, getPlantationName, getPlantationNotes } from '../utils/formatters';
 import { usePreferences } from '../contexts/PreferencesContext';
 
 export interface PlantationCardProps {
@@ -40,7 +40,7 @@ export const PlantationCard: React.FC<PlantationCardProps> = ({
       onPress={onPress}
       style={[styles.card, isDark && styles.cardDark]}
       accessibilityRole="button"
-      accessibilityLabel={`Talhão ${plantation.name}, cultura ${cropTypeLabels[plantation.cropType]}`}
+      accessibilityLabel={`${language === 'en' ? 'Field' : 'Talhão'} ${plantation.name}, ${getCropLabel(plantation.cropType, language)}`}
     >
       <View style={[styles.imageContainer, isDark && styles.imageContainerDark]}>
         {plantation.imageUri ? (
@@ -56,17 +56,19 @@ export const PlantationCard: React.FC<PlantationCardProps> = ({
         )}
         <View style={[styles.statusBadge, { backgroundColor: statusColor }]}>
           <Text style={styles.statusBadgeText}>
-            {plantationStatusLabels[plantation.status]}
+            {getPlantationStatusLabel(plantation.status, language)}
           </Text>
         </View>
       </View>
 
       <View style={styles.content}>
         <Text style={[styles.title, isDark && styles.titleDark]} numberOfLines={1}>
-          {plantation.name}
+          {getPlantationName(plantation, language)}
         </Text>
         <Text style={[styles.subtitle, isDark && styles.subtitleDark]} numberOfLines={2}>
-          {plantation.notes || `${language === 'en' ? 'Crop' : 'Cultura'}: ${cropTypeLabels[plantation.cropType]}`}
+          {plantation.notes
+            ? getPlantationNotes(plantation, language)
+            : `${language === 'en' ? 'Crop' : 'Cultura'}: ${getCropLabel(plantation.cropType, language)}`}
         </Text>
 
         <View style={styles.badgesRow}>
@@ -77,7 +79,7 @@ export const PlantationCard: React.FC<PlantationCardProps> = ({
               color={isDark ? '#4ADE80' : colors.primaryLight}
             />
             <Text style={[styles.badgeText, isDark && styles.badgeTextDark]}>
-              {formatHectares(plantation.areaHectares)}
+              {formatHectares(plantation.areaHectares, language)}
             </Text>
           </View>
           <View style={[styles.badge, isDark && styles.badgeDark]}>

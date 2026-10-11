@@ -27,7 +27,12 @@ import { AppModal } from '../../../components/AppModal';
 import { TextField } from '../../../components/TextField';
 import { Button } from '../../../components/Button';
 import { colors, radii, spacing, typography } from '../../../theme';
-import { cropTypeLabels, plantationStatusLabels } from '../../../utils/formatters';
+import {
+  getCropLabel,
+  getPlantationStatusLabel,
+  getFarmDisplayName,
+} from '../../../utils/formatters';
+import { usePreferences } from '../../../contexts/PreferencesContext';
 
 export interface PlantationFormModalProps {
   visible: boolean;
@@ -42,6 +47,7 @@ export const PlantationFormModal: React.FC<PlantationFormModalProps> = ({
   plantationToEdit,
   defaultFarmId,
 }) => {
+  const { language } = usePreferences();
   const { data: farms } = useFarms();
   const createMutation = useCreatePlantation();
   const updateMutation = useUpdatePlantation();
@@ -194,11 +200,21 @@ export const PlantationFormModal: React.FC<PlantationFormModalProps> = ({
     <AppModal
       visible={visible}
       onClose={onClose}
-      title={isEditing ? 'Editar Talhão' : 'Novo Talhão'}
-      subtitle="Cadastre as informações agronômicas do lote"
+      title={
+        isEditing
+          ? (language === 'en' ? 'Edit Field' : 'Editar Talhão')
+          : (language === 'en' ? 'New Field' : 'Novo Talhão')
+      }
+      subtitle={
+        language === 'en'
+          ? 'Register field agronomic data'
+          : 'Cadastre as informações agronômicas do lote'
+      }
     >
       <View style={styles.formContainer}>
-        <Text style={styles.sectionLabel}>Fazenda Vinculada</Text>
+        <Text style={styles.sectionLabel}>
+          {language === 'en' ? 'Associated Farm' : 'Fazenda Vinculada'}
+        </Text>
         <Controller
           control={control}
           name="farmId"
@@ -219,7 +235,7 @@ export const PlantationFormModal: React.FC<PlantationFormModalProps> = ({
                       color={isSelected ? colors.textInverse : colors.primaryLight}
                     />
                     <Text style={[styles.chipText, isSelected && styles.chipTextActive]}>
-                      {farm.name}
+                      {getFarmDisplayName(farm, language)}
                     </Text>
                   </TouchableOpacity>
                 );
@@ -234,8 +250,8 @@ export const PlantationFormModal: React.FC<PlantationFormModalProps> = ({
           name="name"
           render={({ field: { onChange, onBlur, value } }) => (
             <TextField
-              label="Nome ou Identificação do Talhão"
-              placeholder="Ex: Talhão 04 - Soja Safra Verão"
+              label={language === 'en' ? 'Field Name or Identification' : 'Nome ou Identificação do Talhão'}
+              placeholder={language === 'en' ? 'E.g.: Field 04 - Soy Summer Crop' : 'Ex: Talhão 04 - Soja Safra Verão'}
               leftIcon="sprout-outline"
               value={value}
               onBlur={onBlur}
@@ -245,7 +261,9 @@ export const PlantationFormModal: React.FC<PlantationFormModalProps> = ({
           )}
         />
 
-        <Text style={styles.sectionLabel}>Cultura Agrícola</Text>
+        <Text style={styles.sectionLabel}>
+          {language === 'en' ? 'Agricultural Crop' : 'Cultura Agrícola'}
+        </Text>
         <Controller
           control={control}
           name="cropType"
@@ -261,7 +279,7 @@ export const PlantationFormModal: React.FC<PlantationFormModalProps> = ({
                     style={[styles.chip, isSelected && styles.chipActive]}
                   >
                     <Text style={[styles.chipText, isSelected && styles.chipTextActive]}>
-                      {cropTypeLabels[type]}
+                      {getCropLabel(type, language)}
                     </Text>
                   </TouchableOpacity>
                 );
@@ -276,7 +294,7 @@ export const PlantationFormModal: React.FC<PlantationFormModalProps> = ({
           name="areaHectares"
           render={({ field: { onChange, onBlur, value } }) => (
             <TextField
-              label="Área do Talhão (Hectares)"
+              label={language === 'en' ? 'Field Area (Hectares)' : 'Área do Talhão (Hectares)'}
               placeholder="Ex: 25.5"
               leftIcon="vector-square"
               keyboardType="numeric"
@@ -291,7 +309,9 @@ export const PlantationFormModal: React.FC<PlantationFormModalProps> = ({
           )}
         />
 
-        <Text style={styles.sectionLabel}>Estágio Atual da Lavoura</Text>
+        <Text style={styles.sectionLabel}>
+          {language === 'en' ? 'Current Crop Stage' : 'Estágio Atual da Lavoura'}
+        </Text>
         <Controller
           control={control}
           name="status"
@@ -307,7 +327,7 @@ export const PlantationFormModal: React.FC<PlantationFormModalProps> = ({
                     style={[styles.chip, isSelected && styles.chipActive]}
                   >
                     <Text style={[styles.chipText, isSelected && styles.chipTextActive]}>
-                      {plantationStatusLabels[st]}
+                      {getPlantationStatusLabel(st, language)}
                     </Text>
                   </TouchableOpacity>
                 );
@@ -324,8 +344,8 @@ export const PlantationFormModal: React.FC<PlantationFormModalProps> = ({
               name="plantedAt"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextField
-                  label="Data de Plantio"
-                  placeholder="AAAA-MM-DD"
+                  label={language === 'en' ? 'Planting Date' : 'Data de Plantio'}
+                  placeholder="YYYY-MM-DD"
                   leftIcon="calendar"
                   value={value}
                   onBlur={onBlur}
@@ -341,8 +361,8 @@ export const PlantationFormModal: React.FC<PlantationFormModalProps> = ({
               name="expectedHarvestAt"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextField
-                  label="Previsão Colheita"
-                  placeholder="AAAA-MM-DD"
+                  label={language === 'en' ? 'Expected Harvest' : 'Previsão Colheita'}
+                  placeholder="YYYY-MM-DD"
                   leftIcon="calendar-check"
                   value={value}
                   onBlur={onBlur}
@@ -354,7 +374,9 @@ export const PlantationFormModal: React.FC<PlantationFormModalProps> = ({
           </View>
         </View>
 
-        <Text style={styles.sectionLabel}>Registro Fotográfico do Talhão</Text>
+        <Text style={styles.sectionLabel}>
+          {language === 'en' ? 'Field Photo Record' : 'Registro Fotográfico do Talhão'}
+        </Text>
         <View style={styles.imagePickerWrapper}>
           {selectedImage ? (
             <View style={styles.imagePreviewContainer}>
@@ -362,7 +384,7 @@ export const PlantationFormModal: React.FC<PlantationFormModalProps> = ({
               <TouchableOpacity
                 onPress={handleRemoveImage}
                 style={styles.removeImageBadge}
-                accessibilityLabel="Remover foto"
+                accessibilityLabel={language === 'en' ? 'Remove photo' : 'Remover foto'}
               >
                 <MaterialCommunityIcons name="delete-outline" size={18} color="#FFF" />
               </TouchableOpacity>
@@ -370,7 +392,9 @@ export const PlantationFormModal: React.FC<PlantationFormModalProps> = ({
           ) : (
             <View style={styles.noImagePlaceholder}>
               <MaterialCommunityIcons name="image-outline" size={32} color={colors.textMuted} />
-              <Text style={styles.noImageText}>Nenhuma imagem vinculada</Text>
+              <Text style={styles.noImageText}>
+                {language === 'en' ? 'No image attached' : 'Nenhuma imagem vinculada'}
+              </Text>
             </View>
           )}
 
@@ -381,7 +405,9 @@ export const PlantationFormModal: React.FC<PlantationFormModalProps> = ({
               style={styles.imageActionBtn}
             >
               <MaterialCommunityIcons name="camera-outline" size={18} color={colors.primaryLight} />
-              <Text style={styles.imageActionBtnText}>Tirar Foto</Text>
+              <Text style={styles.imageActionBtnText}>
+                {language === 'en' ? 'Take Photo' : 'Tirar Foto'}
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -390,7 +416,9 @@ export const PlantationFormModal: React.FC<PlantationFormModalProps> = ({
               style={styles.imageActionBtn}
             >
               <MaterialCommunityIcons name="image-plus" size={18} color={colors.primaryLight} />
-              <Text style={styles.imageActionBtnText}>Galeria</Text>
+              <Text style={styles.imageActionBtnText}>
+                {language === 'en' ? 'Gallery' : 'Galeria'}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -400,8 +428,12 @@ export const PlantationFormModal: React.FC<PlantationFormModalProps> = ({
           name="notes"
           render={({ field: { onChange, onBlur, value } }) => (
             <TextField
-              label="Anotações Agronômicas (Opcional)"
-              placeholder="Ex: Variável de adubação, histórico fitossanitário..."
+              label={language === 'en' ? 'Agronomic Notes (Optional)' : 'Anotações Agronômicas (Opcional)'}
+              placeholder={
+                language === 'en'
+                  ? 'E.g.: Fertilizer variables, phytosanitary history...'
+                  : 'Ex: Variável de adubação, histórico fitossanitário...'
+              }
               leftIcon="notebook-outline"
               multiline
               numberOfLines={3}
@@ -415,13 +447,17 @@ export const PlantationFormModal: React.FC<PlantationFormModalProps> = ({
 
         <View style={styles.actionButtonsRow}>
           <Button
-            title="Cancelar"
+            title={language === 'en' ? 'Cancel' : 'Cancelar'}
             onPress={onClose}
             variant="ghost"
             style={styles.cancelBtn}
           />
           <Button
-            title={isEditing ? 'Salvar Alterações' : 'Salvar Talhão'}
+            title={
+              isEditing
+                ? (language === 'en' ? 'Save Changes' : 'Salvar Alterações')
+                : (language === 'en' ? 'Save Field' : 'Salvar Talhão')
+            }
             onPress={handleSubmit(onSubmit)}
             loading={isSubmitting}
             variant="primary"

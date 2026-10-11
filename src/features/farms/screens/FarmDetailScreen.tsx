@@ -19,7 +19,7 @@ import { ErrorState } from '../../../components/ErrorState';
 import { PlantationCard } from '../../../components/PlantationCard';
 import { AppDrawerParamList, AppNavigationProp } from '../../../navigation/types';
 import { colors, radii, spacing, typography } from '../../../theme';
-import { formatHectares } from '../../../utils/formatters';
+import { formatHectares, getFarmDisplayName } from '../../../utils/formatters';
 import { formatDatePtBr } from '../../../utils/dates';
 import { usePreferences } from '../../../contexts/PreferencesContext';
 
@@ -155,7 +155,9 @@ export const FarmDetailScreen: React.FC = () => {
       </View>
 
       <View style={styles.content}>
-        <Text style={[styles.farmName, isDark && styles.farmNameDark]}>{farm.name}</Text>
+        <Text style={[styles.farmName, isDark && styles.farmNameDark]}>
+          {getFarmDisplayName(farm, language)}
+        </Text>
         <View style={styles.locationRow}>
           <MaterialCommunityIcons
             name="map-marker"
@@ -170,19 +172,27 @@ export const FarmDetailScreen: React.FC = () => {
         <View style={styles.grid}>
           <View style={styles.gridCard}>
             <MaterialCommunityIcons name="vector-square" size={20} color={colors.primaryLight} />
-            <Text style={styles.gridLabel}>Área Total Registrada</Text>
-            <Text style={styles.gridValue}>{formatHectares(farm.totalAreaHectares)}</Text>
+            <Text style={styles.gridLabel}>
+              {language === 'en' ? 'Registered Total Area' : 'Área Total Registrada'}
+            </Text>
+            <Text style={styles.gridValue}>{formatHectares(farm.totalAreaHectares, language)}</Text>
           </View>
 
           <View style={styles.gridCard}>
             <MaterialCommunityIcons name="sprout" size={20} color={colors.accentLime} />
-            <Text style={styles.gridLabel}>Talhões Ativos</Text>
-            <Text style={styles.gridValue}>{plantations?.length || 0} Talhões</Text>
+            <Text style={styles.gridLabel}>
+              {language === 'en' ? 'Active Fields' : 'Talhões Ativos'}
+            </Text>
+            <Text style={styles.gridValue}>
+              {plantations?.length || 0} {language === 'en' ? 'Fields' : 'Talhões'}
+            </Text>
           </View>
 
           <View style={styles.gridCard}>
             <MaterialCommunityIcons name="crosshairs-gps" size={20} color={colors.accentBlue} />
-            <Text style={styles.gridLabel}>Latitude / Longitude</Text>
+            <Text style={styles.gridLabel}>
+              {language === 'en' ? 'Latitude / Longitude' : 'Latitude / Longitude'}
+            </Text>
             <Text style={styles.gridValue}>
               {farm.coordinates.latitude.toFixed(4)}, {farm.coordinates.longitude.toFixed(4)}
             </Text>
@@ -190,24 +200,34 @@ export const FarmDetailScreen: React.FC = () => {
 
           <View style={styles.gridCard}>
             <MaterialCommunityIcons name="calendar-outline" size={20} color={colors.accentGold} />
-            <Text style={styles.gridLabel}>Data de Cadastro</Text>
+            <Text style={styles.gridLabel}>
+              {language === 'en' ? 'Registration Date' : 'Data de Cadastro'}
+            </Text>
             <Text style={styles.gridValue}>{formatDatePtBr(farm.createdAt)}</Text>
           </View>
         </View>
 
         <View style={styles.plantationsHeader}>
-          <Text style={styles.sectionTitle}>Talhões desta Propriedade</Text>
+          <Text style={styles.sectionTitle}>
+            {language === 'en' ? 'Fields in this Property' : 'Talhões desta Propriedade'}
+          </Text>
           <TouchableOpacity
             onPress={() => navigation.navigate('Plantations')}
             style={styles.seeAllBtn}
           >
-            <Text style={styles.seeAllBtnText}>Gerenciar</Text>
+            <Text style={styles.seeAllBtnText}>
+              {language === 'en' ? 'Manage' : 'Gerenciar'}
+            </Text>
           </TouchableOpacity>
         </View>
 
         {plantations?.length === 0 ? (
           <View style={styles.emptyBox}>
-            <Text style={styles.emptyText}>Nenhum talhão cadastrado nesta fazenda ainda.</Text>
+            <Text style={styles.emptyText}>
+              {language === 'en'
+                ? 'No fields registered in this farm yet.'
+                : 'Nenhum talhão cadastrado nesta fazenda ainda.'}
+            </Text>
           </View>
         ) : (
           plantations?.map((p) => (

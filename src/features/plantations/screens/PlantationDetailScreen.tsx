@@ -22,7 +22,7 @@ import { ActivityCard } from '../../../components/ActivityCard';
 import { PlantationFormModal } from './PlantationFormModal';
 import { AppDrawerParamList, AppNavigationProp } from '../../../navigation/types';
 import { colors, radii, spacing, typography } from '../../../theme';
-import { cropTypeLabels, plantationStatusLabels, formatHectares } from '../../../utils/formatters';
+import { getCropLabel, getPlantationStatusLabel, formatHectares, getPlantationName, getPlantationNotes, getFarmDisplayName } from '../../../utils/formatters';
 import { formatDatePtBr } from '../../../utils/dates';
 import { usePreferences } from '../../../contexts/PreferencesContext';
 
@@ -161,40 +161,44 @@ export const PlantationDetailScreen: React.FC = () => {
 
         <View style={styles.statusBadge}>
           <Text style={styles.statusBadgeText}>
-            {plantationStatusLabels[plantation.status]}
+            {getPlantationStatusLabel(plantation.status, language)}
           </Text>
         </View>
       </View>
 
       <View style={[styles.content, isDark && { backgroundColor: '#0B1410' }]}>
-        <Text style={[styles.title, isDark && { color: '#FFFFFF' }]}>{plantation.name}</Text>
+        <Text style={[styles.title, isDark && { color: '#FFFFFF' }]}>
+          {getPlantationName(plantation, language)}
+        </Text>
         <View style={styles.farmRow}>
           <MaterialCommunityIcons name="home-outline" size={16} color={colors.primaryLight} />
-          <Text style={[styles.farmName, isDark && { color: '#E2E8F0' }]}>{farm?.name || (language === 'en' ? 'Associated farm' : 'Fazenda associada')}</Text>
+          <Text style={[styles.farmName, isDark && { color: '#E2E8F0' }]}>
+            {farm ? getFarmDisplayName(farm, language) : (language === 'en' ? 'Associated farm' : 'Fazenda associada')}
+          </Text>
         </View>
 
         <View style={styles.propsGrid}>
           <View style={styles.propCard}>
             <MaterialCommunityIcons name="grain" size={20} color={colors.primaryLight} />
-            <Text style={styles.propLabel}>Cultura</Text>
-            <Text style={styles.propValue}>{cropTypeLabels[plantation.cropType]}</Text>
+            <Text style={styles.propLabel}>{language === 'en' ? 'Crop' : 'Cultura'}</Text>
+            <Text style={styles.propValue}>{getCropLabel(plantation.cropType, language)}</Text>
           </View>
 
           <View style={styles.propCard}>
             <MaterialCommunityIcons name="vector-square" size={20} color={colors.accentLime} />
-            <Text style={styles.propLabel}>Área Total</Text>
-            <Text style={styles.propValue}>{formatHectares(plantation.areaHectares)}</Text>
+            <Text style={styles.propLabel}>{language === 'en' ? 'Total Area' : 'Área Total'}</Text>
+            <Text style={styles.propValue}>{formatHectares(plantation.areaHectares, language)}</Text>
           </View>
 
           <View style={styles.propCard}>
             <MaterialCommunityIcons name="calendar-start" size={20} color={colors.accentGold} />
-            <Text style={styles.propLabel}>Plantio</Text>
+            <Text style={styles.propLabel}>{language === 'en' ? 'Planted At' : 'Plantio'}</Text>
             <Text style={styles.propValue}>{formatDatePtBr(plantation.plantedAt)}</Text>
           </View>
 
           <View style={styles.propCard}>
             <MaterialCommunityIcons name="calendar-check" size={20} color={colors.accentBlue} />
-            <Text style={styles.propLabel}>Colheita Prevista</Text>
+            <Text style={styles.propLabel}>{language === 'en' ? 'Expected Harvest' : 'Colheita Prevista'}</Text>
             <Text style={styles.propValue}>{formatDatePtBr(plantation.expectedHarvestAt)}</Text>
           </View>
         </View>
@@ -203,15 +207,19 @@ export const PlantationDetailScreen: React.FC = () => {
           <View style={styles.notesCard}>
             <View style={styles.notesHeader}>
               <MaterialCommunityIcons name="notebook-outline" size={18} color={colors.primaryLight} />
-              <Text style={styles.notesTitle}>Anotações do Produtor</Text>
+              <Text style={styles.notesTitle}>
+                {language === 'en' ? 'Farmer Notes' : 'Anotações do Produtor'}
+              </Text>
             </View>
-            <Text style={styles.notesText}>{plantation.notes}</Text>
+            <Text style={styles.notesText}>{getPlantationNotes(plantation, language)}</Text>
           </View>
         )}
 
         <View style={styles.activitiesSection}>
           <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>Atividades do Talhão</Text>
+            <Text style={styles.sectionTitle}>
+              {language === 'en' ? 'Field Activities' : 'Atividades do Talhão'}
+            </Text>
             <TouchableOpacity
               onPress={() =>
                 navigation.navigate('ActivityForm', {
@@ -221,14 +229,18 @@ export const PlantationDetailScreen: React.FC = () => {
               style={styles.addActivityBtn}
             >
               <MaterialCommunityIcons name="plus" size={16} color={colors.primaryLight} />
-              <Text style={styles.addActivityBtnText}>Nova Atividade</Text>
+              <Text style={styles.addActivityBtnText}>
+                {language === 'en' ? 'New Activity' : 'Nova Atividade'}
+              </Text>
             </TouchableOpacity>
           </View>
 
           {activities?.length === 0 ? (
             <View style={styles.emptyActivitiesBox}>
               <Text style={styles.emptyActivitiesText}>
-                Nenhuma atividade vinculada diretamente a este talhão.
+                {language === 'en'
+                  ? 'No activities linked to this field.'
+                  : 'Nenhuma atividade vinculada diretamente a este talhão.'}
               </Text>
             </View>
           ) : (
