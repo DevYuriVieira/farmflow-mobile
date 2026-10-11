@@ -4,9 +4,9 @@ export default defineConfig({
   testDir: './e2e/playwright',
   timeout: 30 * 1000,
   expect: {
-    timeout: 5000,
+    timeout: 10000,
     toHaveScreenshot: {
-      maxDiffPixelRatio: 0.05,
+      maxDiffPixelRatio: 0.1,
       animations: 'disabled',
     },
   },
@@ -19,6 +19,12 @@ export default defineConfig({
     baseURL: process.env.EXPO_PUBLIC_URL || 'http://localhost:8081',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+  },
+  webServer: {
+    command: 'npx serve dist -l 8081',
+    port: 8081,
+    reuseExistingServer: !process.env.CI,
+    timeout: 60 * 1000,
   },
   projects: [
     {

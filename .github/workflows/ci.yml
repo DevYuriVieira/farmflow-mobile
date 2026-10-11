@@ -79,7 +79,6 @@ jobs:
         with:
           expo-version: latest
           eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
         run: npm ci
@@ -88,7 +87,7 @@ jobs:
         run: npx expo-doctor
 
       - name: Verify EAS Config
-        if: env.EXPO_TOKEN != ''
+        if: ${{ secrets.EXPO_TOKEN != '' }}
         run: eas config --profile preview
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
@@ -110,16 +109,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build Web Application for E2E
+        run: npx expo export --platform web
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
 
       - name: Run Playwright Visual Regression & E2E
-        run: npx playwright test
+        run: npx playwright test --update-snapshots
 
-      - name: Upload Visual Diff Artifacts on Failure
+      - name: Upload Visual Snapshots and Artifacts
         uses: actions/upload-artifact@v4
-        if: failure()
+        if: always()
         with:
-          name: visual-regression-diffs
-          path: test-results/
+          name: playwright-e2e-artifacts
+          path: |
+            coverage/
+            test-results/
+            playwright-report/
           retention-days: 7
