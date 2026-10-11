@@ -10,6 +10,12 @@ import { usePreferences } from '../../../contexts/PreferencesContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { generateAndSharePdfReport } from '../../../services/pdfReport.service';
+import {
+  exportToGeoJson,
+  exportToKml,
+  exportToCsv,
+  triggerAgroFileDownload,
+} from '../../../services/export/exportAgroData.service';
 import { triggerHaptic } from '../../../utils/haptics';
 
 import { Screen } from '../../../components/Screen';
@@ -24,6 +30,9 @@ export const ReportsScreen: React.FC = () => {
   const { data: plantations, isLoading: loadingPlantations } = usePlantations();
   const { data: farms, isLoading: loadingFarms } = useFarms();
   const { data: activities, isLoading: loadingActivities } = useActivities();
+  const { user } = useAuth();
+  const { showSuccess, showError } = useToast();
+  const [isExporting, setIsExporting] = useState(false);
 
   const handleBack = () => {
     if (navigation.canGoBack()) {
@@ -52,10 +61,6 @@ export const ReportsScreen: React.FC = () => {
     cropDistribution.set(label, (cropDistribution.get(label) || 0) + p.areaHectares);
   });
 
-  const { user } = useAuth();
-  const { showSuccess, showError } = useToast();
-  const [isExporting, setIsExporting] = useState(false);
-
   const handleExportPdf = async () => {
     try {
       setIsExporting(true);
@@ -73,6 +78,39 @@ export const ReportsScreen: React.FC = () => {
       showError(language === 'en' ? 'Could not generate PDF' : 'Não foi possível gerar o PDF');
     } finally {
       setIsExporting(false);
+    }
+  };
+
+  const handleExportGeoJson = async () => {
+    try {
+      await triggerHaptic('light');
+      const content = exportToGeoJson(farms || [], plantations || []);
+      await triggerAgroFileDownload('farmflow_talhoes.geojson', content, 'application/geo+json');
+      showSuccess(language === 'en' ? 'GeoJSON downloaded successfully!' : 'GeoJSON exportado com sucesso!');
+    } catch {
+      showError(language === 'en' ? 'Error exporting GeoJSON' : 'Erro ao exportar GeoJSON');
+    }
+  };
+
+  const handleExportKml = async () => {
+    try {
+      await triggerHaptic('light');
+      const content = exportToKml(farms || [], plantations || []);
+      await triggerAgroFileDownload('farmflow_talhoes.kml', content, 'application/vnd.google-earth.kml+xml');
+      showSuccess(language === 'en' ? 'KML GPS file downloaded!' : 'Arquivo KML gerado com sucesso!');
+    } catch {
+      showError(language === 'en' ? 'Error exporting KML' : 'Erro ao exportar KML');
+    }
+  };
+
+  const handleExportCsv = async () => {
+    try {
+      await triggerHaptic('light');
+      const content = exportToCsv(farms || [], plantations || []);
+      await triggerAgroFileDownload('farmflow_relatorio.csv', content, 'text/csv');
+      showSuccess(language === 'en' ? 'CSV spreadsheet downloaded!' : 'Planilha CSV exportada com sucesso!');
+    } catch {
+      showError(language === 'en' ? 'Error exporting CSV' : 'Erro ao exportar CSV');
     }
   };
 
@@ -236,6 +274,49 @@ export const ReportsScreen: React.FC = () => {
                 ? formatHectares(totalArea / plantations.length)
                 : '0 ha'}
             </Text>
+          </View>
+        </View>
+
+        <View style={[styles.precisionExportCard, isDark && styles.precisionExportCardDark]}>
+          <View style={styles.precisionCardHeader}>
+            <MaterialCommunityIcons name="tractor" size={20} color="#22C55E" />
+            <Text style={[styles.precisionCardTitle, isDark && styles.precisionCardTitleDark]}>
+              {language === 'en' ? 'Precision Agriculture GPS Export' : 'Exportações para GPS e Piloto Automático'}
+            </Text>
+          </View>
+          <Text style={[styles.precisionCardDesc, isDark && styles.precisionCardDescDark]}>
+            {language === 'en'
+              ? 'Export field boundaries and operational data for John Deere, Trimble and Climate FieldView systems.'
+              : 'Exporte limites vetoriais dos talhões para monitores de bordo John Deere, Trimble e Climate FieldView.'}
+          </Text>
+
+          <View style={styles.precisionBtnRow}>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={handleExportGeoJson}
+              style={[styles.precisionBtn, styles.geoBtn]}
+            >
+              <MaterialCommunityIcons name="map-marker-path" size={16} color="#FFFFFF" />
+              <Text style={styles.precisionBtnText}>GeoJSON</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={handleExportKml}
+              style={[styles.precisionBtn, styles.kmlBtn]}
+            >
+              <MaterialCommunityIcons name="earth" size={16} color="#FFFFFF" />
+              <Text style={styles.precisionBtnText}>KML (GPS)</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={handleExportCsv}
+              style={[styles.precisionBtn, styles.csvBtn]}
+            >
+              <MaterialCommunityIcons name="file-delimited" size={16} color="#FFFFFF" />
+              <Text style={styles.precisionBtnText}>Planilha CSV</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -473,6 +554,69 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   metricValDark: {
+    color: '#FFFFFF',
+  },
+  precisionExportCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: radii.xl,
+    padding: spacing.base,
+    borderWidth: 1,
+    borderColor: '#E2E8DB',
+    marginTop: spacing.md,
+    marginBottom: spacing.xs,
+  },
+  precisionExportCardDark: {
+    backgroundColor: '#182C23',
+    borderColor: '#2C493A',
+  },
+  precisionCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
+  precisionCardTitle: {
+    ...typography.bodyBold,
+    fontWeight: '700',
+    color: '#172B23',
+  },
+  precisionCardTitleDark: {
+    color: '#FFFFFF',
+  },
+  precisionCardDesc: {
+    ...typography.micro,
+    color: '#4A5E54',
+    lineHeight: 18,
+    marginBottom: spacing.md,
+  },
+  precisionCardDescDark: {
+    color: '#94A3B8',
+  },
+  precisionBtnRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  precisionBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: radii.md,
+    gap: 6,
+  },
+  geoBtn: {
+    backgroundColor: '#0284C7',
+  },
+  kmlBtn: {
+    backgroundColor: '#16A34A',
+  },
+  csvBtn: {
+    backgroundColor: '#D97706',
+  },
+  precisionBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
     color: '#FFFFFF',
   },
 });
