@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { AuthUser, AuthStatus } from '../types/auth.types';
 import { LoginFormData, RegisterFormData } from '../features/auth/schemas/auth.schemas';
 import { authService } from '../services/auth.service';
+import { observabilityService } from '../services/observability/observability.service';
 
 interface AuthContextData {
   user: AuthUser | null;
@@ -32,15 +33,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(session.user);
         setToken(session.token);
         setStatus('authenticated');
+        observabilityService.setUser({
+          id: session.user.id,
+          email: session.user.email,
+        });
       } else {
         setUser(null);
         setToken(null);
         setStatus('unauthenticated');
+        observabilityService.clearUser();
       }
     } catch {
       setUser(null);
       setToken(null);
       setStatus('unauthenticated');
+      observabilityService.clearUser();
     }
   }, []);
 
@@ -55,6 +62,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(session.user);
       setToken(session.token);
       setStatus('authenticated');
+      observabilityService.setUser({
+        id: session.user.id,
+        email: session.user.email,
+      });
     } catch (err) {
       setStatus('unauthenticated');
       throw err;
@@ -68,6 +79,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(session.user);
       setToken(session.token);
       setStatus('authenticated');
+      observabilityService.setUser({
+        id: session.user.id,
+        email: session.user.email,
+      });
     } catch (err) {
       setStatus('unauthenticated');
       throw err;
@@ -82,6 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(null);
       setToken(null);
       setStatus('unauthenticated');
+      observabilityService.clearUser();
     }
   }, [queryClient]);
 

@@ -6,6 +6,9 @@ export interface AppEnvConfig {
   googleClientIdAndroid?: string;
   googleClientIdWeb?: string;
   mapsApiKey?: string;
+  sentryDsn?: string;
+  environment: string;
+  enableTelemetry: boolean;
 }
 
 export const ENV: AppEnvConfig = {
@@ -16,4 +19,7 @@ export const ENV: AppEnvConfig = {
   googleClientIdAndroid: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_ANDROID,
   googleClientIdWeb: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_WEB,
   mapsApiKey: process.env.EXPO_PUBLIC_MAPS_API_KEY,
+  sentryDsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
+  environment: process.env.EXPO_PUBLIC_APP_ENV || 'development',
+  enableTelemetry: process.env.EXPO_PUBLIC_ENABLE_TELEMETRY !== 'false',
 };
