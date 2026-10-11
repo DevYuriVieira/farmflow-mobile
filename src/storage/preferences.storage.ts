@@ -7,6 +7,7 @@ export interface UserPreferences {
   notificationsEnabled: boolean;
   offlineSyncEnabled: boolean;
   themeMode: 'light' | 'dark';
+  highContrastFieldMode: boolean;
   language: Language;
 }
 
@@ -17,33 +18,38 @@ const defaultPreferences: UserPreferences = {
   notificationsEnabled: true,
   offlineSyncEnabled: true,
   themeMode: 'light',
+  highContrastFieldMode: false,
   language: 'pt',
 };
+
+let inMemoryPreferences: UserPreferences = { ...defaultPreferences };
 
 export const preferencesStorage = {
   async getPreferences(): Promise<UserPreferences> {
     try {
       const raw = await AsyncStorage.getItem(PREFERENCES_KEY);
-      if (!raw) return defaultPreferences;
+      if (!raw) return inMemoryPreferences;
       const parsed = JSON.parse(raw) as Partial<UserPreferences>;
-      return { ...defaultPreferences, ...parsed };
+      inMemoryPreferences = { ...inMemoryPreferences, ...parsed };
+      return inMemoryPreferences;
     } catch {
-      return defaultPreferences;
+      return inMemoryPreferences;
     }
   },
 
   async setPreferences(prefs: Partial<UserPreferences>): Promise<UserPreferences> {
+    const updated = { ...inMemoryPreferences, ...prefs };
+    inMemoryPreferences = updated;
     try {
-      const current = await this.getPreferences();
-      const updated = { ...current, ...prefs };
       await AsyncStorage.setItem(PREFERENCES_KEY, JSON.stringify(updated));
-      return updated;
     } catch {
-      return defaultPreferences;
+      // In-memory fallback for environments without storage bridge
     }
+    return updated;
   },
 
   async clear(): Promise<void> {
+    inMemoryPreferences = { ...defaultPreferences };
     try {
       await AsyncStorage.removeItem(PREFERENCES_KEY);
     } catch {

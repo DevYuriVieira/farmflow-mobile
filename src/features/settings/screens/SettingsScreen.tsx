@@ -22,6 +22,7 @@ import { Screen } from '../../../components/Screen';
 import { Button } from '../../../components/Button';
 import { UserAvatar } from '../../../components/UserAvatar';
 import { colors, radii, spacing, typography } from '../../../theme';
+import { checkBiometricSupport, authenticateWithBiometrics } from '../../../services/security/biometrics.service';
 
 export const SettingsScreen: React.FC = () => {
   const navigation = useNavigation<AppNavigationProp>();
@@ -30,16 +31,35 @@ export const SettingsScreen: React.FC = () => {
     preferences,
     selectedFarmId,
     isDark,
+    highContrastFieldMode,
     language,
     setSelectedFarmId,
     toggleReducedMotion,
     toggleNotifications,
     toggleTheme,
+    toggleHighContrastFieldMode,
     setLanguage,
   } = usePreferences();
   const { isConnected, isInternetReachable } = useNetworkStatus();
   const { data: farms } = useFarms();
   const { showSuccess } = useToast();
+
+  const handleTestBiometrics = async () => {
+    const status = await checkBiometricSupport();
+    if (!status.hasHardware) {
+      Alert.alert(
+        'Biometria',
+        'Hardware biométrico não detectado no dispositivo/navegador. (Emulando em ambiente web/teste)'
+      );
+      return;
+    }
+    const result = await authenticateWithBiometrics('Validação Biométrica FarmFlow');
+    if (result.success) {
+      showSuccess('Biometria autenticada com sucesso!');
+    } else {
+      Alert.alert('Falha na Biometria', result.error || 'Autenticação não concluída.');
+    }
+  };
 
   const handleBack = () => {
     if (navigation.canGoBack()) {
@@ -162,6 +182,32 @@ export const SettingsScreen: React.FC = () => {
             />
           </View>
 
+          <View style={[styles.settingRow, isDark && styles.settingRowDark]}>
+            <View style={styles.settingTextWrapper}>
+              <View style={styles.settingLabelRow}>
+                <MaterialCommunityIcons
+                  name="tractor"
+                  size={20}
+                  color={highContrastFieldMode ? '#FACC15' : colors.primary}
+                />
+                <Text style={[styles.settingLabel, isDark && styles.settingLabelDark]}>
+                  {language === 'en' ? 'Tractor Field Mode (Anti-Glare)' : 'Modo Cabine (Alto Contraste Solar)'}
+                </Text>
+              </View>
+              <Text style={[styles.settingDesc, isDark && styles.settingDescDark]}>
+                {language === 'en'
+                  ? 'High-contrast black & amber theme with enlarged buttons for outdoor machinery'
+                  : 'Fundo preto puro e botões ampliados anti-reflexo para operação na lavoura'}
+              </Text>
+            </View>
+            <Switch
+              value={highContrastFieldMode}
+              onValueChange={toggleHighContrastFieldMode}
+              trackColor={{ false: isDark ? '#23382E' : colors.surfaceInput, true: '#FACC15' }}
+              thumbColor={highContrastFieldMode ? '#000000' : colors.textPrimary}
+            />
+          </View>
+
           <View style={[styles.settingRow, { borderBottomWidth: 0 }, isDark && styles.settingRowDark]}>
             <View style={styles.settingTextWrapper}>
               <View style={styles.settingLabelRow}>
@@ -214,6 +260,44 @@ export const SettingsScreen: React.FC = () => {
                 </Text>
               </TouchableOpacity>
             </View>
+          </View>
+        </View>
+
+        <View style={[styles.sectionCard, isDark && styles.sectionCardDark]}>
+          <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>
+            {language === 'en' ? 'Security & Native Biometrics' : 'Segurança & Biometria Nativa'}
+          </Text>
+          <View style={[styles.settingRow, { borderBottomWidth: 0 }, isDark && styles.settingRowDark]}>
+            <View style={styles.settingTextWrapper}>
+              <View style={styles.settingLabelRow}>
+                <MaterialCommunityIcons
+                  name="fingerprint"
+                  size={20}
+                  color="#22C55E"
+                />
+                <Text style={[styles.settingLabel, isDark && styles.settingLabelDark]}>
+                  {language === 'en' ? 'Biometric Authentication' : 'Face ID / Biometria'}
+                </Text>
+              </View>
+              <Text style={[styles.settingDesc, isDark && styles.settingDescDark]}>
+                {language === 'en'
+                  ? 'Hardware-level biometric verification and SecureStore encrypted keychain'
+                  : 'Validação biométrica com criptografia no SecureStore para acesso rápido no campo'}
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={handleTestBiometrics}
+              style={{
+                backgroundColor: '#22C55E',
+                paddingHorizontal: 12,
+                paddingVertical: 8,
+                borderRadius: 8,
+              }}
+            >
+              <Text style={{ color: '#FFFFFF', fontWeight: '700', fontSize: 12 }}>
+                {language === 'en' ? 'Test' : 'Testar'}
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
 

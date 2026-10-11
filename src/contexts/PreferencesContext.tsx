@@ -8,6 +8,8 @@ interface PreferencesContextData {
   selectedFarmId: string | null;
   themeMode: 'light' | 'dark';
   isDark: boolean;
+  highContrastFieldMode: boolean;
+  touchTargetMinHeight: number;
   language: Language;
   themeColors: ColorPalette;
   setSelectedFarmId: (farmId: string) => Promise<void>;
@@ -15,6 +17,7 @@ interface PreferencesContextData {
   toggleNotifications: () => Promise<void>;
   toggleTheme: () => Promise<void>;
   setThemeMode: (mode: 'light' | 'dark') => Promise<void>;
+  toggleHighContrastFieldMode: () => Promise<void>;
   toggleLanguage: () => Promise<void>;
   setLanguage: (lang: Language) => Promise<void>;
   t: (key: TranslationKey) => string;
@@ -28,6 +31,7 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
     notificationsEnabled: true,
     offlineSyncEnabled: true,
     themeMode: 'light',
+    highContrastFieldMode: false,
     language: 'pt',
   });
 
@@ -68,6 +72,19 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
     setPreferencesState(updated);
   }, []);
 
+  const toggleHighContrastFieldMode = useCallback(async () => {
+    const nextVal = !preferences.highContrastFieldMode;
+    const updated = await preferencesStorage.setPreferences({ highContrastFieldMode: nextVal });
+    setPreferencesState(updated);
+
+    try {
+      const Haptics = await import('expo-haptics');
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    } catch {
+      // Haptics fallback
+    }
+  }, [preferences.highContrastFieldMode]);
+
   const toggleLanguage = useCallback(async () => {
     const nextLang: Language = preferences.language === 'pt' ? 'en' : 'pt';
     const updated = await preferencesStorage.setPreferences({ language: nextLang });
@@ -87,7 +104,9 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
   );
 
   const isDark = preferences.themeMode === 'dark';
-  const themeColors = getThemeColors(isDark);
+  const highContrastFieldMode = preferences.highContrastFieldMode || false;
+  const themeColors = getThemeColors(isDark, highContrastFieldMode);
+  const touchTargetMinHeight = highContrastFieldMode ? 56 : 44;
 
   return (
     <PreferencesContext.Provider
@@ -96,6 +115,8 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
         selectedFarmId: preferences.selectedFarmId || null,
         themeMode: preferences.themeMode || 'light',
         isDark,
+        highContrastFieldMode,
+        touchTargetMinHeight,
         language: preferences.language || 'pt',
         themeColors,
         setSelectedFarmId,
@@ -103,6 +124,7 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
         toggleNotifications,
         toggleTheme,
         setThemeMode,
+        toggleHighContrastFieldMode,
         toggleLanguage,
         setLanguage,
         t,
