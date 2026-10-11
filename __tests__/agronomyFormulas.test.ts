@@ -10,13 +10,9 @@ describe('Agronomy Formulas', () => {
       nozzleSpacingMeters: 0.5,
     });
 
-    // 2000 L / 150 L/ha = 13.33 ha
     expect(result.hectaresPerTank).toBe(13.33);
-    // (150 * 18 * 0.5) / 600 = 1350 / 600 = 2.25 L/min
     expect(result.nozzleFlowRateLPerMin).toBe(2.25);
-    // 24 / 0.5 = 48 nozzles
     expect(result.numberOfNozzles).toBe(48);
-    // 2.25 * 48 = 108 L/min
     expect(result.totalFlowRateLPerMin).toBe(108);
   });
 
@@ -28,7 +24,7 @@ describe('Agronomy Formulas', () => {
       soilK_cmolcDm3: 0.1,
     });
 
-    expect(soyResult.nitrogenKgPerHa).toBe(0); // Biological fixation
+    expect(soyResult.nitrogenKgPerHa).toBe(0);
     expect(soyResult.phosphorusKgPerHa).toBeGreaterThan(0);
     expect(soyResult.potassiumKgPerHa).toBeGreaterThan(0);
     expect(soyResult.commercialFormulaSuggested).toContain('00-20-20');
@@ -54,7 +50,6 @@ describe('Agronomy Formulas', () => {
       thousandGrainWeightGrams: 320,
     });
 
-    // 10000 / 0.5 * 3.5 = 70,000 plants/ha
     expect(cornYield.plantPopulationPerHa).toBe(70000);
     expect(cornYield.estimatedBagsPerHa).toBeGreaterThan(100);
     expect(['Baixa', 'Média', 'Alta', 'Recorde']).toContain(cornYield.benchmarkRating);

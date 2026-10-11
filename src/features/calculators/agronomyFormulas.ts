@@ -8,13 +8,8 @@ import {
 } from './types';
 
 /**
- * Cálculo de Pulverização Agrícola (Calda por Hectare e Vazão de Bicos)
- * Fórmula padrão da engenharia agronômica:
- * Vazão por bico (L/min) = (Q * V * e) / 600
- * Onde:
- * Q = Volume de aplicação (L/ha)
- * V = Velocidade de deslocamento (km/h)
- * e = Espaçamento entre bicos (m)
+ * Agricultural Spraying Calibration (Volume per Hectare & Nozzle Flow Rate)
+ * Standard formula: Nozzle flow (L/min) = (Q * V * e) / 600
  */
 export function calculateSpray(input: SprayCalculationInput): SprayCalculationResult {
   const {
@@ -44,11 +39,11 @@ export function calculateSpray(input: SprayCalculationInput): SprayCalculationRe
 }
 
 /**
- * Cálculo de Adubação NPK e Correção Nutricional por Cultura
+ * NPK Fertilizer and Liming Recommendation by Crop
  */
 export function calculateNpk(input: NpkCalculationInput): NpkCalculationResult {
   const { crop, targetYieldTonPerHa, soilP_mgDm3, soilK_cmolcDm3 } = input;
-  const yieldTarget = Math.max(1, targetYieldTonPerHa);
+  const yieldTarget = Math.max(0.1, targetYieldTonPerHa);
 
   let n = 0;
   let p2o5 = 0;
@@ -57,15 +52,15 @@ export function calculateNpk(input: NpkCalculationInput): NpkCalculationResult {
   let liming = 1.5;
 
   switch (crop) {
-    case 'SOY': // Soja fixa N biologicamente (FBN), precisa pouco ou nenhum N mineral
-      n = 0; // Fixação biológica
+    case 'SOY':
+      n = 0;
       p2o5 = soilP_mgDm3 < 15 ? yieldTarget * 22 : yieldTarget * 16;
       k2o = soilK_cmolcDm3 < 0.15 ? yieldTarget * 28 : yieldTarget * 20;
       formula = '00-20-20 (300 kg/ha)';
       liming = soilP_mgDm3 < 10 ? 2.0 : 1.0;
       break;
 
-    case 'CORN': // Milho é altamente responsivo ao Nitrogênio
+    case 'CORN':
       n = yieldTarget * 20;
       p2o5 = soilP_mgDm3 < 15 ? yieldTarget * 14 : yieldTarget * 9;
       k2o = soilK_cmolcDm3 < 0.15 ? yieldTarget * 18 : yieldTarget * 12;
@@ -73,7 +68,7 @@ export function calculateNpk(input: NpkCalculationInput): NpkCalculationResult {
       liming = 2.2;
       break;
 
-    case 'COFFEE': // Café perene
+    case 'COFFEE':
       n = yieldTarget * 45;
       p2o5 = soilP_mgDm3 < 12 ? yieldTarget * 18 : yieldTarget * 12;
       k2o = soilK_cmolcDm3 < 0.2 ? yieldTarget * 50 : yieldTarget * 35;
@@ -81,7 +76,7 @@ export function calculateNpk(input: NpkCalculationInput): NpkCalculationResult {
       liming = 1.8;
       break;
 
-    case 'COTTON': // Algodão
+    case 'COTTON':
       n = yieldTarget * 32;
       p2o5 = soilP_mgDm3 < 15 ? yieldTarget * 20 : yieldTarget * 14;
       k2o = soilK_cmolcDm3 < 0.15 ? yieldTarget * 30 : yieldTarget * 22;
@@ -89,7 +84,7 @@ export function calculateNpk(input: NpkCalculationInput): NpkCalculationResult {
       liming = 2.5;
       break;
 
-    case 'WHEAT': // Trigo
+    case 'WHEAT':
     default:
       n = yieldTarget * 25;
       p2o5 = soilP_mgDm3 < 15 ? yieldTarget * 18 : yieldTarget * 12;
@@ -109,12 +104,7 @@ export function calculateNpk(input: NpkCalculationInput): NpkCalculationResult {
 }
 
 /**
- * Estimativa Pré-Colheita de Produtividade (Sacas/ha)
- * Fórmula padrão Embrapa / Pioneer:
- * População (pl/ha) = (10.000 / Espaçamento entre linhas) * Plantas por metro
- * Grãos por hectare = População * Espigas por planta * Grãos por espiga
- * Peso total (kg/ha) = (Grãos por hectare / 1000) * (PMG / 1000)
- * Sacas/ha = Peso total / 60
+ * Pre-Harvest Yield Estimation (Bags/ha)
  */
 export function estimateYield(input: YieldEstimationInput): YieldEstimationResult {
   const {
@@ -142,7 +132,6 @@ export function estimateYield(input: YieldEstimationInput): YieldEstimationResul
     else if (estimatedBagsPerHa < 80) benchmarkRating = 'Alta';
     else benchmarkRating = 'Recorde';
   } else {
-    // Milho
     if (estimatedBagsPerHa < 90) benchmarkRating = 'Baixa';
     else if (estimatedBagsPerHa < 140) benchmarkRating = 'Média';
     else if (estimatedBagsPerHa < 180) benchmarkRating = 'Alta';
