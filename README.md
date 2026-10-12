@@ -1,6 +1,6 @@
-# FarmFlow Mobile
-
 <div align="center">
+
+# FarmFlow Mobile
 
 [![React Native](https://img.shields.io/badge/React%20Native-0.81.5-61DAFB?logo=react&logoColor=black)](https://reactnative.dev/)
 [![Expo SDK 54](https://img.shields.io/badge/Expo-SDK%2054-000020?logo=expo&logoColor=white)](https://expo.dev/)
