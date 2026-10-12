@@ -81,8 +81,12 @@ jobs:
         run: npx expo-doctor
 
       - name: Verify EAS Config
-        if: ${{ secrets.EXPO_TOKEN != '' }}
-        run: npx --yes eas-cli@latest config --profile preview
+        run: |
+          if [ -n "$EXPO_TOKEN" ]; then
+            npx --yes eas-cli@latest config --profile preview
+          else
+            echo "EXPO_TOKEN secret not configured, skipping remote EAS check."
+          fi
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
