@@ -6,18 +6,33 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8F9F5',
   },
+  containerDark: {
+    backgroundColor: '#07150E',
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: spacing.md,
     paddingTop: Platform.OS === 'ios' ? 52 : 24,
-    paddingBottom: spacing.sm,
+    paddingBottom: spacing.xs,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  headerTitles: {
+    marginLeft: spacing.sm,
+    flex: 1,
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '800',
     color: '#0F172A',
+  },
+  headerTitleDark: {
+    color: '#F0FDF4',
   },
   locationRow: {
     flexDirection: 'row',
@@ -26,14 +41,22 @@ export const styles = StyleSheet.create({
     marginTop: 2,
   },
   locationText: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#64748B',
     fontWeight: '500',
   },
+  locationTextDark: {
+    color: '#94A3B8',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
@@ -41,18 +64,81 @@ export const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
   },
   backButtonDark: {
-    backgroundColor: '#1E293B',
-    borderColor: '#334155',
+    backgroundColor: '#11291D',
+    borderColor: '#1F3F2E',
   },
-  weatherButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+  headerIconBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#E2E8F0',
+  },
+  headerIconBtnDark: {
+    backgroundColor: '#11291D',
+    borderColor: '#1F3F2E',
+  },
+  toolbarRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.md,
+    marginTop: 6,
+    marginBottom: 4,
+    gap: 8,
+  },
+  toolbarBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+    borderRadius: radii.pill,
+    backgroundColor: '#ECFDF5',
+    borderWidth: 1,
+    borderColor: '#A7F3D0',
+    gap: 6,
+  },
+  toolbarBtnDark: {
+    backgroundColor: '#11291D',
+    borderColor: '#22C55E40',
+  },
+  toolbarBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#047857',
+  },
+  toolbarBtnTextDark: {
+    color: '#4ADE80',
+  },
+  toolbarSecondaryBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+    borderRadius: radii.pill,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    gap: 6,
+  },
+  toolbarSecondaryBtnDark: {
+    backgroundColor: '#16221C',
+    borderColor: '#243A2E',
+  },
+  toolbarSecondaryBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#334155',
+  },
+  toolbarSecondaryBtnTextDark: {
+    color: '#E2E8F0',
   },
   tabsContainer: {
     paddingHorizontal: spacing.md,
@@ -62,176 +148,40 @@ export const styles = StyleSheet.create({
   tabPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 14,
+    paddingVertical: 7,
+    paddingHorizontal: 13,
     borderRadius: radii.pill,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#E2E8F0',
     gap: 6,
+  },
+  tabPillDark: {
+    backgroundColor: '#11291D',
+    borderColor: '#1F3F2E',
   },
   tabPillActive: {
     backgroundColor: '#1B4D3E',
     borderColor: '#1B4D3E',
   },
+  tabPillActiveDark: {
+    backgroundColor: '#22C55E',
+    borderColor: '#22C55E',
+  },
   tabLabel: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '600',
     color: '#475569',
+  },
+  tabLabelDark: {
+    color: '#94A3B8',
   },
   tabLabelActive: {
     color: '#FFFFFF',
   },
-  mapCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: radii.xxl,
-    marginHorizontal: spacing.md,
-    marginTop: spacing.sm,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#0F291E',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.06,
-        shadowRadius: 10,
-      },
-      android: {
-        elevation: 2,
-      },
-      default: {
-        shadowColor: '#0F291E',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.06,
-        shadowRadius: 10,
-      },
-    }),
-  },
-  explorePill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#ECFDF5',
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: radii.lg,
-    marginTop: 10,
-    gap: 6,
-  },
-  exploreText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#065F46',
-  },
-  zoneCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: radii.xxl,
-    marginHorizontal: spacing.md,
-    marginTop: spacing.md,
-    marginBottom: 80,
-    padding: spacing.md,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  zoneHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  zoneTitleLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  zoneIconWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  zoneTitle: {
-    fontSize: 17,
+  tabLabelActiveDark: {
+    color: '#07150E',
     fontWeight: '800',
-    color: '#0F172A',
-  },
-  zoneCategory: {
-    fontSize: 12,
-    color: '#64748B',
-  },
-  healthBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: radii.pill,
-  },
-  healthBadgeText: {
-    fontSize: 11,
-    fontWeight: '800',
-  },
-  metricsRow: {
-    flexDirection: 'row',
-    backgroundColor: '#F8F9F5',
-    borderRadius: radii.lg,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    justifyContent: 'space-between',
-    marginVertical: 10,
-  },
-  metricItem: {
-    alignItems: 'center',
-  },
-  metricLabel: {
-    fontSize: 10,
-    color: '#64748B',
-    fontWeight: '600',
-  },
-  metricVal: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#0F172A',
-    marginTop: 2,
-  },
-  zoneNote: {
-    fontSize: 13,
-    color: '#475569',
-    lineHeight: 18,
-    marginBottom: 14,
-  },
-  actionButtonsRow: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  actionBtnPrimary: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#1B4D3E',
-    paddingVertical: 12,
-    borderRadius: radii.pill,
-    gap: 6,
-  },
-  actionBtnPrimaryText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  actionBtnSecondary: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#F1F5E9',
-    paddingVertical: 12,
-    borderRadius: radii.pill,
-    gap: 6,
-  },
-  actionBtnSecondaryText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#1E293B',
   },
   layerSelectorBar: {
     flexDirection: 'row',
@@ -240,20 +190,20 @@ export const styles = StyleSheet.create({
     marginBottom: spacing.xs,
     backgroundColor: '#FFFFFF',
     borderRadius: radii.pill,
-    padding: 4,
+    padding: 3,
     borderWidth: 1,
     borderColor: '#E2E8F0',
   },
   layerSelectorBarDark: {
-    backgroundColor: '#16221C',
-    borderColor: '#243A2E',
+    backgroundColor: '#11291D',
+    borderColor: '#1F3F2E',
   },
   layerBtn: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 7,
+    paddingVertical: 6,
     borderRadius: radii.pill,
     gap: 4,
   },
@@ -265,8 +215,90 @@ export const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#64748B',
   },
+  layerBtnTextDark: {
+    color: '#94A3B8',
+  },
   layerBtnTextActive: {
     color: '#FFFFFF',
+  },
+  mapCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: radii.xxl,
+    marginHorizontal: spacing.md,
+    marginTop: spacing.xs,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#07150E',
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.08,
+        shadowRadius: 14,
+      },
+      android: {
+        elevation: 3,
+      },
+      default: {
+        shadowColor: '#07150E',
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.08,
+        shadowRadius: 14,
+      },
+    }),
+  },
+  mapCardDark: {
+    backgroundColor: '#0D1E16',
+    borderColor: '#1F3F2E',
+  },
+  mapHudTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+    paddingBottom: 8,
+  },
+  mapHudBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: '#F1F5F9',
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: radii.sm,
+  },
+  mapHudBadgeDark: {
+    backgroundColor: '#162C21',
+  },
+  mapHudBadgeText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#334155',
+  },
+  mapHudBadgeTextDark: {
+    color: '#A7F3D0',
+  },
+  explorePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ECFDF5',
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+    borderRadius: radii.lg,
+    marginTop: 8,
+    gap: 6,
+  },
+  explorePillDark: {
+    backgroundColor: '#11291D',
+  },
+  exploreText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#065F46',
+  },
+  exploreTextDark: {
+    color: '#6EE7B7',
   },
   legendBar: {
     paddingVertical: 4,
@@ -279,6 +311,135 @@ export const styles = StyleSheet.create({
     color: '#64748B',
     fontWeight: '500',
     textAlign: 'center',
+  },
+  legendTextDark: {
+    color: '#94A3B8',
+  },
+  zoneCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: radii.xxl,
+    marginHorizontal: spacing.md,
+    marginTop: spacing.md,
+    marginBottom: 80,
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  zoneCardDark: {
+    backgroundColor: '#0D1E16',
+    borderColor: '#1F3F2E',
+  },
+  zoneHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.xs,
+  },
+  zoneTitleLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    flex: 1,
+  },
+  zoneIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  zoneTextContainer: {
+    flex: 1,
+  },
+  zoneTitle: {
+    fontSize: 17,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  zoneTitleDark: {
+    color: '#FFFFFF',
+  },
+  zoneCategory: {
+    fontSize: 12,
+    color: '#64748B',
+    marginTop: 1,
+  },
+  zoneCategoryDark: {
+    color: '#94A3B8',
+  },
+  healthBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: radii.pill,
+  },
+  healthBadgeText: {
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  customizeZoneButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#059669',
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: radii.lg,
+    marginTop: spacing.xs,
+    marginBottom: spacing.xs,
+    gap: 6,
+  },
+  customizeZoneButtonText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  metricsRow: {
+    flexDirection: 'row',
+    backgroundColor: '#F8F9F5',
+    borderRadius: radii.lg,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    justifyContent: 'space-between',
+    marginVertical: 10,
+  },
+  metricsRowDark: {
+    backgroundColor: '#11291D',
+  },
+  metricItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  metricItemDark: {
+    backgroundColor: 'transparent',
+  },
+  metricLabel: {
+    fontSize: 10,
+    color: '#64748B',
+    fontWeight: '600',
+  },
+  metricLabelDark: {
+    color: '#94A3B8',
+  },
+  metricVal: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#0F172A',
+    marginTop: 2,
+  },
+  metricValDark: {
+    color: '#F0FDF4',
+  },
+  zoneNote: {
+    fontSize: 13,
+    color: '#475569',
+    lineHeight: 18,
+    marginBottom: 12,
+  },
+  zoneNoteDark: {
+    color: '#CBD5E1',
+  },
+  zoneNoteBold: {
+    fontWeight: '700',
   },
   actionButtonsGrid: {
     flexDirection: 'row',
@@ -298,51 +459,302 @@ export const styles = StyleSheet.create({
     borderRadius: radii.md,
     gap: 6,
   },
+  actionBtnDark: {
+    backgroundColor: '#11291D',
+    borderColor: '#1F3F2E',
+  },
   actionBtnText: {
     fontSize: 12,
     fontWeight: '700',
     color: '#1E293B',
   },
-  zoneCardDark: {
-    backgroundColor: '#16221C',
-    borderColor: '#243A2E',
-  },
-  zoneTitleDark: {
-    color: '#FFFFFF',
-  },
-  zoneCategoryDark: {
-    color: '#94A3B8',
-  },
-  zoneNoteDark: {
-    color: '#94A3B8',
-  },
-  metricItemDark: {
-    backgroundColor: 'transparent',
-  },
-  metricValDark: {
+  actionBtnTextDark: {
     color: '#E2E8F0',
   },
-  containerDark: {
-    backgroundColor: '#0B1410',
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    justifyContent: 'flex-end',
   },
-  headerTitleDark: {
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: radii.xxl,
+    borderTopRightRadius: radii.xxl,
+    maxHeight: '85%',
+    paddingBottom: Platform.OS === 'ios' ? 36 : 24,
+  },
+  modalContentDark: {
+    backgroundColor: '#0D1E16',
+    borderTopColor: '#1F3F2E',
+    borderTopWidth: 1,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+  },
+  modalHeaderDark: {
+    borderBottomColor: '#1F3F2E',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  modalTitleDark: {
+    color: '#FFFFFF',
+  },
+  modalSubtitle: {
+    fontSize: 12,
+    color: '#64748B',
+    marginTop: 2,
+  },
+  modalSubtitleDark: {
+    color: '#94A3B8',
+  },
+  modalCloseBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#F1F5F9',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalCloseBtnDark: {
+    backgroundColor: '#1F3F2E',
+  },
+  modalScrollArea: {
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.sm,
+  },
+  inputGroup: {
+    marginBottom: spacing.sm,
+  },
+  inputLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#334155',
+    marginBottom: 5,
+  },
+  inputLabelDark: {
+    color: '#E2E8F0',
+  },
+  textInput: {
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    borderRadius: radii.md,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    fontSize: 14,
+    color: '#0F172A',
+  },
+  textInputDark: {
+    backgroundColor: '#11291D',
+    borderColor: '#1F3F2E',
     color: '#F0FDF4',
   },
-  locationTextDark: {
+  rowInputs: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: spacing.sm,
+  },
+  flex1: {
+    flex: 1,
+  },
+  cropCatalogGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 4,
+    marginBottom: spacing.sm,
+  },
+  cropCard: {
+    width: '31%',
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1.5,
+    borderColor: '#E2E8F0',
+    borderRadius: radii.lg,
+    padding: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+  },
+  cropCardDark: {
+    backgroundColor: '#11291D',
+    borderColor: '#1F3F2E',
+  },
+  cropCardActive: {
+    borderColor: '#059669',
+    backgroundColor: '#ECFDF5',
+  },
+  cropCardActiveDark: {
+    borderColor: '#22C55E',
+    backgroundColor: '#163826',
+  },
+  cropIconBadge: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cropCardName: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#1E293B',
+    textAlign: 'center',
+  },
+  cropCardNameDark: {
+    color: '#E2E8F0',
+  },
+  cropCardCategory: {
+    fontSize: 9,
+    color: '#64748B',
+    textAlign: 'center',
+  },
+  cropCardCategoryDark: {
     color: '#94A3B8',
   },
-  weatherButtonDark: {
-    backgroundColor: '#182A22',
-    borderColor: '#23382E',
+  stageChipsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginTop: 4,
+    marginBottom: spacing.md,
   },
-  tabPillDark: {
-    backgroundColor: '#182A22',
-    borderColor: '#23382E',
+  stageChip: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: radii.pill,
+    backgroundColor: '#F1F5F9',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
-  tabPillActiveDark: {
-    backgroundColor: '#22C55E',
+  stageChipDark: {
+    backgroundColor: '#11291D',
+    borderColor: '#1F3F2E',
   },
-  tabLabelDark: {
+  stageChipActive: {
+    backgroundColor: '#059669',
+    borderColor: '#059669',
+  },
+  stageChipText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#475569',
+  },
+  stageChipTextDark: {
     color: '#94A3B8',
+  },
+  stageChipTextActive: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+  },
+  modalFooter: {
+    flexDirection: 'row',
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.xs,
+    gap: 10,
+  },
+  modalPrimaryBtn: {
+    flex: 1,
+    backgroundColor: '#059669',
+    paddingVertical: 12,
+    borderRadius: radii.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalPrimaryBtnText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+  modalResetBtn: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: radii.pill,
+    backgroundColor: '#F1F5F9',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalResetBtnDark: {
+    backgroundColor: '#1F3F2E',
+  },
+  modalResetBtnText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#64748B',
+  },
+  modalResetBtnTextDark: {
+    color: '#94A3B8',
+  },
+  // Presets Modal List
+  presetList: {
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.sm,
+    gap: 10,
+  },
+  presetCard: {
+    backgroundColor: '#F8FAFC',
+    borderRadius: radii.xl,
+    padding: spacing.md,
+    borderWidth: 1.5,
+    borderColor: '#E2E8F0',
+    gap: 6,
+  },
+  presetCardDark: {
+    backgroundColor: '#11291D',
+    borderColor: '#1F3F2E',
+  },
+  presetHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  presetTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  presetTitleDark: {
+    color: '#FFFFFF',
+  },
+  presetDesc: {
+    fontSize: 12,
+    color: '#64748B',
+    lineHeight: 16,
+  },
+  presetDescDark: {
+    color: '#94A3B8',
+  },
+  presetTagsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginTop: 4,
+  },
+  presetTag: {
+    backgroundColor: '#ECFDF5',
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: radii.sm,
+  },
+  presetTagDark: {
+    backgroundColor: '#163826',
+  },
+  presetTagText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#047857',
+  },
+  presetTagTextDark: {
+    color: '#6EE7B7',
   },
 });

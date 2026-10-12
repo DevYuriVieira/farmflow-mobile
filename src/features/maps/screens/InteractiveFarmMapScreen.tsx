@@ -1,186 +1,392 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   ScrollView,
+  Modal,
+  TextInput,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import Svg, {
-  Path,
-  Rect,
-  Circle,
-  G,
-  Defs,
-  LinearGradient,
-  Stop,
-  Line,
-  Polygon,
-  Text as SvgText,
-} from 'react-native-svg';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FarmIllustration } from '../components/FarmIllustration';
 
 import { AppNavigationProp } from '../../../navigation/types';
 import { usePreferences } from '../../../contexts/PreferencesContext';
-import { spacing } from '../../../theme';
+import { triggerHaptic } from '../../../utils/haptics';
 import { styles } from '../styles/interactiveFarmMap.styles';
-
-
-export type FarmZoneId =
-  | 'overview'
-  | 'house'
-  | 'tomatoes'
-  | 'vegetables'
-  | 'corn'
-  | 'animals'
-  | 'storage';
 
 export type MapLayerMode = 'standard' | 'ndvi' | 'moisture';
 
-interface FarmZoneDetail {
-  id: FarmZoneId;
-  name: string;
-  category: string;
-  area: string;
-  health: number;
-  moisture: number;
-  ndviIndex: number;
-  ndviStatus: string;
-  stage: string;
-  telemetryNote: string;
-  statusColor: string;
+export type CropTypeKey =
+  | 'soybeans'
+  | 'corn'
+  | 'cotton'
+  | 'coffee'
+  | 'wheat'
+  | 'sugarcane'
+  | 'tomatoes'
+  | 'vegetables'
+  | 'citrus'
+  | 'pasture'
+  | 'headquarters'
+  | 'storage_silos'
+  | 'reservoir_pivot';
+
+export interface CropCatalogItem {
+  key: CropTypeKey;
+  namePt: string;
+  nameEn: string;
+  categoryPt: string;
+  categoryEn: string;
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
+  color: string;
+  defaultNdvi: number;
+  defaultMoisture: number;
+  defaultHealth: number;
+  defaultStagePt: string;
+  defaultStageEn: string;
+  telemetryNotePt: string;
+  telemetryNoteEn: string;
+  renderVisual: 'rows' | 'pivots' | 'orchard' | 'water' | 'building' | 'pasture' | 'silos' | 'tomatoes';
 }
+
+export const CROP_CATALOG: Record<CropTypeKey, CropCatalogItem> = {
+  soybeans: {
+    key: 'soybeans',
+    namePt: 'Soja Safra',
+    nameEn: 'Soybeans',
+    categoryPt: 'Grãos & Oleaginosas',
+    categoryEn: 'Grains & Oilseeds',
+    icon: 'sprout',
+    color: '#10B981',
+    defaultNdvi: 0.88,
+    defaultMoisture: 78,
+    defaultHealth: 94,
+    defaultStagePt: 'Enchimento de Grãos (R5.2)',
+    defaultStageEn: 'Grain Filling (R5.2)',
+    telemetryNotePt: 'Soja transgênica IPRO. Monitoramento de percevejo-marrom e ferrugem asiática em dia.',
+    telemetryNoteEn: 'IPRO Biotech Soybeans. Brown stink bug and Asian rust scouting up to date.',
+    renderVisual: 'rows',
+  },
+  corn: {
+    key: 'corn',
+    namePt: 'Milho Safrinha',
+    nameEn: 'Off-Season Corn',
+    categoryPt: 'Grãos & Cereais',
+    categoryEn: 'Grains & Cereals',
+    icon: 'corn',
+    color: '#F59E0B',
+    defaultNdvi: 0.81,
+    defaultMoisture: 72,
+    defaultHealth: 91,
+    defaultStagePt: 'Pendoamento / Espigamento',
+    defaultStageEn: 'Tasseling / Silking',
+    telemetryNotePt: 'Milho híbrido safrinha. Aplicação foliar de fungicida realizada há 4 dias.',
+    telemetryNoteEn: 'Hybrid off-season corn. Foliar fungicide application completed 4 days ago.',
+    renderVisual: 'rows',
+  },
+  cotton: {
+    key: 'cotton',
+    namePt: 'Algodão em Pluma',
+    nameEn: 'Cotton Crop',
+    categoryPt: 'Fibras Naturais',
+    categoryEn: 'Natural Fibers',
+    icon: 'cloud-outline',
+    color: '#8B5CF6',
+    defaultNdvi: 0.79,
+    defaultMoisture: 68,
+    defaultHealth: 93,
+    defaultStagePt: 'Abertura de Capulhos',
+    defaultStageEn: 'Boll Opening Stage',
+    telemetryNotePt: 'Bicudo sob armadilhas e controle integrado. Maturação de fibra excelente.',
+    telemetryNoteEn: 'Boll weevil pheromone traps active. Fiber quality index rated high.',
+    renderVisual: 'rows',
+  },
+  coffee: {
+    key: 'coffee',
+    namePt: 'Café Arábica',
+    nameEn: 'Arabica Coffee',
+    categoryPt: 'Culturas Perenes',
+    categoryEn: 'Perennial Crops',
+    icon: 'coffee-outline',
+    color: '#78350F',
+    defaultNdvi: 0.84,
+    defaultMoisture: 75,
+    defaultHealth: 96,
+    defaultStagePt: 'Chumbinho / Granação',
+    defaultStageEn: 'Berry Development',
+    telemetryNotePt: 'Lavoura irrigada por gotejo. Manejo focado na maturação homogênea de cerejas.',
+    telemetryNoteEn: 'Drip irrigated orchard. Management focused on uniform cherry maturation.',
+    renderVisual: 'orchard',
+  },
+  wheat: {
+    key: 'wheat',
+    namePt: 'Trigo Grão',
+    nameEn: 'Winter Wheat',
+    categoryPt: 'Cereais de Inverno',
+    categoryEn: 'Winter Cereals',
+    icon: 'barley',
+    color: '#D97706',
+    defaultNdvi: 0.86,
+    defaultMoisture: 70,
+    defaultHealth: 92,
+    defaultStagePt: 'Enchimento de Espiga',
+    defaultStageEn: 'Grain Maturation',
+    telemetryNotePt: 'Safra de inverno com excelente sanidade foliar e temperatura amena.',
+    telemetryNoteEn: 'Winter wheat crop with optimal foliar health and mild temperatures.',
+    renderVisual: 'rows',
+  },
+  sugarcane: {
+    key: 'sugarcane',
+    namePt: 'Cana-de-Açúcar',
+    nameEn: 'Sugarcane',
+    categoryPt: 'Biomassa & Agroindústria',
+    categoryEn: 'Biomass & Agro-Industry',
+    icon: 'grass',
+    color: '#059669',
+    defaultNdvi: 0.91,
+    defaultMoisture: 80,
+    defaultHealth: 95,
+    defaultStagePt: 'Desenvolvimento Vegetativo',
+    defaultStageEn: 'Vegetative Growth',
+    telemetryNotePt: 'Cana-soca de 2º corte. Adubação de soqueira com vinhaça concentrada.',
+    telemetryNoteEn: 'Second-cut ratoon cane. Concentrated vinasse application completed.',
+    renderVisual: 'rows',
+  },
+  tomatoes: {
+    key: 'tomatoes',
+    namePt: 'Tomates de Mesa',
+    nameEn: 'Table Tomatoes',
+    categoryPt: 'Hortifrúti / Olericultura',
+    categoryEn: 'Horticulture / Fruit Crops',
+    icon: 'food-apple',
+    color: '#EF4444',
+    defaultNdvi: 0.88,
+    defaultMoisture: 82,
+    defaultHealth: 92,
+    defaultStagePt: 'Frutificação / Colheita',
+    defaultStageEn: 'Fruiting & Harvest',
+    telemetryNotePt: 'Cultivo tutorado com fertirrigação por gotejo. Colheita seletiva diária.',
+    telemetryNoteEn: 'Staked cultivation with drip fertigation. Daily selective harvesting.',
+    renderVisual: 'tomatoes',
+  },
+  vegetables: {
+    key: 'vegetables',
+    namePt: 'Horta & Folhosas',
+    nameEn: 'Vegetable Beds',
+    categoryPt: 'Olericultura Folhosa',
+    categoryEn: 'Leafy Vegetables',
+    icon: 'sprout',
+    color: '#22C55E',
+    defaultNdvi: 0.94,
+    defaultMoisture: 88,
+    defaultHealth: 95,
+    defaultStagePt: 'Colheita Contínua',
+    defaultStageEn: 'Continuous Harvest',
+    telemetryNotePt: 'Canteiros com microaspersão e mulching ecológico. Destino: cooperativa local.',
+    telemetryNoteEn: 'Raised beds with micro-sprinklers and organic mulching for local co-op.',
+    renderVisual: 'rows',
+  },
+  citrus: {
+    key: 'citrus',
+    namePt: 'Citros / Pomar',
+    nameEn: 'Citrus Orchard',
+    categoryPt: 'Fruticultura Comercial',
+    categoryEn: 'Commercial Fruit Orchard',
+    icon: 'fruit-citrus',
+    color: '#F97316',
+    defaultNdvi: 0.85,
+    defaultMoisture: 76,
+    defaultHealth: 94,
+    defaultStagePt: 'Crescimento de Frutos',
+    defaultStageEn: 'Fruit Sizing Stage',
+    telemetryNotePt: 'Pomar de laranjeiras Pêra-Rio com controle biológico de psilídeo.',
+    telemetryNoteEn: 'Pera-Rio sweet orange orchard with active psyllid biocontrol.',
+    renderVisual: 'orchard',
+  },
+  pasture: {
+    key: 'pasture',
+    namePt: 'Pasto & Bovinos',
+    nameEn: 'Pasture & Livestock',
+    categoryPt: 'Bovinocultura & ILPF',
+    categoryEn: 'Livestock & Agroforestry',
+    icon: 'cow',
+    color: '#14B8A6',
+    defaultNdvi: 0.65,
+    defaultMoisture: 70,
+    defaultHealth: 97,
+    defaultStagePt: 'Pastejo Rotacionado',
+    defaultStageEn: 'Rotational Grazing',
+    telemetryNotePt: 'Piquetes de capim Mombaça com bebedouros solares e cerca elétrica ativa.',
+    telemetryNoteEn: 'Mombasa grass paddocks with solar water troughs and rotational grazing.',
+    renderVisual: 'pasture',
+  },
+  headquarters: {
+    key: 'headquarters',
+    namePt: 'Sede & Oficina',
+    nameEn: 'Headquarters & Depot',
+    categoryPt: 'Infraestrutura & Gestão',
+    categoryEn: 'Infrastructure & Admin',
+    icon: 'home',
+    color: '#3B82F6',
+    defaultNdvi: 0.15,
+    defaultMoisture: 65,
+    defaultHealth: 99,
+    defaultStagePt: 'Centro de Operações (CCO)',
+    defaultStageEn: 'Operations Center (NOC)',
+    telemetryNotePt: 'Hangar de máquinas agrícolas, oficina técnica mecânica e usina solar.',
+    telemetryNoteEn: 'Agricultural machinery hangar, technical workshop, and solar farm.',
+    renderVisual: 'building',
+  },
+  storage_silos: {
+    key: 'storage_silos',
+    namePt: 'Silos Graneleiros',
+    nameEn: 'Grain Silos',
+    categoryPt: 'Armazenagem & Secagem',
+    categoryEn: 'Grain Storage & Drying',
+    icon: 'silo',
+    color: '#64748B',
+    defaultNdvi: 0.12,
+    defaultMoisture: 60,
+    defaultHealth: 98,
+    defaultStagePt: 'Armazenamento em 85%',
+    defaultStageEn: 'Capacity at 85%',
+    telemetryNotePt: '2 silos metálicos de 1.500t com termometria e aeração automatizada.',
+    telemetryNoteEn: '2 metal grain silos (1,500t) with automated thermometry cables.',
+    renderVisual: 'silos',
+  },
+  reservoir_pivot: {
+    key: 'reservoir_pivot',
+    namePt: 'Represa & Pivô',
+    nameEn: 'Dam & Center Pivot',
+    categoryPt: 'Recursos Hídricos & Irrigação',
+    categoryEn: 'Water Resources & Irrigation',
+    icon: 'water-pump',
+    color: '#06B6D4',
+    defaultNdvi: -0.22,
+    defaultMoisture: 96,
+    defaultHealth: 98,
+    defaultStagePt: 'Lâmina d\'Água 12mm',
+    defaultStageEn: '12mm Water Depth',
+    telemetryNotePt: 'Espelho d\'água de 18.000m³ alimentando adutora do pivô central de 40 ha.',
+    telemetryNoteEn: '18,000 m³ reservoir feeding the central pivot pipeline for 40 hectares.',
+    renderVisual: 'pivots',
+  },
+};
+
+export interface SectorZone {
+  id: string; // 'sector_1' .. 'sector_6'
+  cropKey: CropTypeKey;
+  customName?: string;
+  customArea?: string;
+  customStage?: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+const DEFAULT_SECTORS: SectorZone[] = [
+  { id: 'sector_1', cropKey: 'headquarters', customArea: '0.8 ha', x: 12, y: 12, width: 100, height: 95 },
+  { id: 'sector_2', cropKey: 'tomatoes', customArea: '4.2 ha', x: 128, y: 12, width: 220, height: 95 },
+  { id: 'sector_3', cropKey: 'vegetables', customArea: '2.0 ha', x: 12, y: 123, width: 100, height: 90 },
+  { id: 'sector_4', cropKey: 'corn', customArea: '3.5 ha', x: 128, y: 123, width: 220, height: 90 },
+  { id: 'sector_5', cropKey: 'pasture', customArea: '1.8 ha', x: 12, y: 229, width: 199, height: 99 },
+  { id: 'sector_6', cropKey: 'reservoir_pivot', customArea: '0.2 ha', x: 227, y: 229, width: 121, height: 46 },
+  { id: 'sector_7', cropKey: 'storage_silos', customArea: '0.1 ha', x: 227, y: 282, width: 121, height: 46 },
+];
+
+export interface FarmPreset {
+  id: string;
+  titlePt: string;
+  titleEn: string;
+  descPt: string;
+  descEn: string;
+  sectors: CropTypeKey[];
+}
+
+const FARM_PRESETS: FarmPreset[] = [
+  {
+    id: 'grains_cerrado',
+    titlePt: 'Grãos & Commodities (Cerrado)',
+    titleEn: 'Grains & Commodities (Cerrado)',
+    descPt: 'Ideal para produção em larga escala de Soja Safra, Milho Safrinha, Algodão e Silos.',
+    descEn: 'Optimized for high-yield Soybeans, Corn, Cotton, and Commercial Grain Silos.',
+    sectors: ['headquarters', 'soybeans', 'wheat', 'corn', 'cotton', 'storage_silos'],
+  },
+  {
+    id: 'hortifruti_green',
+    titlePt: 'Hortifrúti & Fruticultura',
+    titleEn: 'Horticulture & Fruit Belt',
+    descPt: 'Vocacionada para Tomates de mesa, Horta folhosa comercial, Pomar de Citros e Represa.',
+    descEn: 'Engineered for Table Tomatoes, Leafy Greens, Citrus Orchards, and Reservoir.',
+    sectors: ['headquarters', 'tomatoes', 'vegetables', 'citrus', 'pasture', 'reservoir_pivot'],
+  },
+  {
+    id: 'coffee_special',
+    titlePt: 'Café & Culturas Especiais',
+    titleEn: 'Specialty Coffee & Grains',
+    descPt: 'Focada em Cafezais Arábica, Lavoura de Milho, Trigo de Inverno e Silos de armazenagem.',
+    descEn: 'Dedicated to Arabica Coffee, Corn, Winter Wheat, and On-Farm Grain Silos.',
+    sectors: ['headquarters', 'coffee', 'wheat', 'corn', 'pasture', 'storage_silos'],
+  },
+  {
+    id: 'ilpf_livestock',
+    titlePt: 'Integração Lavoura-Pecuária (ILPF)',
+    titleEn: 'Integrated Crop-Livestock (ILPF)',
+    descPt: 'Manejo sinérgico entre Soja, Milho silagem, Pecuária rotacionada e Represa.',
+    descEn: 'Synergistic rotation between Soybeans, Silage Corn, Pasture Cattle, and Dam.',
+    sectors: ['headquarters', 'pasture', 'corn', 'soybeans', 'pasture', 'reservoir_pivot'],
+  },
+];
+
+const STORAGE_KEY = '@farmflow_custom_farm_map_v2';
 
 export const InteractiveFarmMapScreen: React.FC = () => {
   const navigation = useNavigation<AppNavigationProp>();
   const { isDark, language, t } = usePreferences();
-  const [selectedZone, setSelectedZone] = useState<FarmZoneId>('overview');
+
+  const [sectors, setSectors] = useState<SectorZone[]>(DEFAULT_SECTORS);
+  const [selectedSectorId, setSelectedSectorId] = useState<string>('sector_2');
   const [mapLayer, setMapLayer] = useState<MapLayerMode>('standard');
 
-  const zoneDetails: Record<FarmZoneId, FarmZoneDetail> = {
-    overview: {
-      id: 'overview',
-      name: language === 'en' ? 'Farm Overview' : 'Visão Geral da Fazenda',
-      category: language === 'en' ? 'Whole Property' : 'Toda a Propriedade',
-      area: '12.5 ha',
-      health: 94,
-      moisture: 78,
-      ndviIndex: 0.82,
-      ndviStatus: language === 'en' ? 'Healthy Overall Vigour' : 'Vigor Geral Saudável',
-      stage: language === 'en' ? 'Active Operation' : 'Operação Ativa',
-      telemetryNote:
-        language === 'en'
-          ? 'All 6 rural zones operating with optimal soil and irrigation indices.'
-          : 'Todos os 6 setores rurais operando com índices ideais de solo e irrigação.',
-      statusColor: '#10B981',
-      icon: 'map-marker-radius',
-    },
-    house: {
-      id: 'house',
-      name: language === 'en' ? 'Farm Headquarters' : 'Sede da Fazenda',
-      category: language === 'en' ? 'Infrastructure & Management' : 'Infraestrutura & Gestão',
-      area: '0.8 ha',
-      health: 99,
-      moisture: 65,
-      ndviIndex: 0.15,
-      ndviStatus: language === 'en' ? 'Built Area / Soil' : 'Área Construída / Solo',
-      stage: language === 'en' ? 'Main Headquarters' : 'Sede Principal',
-      telemetryNote:
-        language === 'en'
-          ? 'Residence, tractor garage, technical workshop, and central management office.'
-          : 'Residência, garagem de tratores, oficina técnica e escritório central.',
-      statusColor: '#3B82F6',
-      icon: 'home',
-    },
-    tomatoes: {
-      id: 'tomatoes',
-      name: language === 'en' ? 'Tomato Plot' : 'Talhão de Tomates',
-      category: language === 'en' ? 'Horticulture / Fruit Crops' : 'Hortifrúti / Olericultura',
-      area: '4.2 ha',
-      health: 92,
-      moisture: 82,
-      ndviIndex: 0.88,
-      ndviStatus: language === 'en' ? 'High Canopy Density' : 'Alta Densidade Foliar',
-      stage: language === 'en' ? 'Fruiting / Maturation' : 'Frutificação / Maturação',
-      telemetryNote:
-        language === 'en'
-          ? 'Drip irrigation scheduled for 16:00. Harvest estimated in 12 days.'
-          : 'Irrigação por gotejamento programada para 16:00. Estimativa de colheita em 12 dias.',
-      statusColor: '#EF4444',
-      icon: 'food-apple',
-    },
-    vegetables: {
-      id: 'vegetables',
-      name: language === 'en' ? 'Vegetable Garden' : 'Horta & Legumes',
-      category: language === 'en' ? 'Leafy Vegetable Crops' : 'Olericultura Folhosa',
-      area: '2.0 ha',
-      health: 95,
-      moisture: 88,
-      ndviIndex: 0.94,
-      ndviStatus: language === 'en' ? 'Peak Vegetative Vigour' : 'Vigor Vegetativo Máximo',
-      stage: language === 'en' ? 'Continuous Harvest' : 'Colheita Contínua',
-      telemetryNote:
-        language === 'en'
-          ? 'Lettuce, carrot, and broccoli beds. Daily harvest for local cooperative.'
-          : 'Canteiros de alface, cenoura e brócolis. Colheita diária para cooperativa.',
-      statusColor: '#10B981',
-      icon: 'sprout',
-    },
-    corn: {
-      id: 'corn',
-      name: language === 'en' ? 'Corn Field' : 'Lavoura de Milho',
-      category: language === 'en' ? 'Grains & Cereals' : 'Grãos & Cereais',
-      area: '3.5 ha',
-      health: 89,
-      moisture: 74,
-      ndviIndex: 0.74,
-      ndviStatus: language === 'en' ? 'Flowering in Progress' : 'Floração em Desenvolvimento',
-      stage: language === 'en' ? 'Active Flowering' : 'Floração Ativa',
-      telemetryNote:
-        language === 'en'
-          ? 'Off-season hybrid corn. Foliar spraying against fall armyworm scheduled.'
-          : 'Milho safrinha híbrido. Pulverização foliar contra lagarta do cartucho agendada.',
-      statusColor: '#F59E0B',
-      icon: 'corn',
-    },
-    animals: {
-      id: 'animals',
-      name: language === 'en' ? 'Pasture & Livestock' : 'Pasto & Pecuária',
-      category: language === 'en' ? 'Dairy Cattle Farming' : 'Bovinocultura de Leite',
-      area: '1.8 ha',
-      health: 97,
-      moisture: 70,
-      ndviIndex: 0.62,
-      ndviStatus: language === 'en' ? 'Stable Brachiaria Pasture' : 'Pastagem Brachiaria Estável',
-      stage: language === 'en' ? 'Rotational Grazing' : 'Pastejo Rotacionado',
-      telemetryNote:
-        language === 'en'
-          ? '48 heads of Holstein dairy cattle. Clean troughs and active electric fencing.'
-          : '48 cabeças de gado holandês. Bebedouros limpos e cerca elétrica ativa.',
-      statusColor: '#F97316',
-      icon: 'cow',
-    },
-    storage: {
-      id: 'storage',
-      name: language === 'en' ? 'Dam & Grain Silos' : 'Represa & Armazenamento',
-      category: language === 'en' ? 'Water Resources & Storage' : 'Recursos Hídricos & Silos',
-      area: '0.2 ha',
-      health: 98,
-      moisture: 96,
-      ndviIndex: -0.25,
-      ndviStatus: language === 'en' ? "Water Surface / Silos" : "Espelho d'Água / Silos",
-      stage: language === 'en' ? 'Storage at 92%' : 'Nível em 92%',
-      telemetryNote:
-        language === 'en'
-          ? 'Reservoir holding 9,200 L of fresh water and 2 vertical grain silos.'
-          : 'Reservatório com 9.200 L de água e 2 silos verticais de grãos.',
-      statusColor: '#06B6D4',
-      icon: 'water-pump',
-    },
-  };
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [presetsModalVisible, setPresetsModalVisible] = useState(false);
 
-  const activeDetail = zoneDetails[selectedZone];
+  // Form states for zone customization
+  const [editingSector, setEditingSector] = useState<SectorZone | null>(null);
+  const [formCropKey, setFormCropKey] = useState<CropTypeKey>('soybeans');
+  const [formName, setFormName] = useState('');
+  const [formArea, setFormArea] = useState('');
+  const [formStage, setFormStage] = useState('');
+
+  // Load custom map configuration from persistent storage on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const stored = await AsyncStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored) as SectorZone[];
+          if (Array.isArray(parsed) && parsed.length === DEFAULT_SECTORS.length) {
+            setSectors(parsed);
+          }
+        }
+      } catch {
+        // Fallback to default
+      }
+    })();
+  }, []);
+
+  const saveCustomSectors = async (updated: SectorZone[]) => {
+    setSectors(updated);
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    } catch {
+      // Ignore
+    }
+  };
 
   const handleBack = () => {
     if (navigation.canGoBack()) {
@@ -190,500 +396,623 @@ export const InteractiveFarmMapScreen: React.FC = () => {
     }
   };
 
+  const currentSector = sectors.find((s) => s.id === selectedSectorId) || sectors[1];
+  const currentCrop = CROP_CATALOG[currentSector.cropKey] || CROP_CATALOG.soybeans;
+
+  const currentName = currentSector.customName || (language === 'en' ? currentCrop.nameEn : currentCrop.namePt);
+  const currentArea = currentSector.customArea || '3.5 ha';
+  const currentStage = currentSector.customStage || (language === 'en' ? currentCrop.defaultStageEn : currentCrop.defaultStagePt);
+  const currentCategory = language === 'en' ? currentCrop.categoryEn : currentCrop.categoryPt;
+  const currentNote = language === 'en' ? currentCrop.telemetryNoteEn : currentCrop.telemetryNotePt;
+
+  const openEditModal = (sector?: SectorZone) => {
+    const target = sector || currentSector;
+    setEditingSector(target);
+    setFormCropKey(target.cropKey);
+    const cropItem = CROP_CATALOG[target.cropKey];
+    setFormName(target.customName || (language === 'en' ? cropItem.nameEn : cropItem.namePt));
+    setFormArea(target.customArea || '3.5 ha');
+    setFormStage(target.customStage || (language === 'en' ? cropItem.defaultStageEn : cropItem.defaultStagePt));
+    triggerHaptic('selection');
+    setEditModalVisible(true);
+  };
+
+  const saveEditedSector = () => {
+    if (!editingSector) return;
+    const updated = sectors.map((sec) => {
+      if (sec.id === editingSector.id) {
+        return {
+          ...sec,
+          cropKey: formCropKey,
+          customName: formName.trim() || undefined,
+          customArea: formArea.trim() || undefined,
+          customStage: formStage.trim() || undefined,
+        };
+      }
+      return sec;
+    });
+
+    saveCustomSectors(updated);
+    triggerHaptic('success');
+    setEditModalVisible(false);
+  };
+
+  const applyPreset = (preset: FarmPreset) => {
+    const updated = sectors.map((sec, idx) => ({
+      ...sec,
+      cropKey: preset.sectors[idx] || sec.cropKey,
+      customName: undefined,
+      customStage: undefined,
+    }));
+
+    saveCustomSectors(updated);
+    triggerHaptic('medium');
+    setPresetsModalVisible(false);
+  };
+
+  const resetToDefault = () => {
+    saveCustomSectors(DEFAULT_SECTORS);
+    triggerHaptic('warning');
+    setEditModalVisible(false);
+  };
+
+
   return (
     <ScrollView style={[styles.container, isDark && styles.containerDark]} showsVerticalScrollIndicator={false}>
+      {/* Header Bar */}
       <View style={styles.header}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+        <View style={styles.headerLeft}>
           <TouchableOpacity
             style={[styles.backButton, isDark && styles.backButtonDark]}
             onPress={handleBack}
             activeOpacity={0.7}
             accessibilityLabel="Voltar"
           >
-            <MaterialCommunityIcons name="arrow-left" size={22} color={isDark ? '#FFFFFF' : '#1E293B'} />
+            <MaterialCommunityIcons name="arrow-left" size={20} color={isDark ? '#FFFFFF' : '#1E293B'} />
           </TouchableOpacity>
-          <View style={{ marginLeft: spacing.sm, flex: 1 }}>
+          <View style={styles.headerTitles}>
             <Text style={[styles.headerTitle, isDark && styles.headerTitleDark]}>
               {t('myFarm')}
             </Text>
             <View style={styles.locationRow}>
-              <MaterialCommunityIcons name="map-marker-outline" size={14} color="#059669" />
+              <MaterialCommunityIcons name="map-marker-outline" size={13} color="#059669" />
               <Text style={[styles.locationText, isDark && styles.locationTextDark]}>
-                {language === 'en' ? 'Green Valley Farm · 12.5 ha' : 'Fazenda Santa Fé · 12.5 ha'}
+                {language === 'en' ? 'Santa Fé Estate · 12.5 ha' : 'Fazenda Santa Fé · 12.5 ha'}
               </Text>
             </View>
           </View>
         </View>
 
+        <View style={styles.headerActions}>
+          <TouchableOpacity
+            style={[styles.headerIconBtn, isDark && styles.headerIconBtnDark]}
+            onPress={() => navigation.navigate('WeatherScreen' as never)}
+            activeOpacity={0.7}
+          >
+            <MaterialCommunityIcons name="weather-partly-cloudy" size={18} color={isDark ? '#FFFFFF' : '#1E293B'} />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Toolbar: Farmer Customization Shortcuts */}
+      <View style={styles.toolbarRow}>
         <TouchableOpacity
-          style={[styles.weatherButton, isDark && styles.weatherButtonDark]}
-          onPress={() => navigation.navigate('WeatherScreen' as never)}
-          activeOpacity={0.7}
+          style={[styles.toolbarBtn, isDark && styles.toolbarBtnDark]}
+          onPress={() => openEditModal()}
+          activeOpacity={0.8}
         >
-          <MaterialCommunityIcons name="weather-partly-cloudy" size={20} color={isDark ? '#FFFFFF' : '#1E293B'} />
+          <MaterialCommunityIcons name="tune-variant" size={16} color={isDark ? '#4ADE80' : '#047857'} />
+          <Text style={[styles.toolbarBtnText, isDark && styles.toolbarBtnTextDark]}>
+            {language === 'en' ? 'Customize Plot' : 'Personalizar Talhão'}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.toolbarSecondaryBtn, isDark && styles.toolbarSecondaryBtnDark]}
+          onPress={() => {
+            triggerHaptic('selection');
+            setPresetsModalVisible(true);
+          }}
+          activeOpacity={0.8}
+        >
+          <MaterialCommunityIcons name="view-grid-plus-outline" size={16} color={isDark ? '#E2E8F0' : '#334155'} />
+          <Text style={[styles.toolbarSecondaryBtnText, isDark && styles.toolbarSecondaryBtnTextDark]}>
+            {language === 'en' ? 'Farm Presets' : 'Modelos de Fazenda'}
+          </Text>
         </TouchableOpacity>
       </View>
 
+      {/* Horizontal Sector Selector Tabs */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.tabsContainer}
       >
-        {[
-          { id: 'overview', label: language === 'en' ? 'Overview' : 'Geral', icon: 'view-dashboard-outline' },
-          { id: 'house', label: language === 'en' ? 'House' : 'Sede', icon: 'home-outline' },
-          { id: 'tomatoes', label: language === 'en' ? 'Tomatoes' : 'Tomates', icon: 'food-apple-outline' },
-          { id: 'vegetables', label: language === 'en' ? 'Vegetables' : 'Horta', icon: 'sprout-outline' },
-          { id: 'corn', label: language === 'en' ? 'Corn' : 'Milho', icon: 'corn' },
-          { id: 'animals', label: language === 'en' ? 'Animals' : 'Animais', icon: 'cow' },
-          { id: 'storage', label: language === 'en' ? 'Water/Store' : 'Represa', icon: 'water-outline' },
-        ].map((tab) => {
-          const isSelected = selectedZone === tab.id;
+        {sectors.map((sec) => {
+          const crop = CROP_CATALOG[sec.cropKey] || CROP_CATALOG.soybeans;
+          const isSelected = selectedSectorId === sec.id;
+          const label = sec.customName || (language === 'en' ? crop.nameEn : crop.namePt);
           return (
             <TouchableOpacity
-              key={tab.id}
+              key={sec.id}
               style={[
                 styles.tabPill,
                 isDark && styles.tabPillDark,
                 isSelected && (isDark ? styles.tabPillActiveDark : styles.tabPillActive),
               ]}
-              onPress={() => setSelectedZone(tab.id as FarmZoneId)}
+              onPress={() => {
+                setSelectedSectorId(sec.id);
+                triggerHaptic('light');
+              }}
               activeOpacity={0.7}
             >
               <MaterialCommunityIcons
-                name={tab.icon as keyof typeof MaterialCommunityIcons.glyphMap}
-                size={16}
-                color={isSelected ? '#FFFFFF' : isDark ? '#94A3B8' : '#475569'}
+                name={crop.icon}
+                size={15}
+                color={isSelected ? (isDark ? '#07150E' : '#FFFFFF') : isDark ? '#94A3B8' : '#475569'}
               />
               <Text
                 style={[
                   styles.tabLabel,
                   isDark && styles.tabLabelDark,
-                  isSelected && styles.tabLabelActive,
+                  isSelected && (isDark ? styles.tabLabelActiveDark : styles.tabLabelActive),
                 ]}
               >
-                {tab.label}
+                {label.length > 12 ? label.slice(0, 10) + '...' : label}
               </Text>
             </TouchableOpacity>
           );
         })}
       </ScrollView>
 
+      {/* Map Layer Selector Bar (Standard, NDVI, Moisture) */}
       <View style={[styles.layerSelectorBar, isDark && styles.layerSelectorBarDark]}>
         <TouchableOpacity
           style={[styles.layerBtn, mapLayer === 'standard' && styles.layerBtnActive]}
-          onPress={() => setMapLayer('standard')}
+          onPress={() => {
+            setMapLayer('standard');
+            triggerHaptic('selection');
+          }}
           activeOpacity={0.8}
         >
           <MaterialCommunityIcons
             name="layers-outline"
-            size={15}
-            color={mapLayer === 'standard' ? '#FFFFFF' : isDark ? '#94A3B8' : '#475569'}
+            size={14}
+            color={mapLayer === 'standard' ? '#FFFFFF' : isDark ? '#94A3B8' : '#64748B'}
           />
-          <Text
-            style={[
-              styles.layerBtnText,
-              mapLayer === 'standard' && styles.layerBtnTextActive,
-              isDark && mapLayer !== 'standard' && { color: '#94A3B8' },
-            ]}
-          >
-            {language === 'en' ? 'Standard' : 'Padrão'}
+          <Text style={[styles.layerBtnText, isDark && styles.layerBtnTextDark, mapLayer === 'standard' && styles.layerBtnTextActive]}>
+            {language === 'en' ? 'Precision GIS' : 'Padrão GIS'}
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.layerBtn, mapLayer === 'ndvi' && styles.layerBtnActive]}
-          onPress={() => setMapLayer('ndvi')}
+          onPress={() => {
+            setMapLayer('ndvi');
+            triggerHaptic('selection');
+          }}
           activeOpacity={0.8}
         >
           <MaterialCommunityIcons
             name="satellite-variant"
-            size={15}
-            color={mapLayer === 'ndvi' ? '#FFFFFF' : isDark ? '#94A3B8' : '#475569'}
+            size={14}
+            color={mapLayer === 'ndvi' ? '#FFFFFF' : isDark ? '#94A3B8' : '#64748B'}
           />
-          <Text
-            style={[
-              styles.layerBtnText,
-              mapLayer === 'ndvi' && styles.layerBtnTextActive,
-              isDark && mapLayer !== 'ndvi' && { color: '#94A3B8' },
-            ]}
-          >
+          <Text style={[styles.layerBtnText, isDark && styles.layerBtnTextDark, mapLayer === 'ndvi' && styles.layerBtnTextActive]}>
             {language === 'en' ? 'NDVI Satellite' : 'Satélite NDVI'}
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.layerBtn, mapLayer === 'moisture' && styles.layerBtnActive]}
-          onPress={() => setMapLayer('moisture')}
+          onPress={() => {
+            setMapLayer('moisture');
+            triggerHaptic('selection');
+          }}
           activeOpacity={0.8}
         >
           <MaterialCommunityIcons
             name="water-percent"
-            size={15}
-            color={mapLayer === 'moisture' ? '#FFFFFF' : isDark ? '#94A3B8' : '#475569'}
+            size={14}
+            color={mapLayer === 'moisture' ? '#FFFFFF' : isDark ? '#94A3B8' : '#64748B'}
           />
-          <Text
-            style={[
-              styles.layerBtnText,
-              mapLayer === 'moisture' && styles.layerBtnTextActive,
-              isDark && mapLayer !== 'moisture' && { color: '#94A3B8' },
-            ]}
-          >
+          <Text style={[styles.layerBtnText, isDark && styles.layerBtnTextDark, mapLayer === 'moisture' && styles.layerBtnTextActive]}>
             {language === 'en' ? 'Soil Moisture' : 'Umidade Solo'}
           </Text>
         </TouchableOpacity>
       </View>
 
-      <View style={styles.mapCard}>
-        <Svg width="100%" height="340" viewBox="0 0 360 340">
-          <Defs>
-            <LinearGradient id="grassBg" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0" stopColor={mapLayer === 'ndvi' ? '#A7F3D0' : mapLayer === 'moisture' ? '#BAE6FD' : '#D9F99D'} />
-              <Stop offset="1" stopColor={mapLayer === 'ndvi' ? '#6EE7B7' : mapLayer === 'moisture' ? '#93C5FD' : '#BBF7D0'} />
-            </LinearGradient>
-            <LinearGradient id="soilTomatoes" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0" stopColor="#9A7B56" />
-              <Stop offset="1" stopColor="#785E3E" />
-            </LinearGradient>
-            <LinearGradient id="soilVeg" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0" stopColor="#854D0E" />
-              <Stop offset="1" stopColor="#713F12" />
-            </LinearGradient>
-          </Defs>
+      {/* Main High-Tech Farm Map Card */}
+      <View style={[styles.mapCard, isDark && styles.mapCardDark]}>
+        {/* HUD Top Bar */}
+        <View style={styles.mapHudTop}>
+          <View style={[styles.mapHudBadge, isDark && styles.mapHudBadgeDark]}>
+            <MaterialCommunityIcons name="crosshairs-gps" size={13} color={isDark ? '#4ADE80' : '#059669'} />
+            <Text style={[styles.mapHudBadgeText, isDark && styles.mapHudBadgeTextDark]}>
+              GPS RTK · 23°14&apos;S 51°12&apos;W
+            </Text>
+          </View>
+          <View style={[styles.mapHudBadge, isDark && styles.mapHudBadgeDark]}>
+            <MaterialCommunityIcons name="quadcopter" size={13} color={isDark ? '#4ADE80' : '#059669'} />
+            <Text style={[styles.mapHudBadgeText, isDark && styles.mapHudBadgeTextDark]}>
+              {language === 'en' ? 'Flight Alt: 120m' : 'Altitude Voo: 120m'}
+            </Text>
+          </View>
+        </View>
 
-          <Rect x="0" y="0" width="360" height="340" rx="20" fill="url(#grassBg)" />
+        <FarmIllustration
+          sectors={sectors}
+          selectedId={selectedSectorId}
+          mapLayer={mapLayer}
+          language={language}
+          catalog={CROP_CATALOG}
+          onSelect={(id) => {
+            setSelectedSectorId(id);
+            triggerHaptic('light');
+          }}
+        />
 
-          <Path
-            d="M 125 10 L 125 330 M 10 120 L 350 120 M 10 230 L 350 230"
-            stroke="#FEF3C7"
-            strokeWidth="12"
-            strokeLinecap="round"
-          />
-
-          <G
-            onPress={() => setSelectedZone('house')}
-            transform="translate(14, 14)"
-          >
-            <Rect
-              x="0"
-              y="0"
-              width="100"
-              height="96"
-              rx="12"
-              fill={mapLayer === 'ndvi' ? '#94A3B8' : mapLayer === 'moisture' ? '#BAE6FD' : '#A7F3D0'}
-              stroke={selectedZone === 'house' ? '#059669' : '#86EFAC'}
-              strokeWidth={selectedZone === 'house' ? 3 : 1}
-            />
-            <Circle cx="80" cy="22" r="10" fill="#15803D" />
-            <Circle cx="84" cy="40" r="8" fill="#16A34A" />
-            <Rect x="16" y="32" width="48" height="36" fill="#F8FAFC" />
-            <Polygon points="12,32 40,14 68,32" fill="#DC2626" />
-            <Polygon points="40,14 68,32 64,48 36,32" fill="#B91C1C" />
-            <Rect x="72" y="65" width="20" height="12" rx="3" fill="#2563EB" />
-            <Circle cx="76" cy="78" r="3" fill="#1E293B" />
-            <Circle cx="88" cy="78" r="3" fill="#1E293B" />
-            <Rect x="14" y="6" width="72" height="18" rx="9" fill="#FFFFFF" opacity="0.95" />
-            <SvgText x="20" y="19" fill="#1E293B" fontSize="9" fontWeight="bold">
-              {mapLayer === 'ndvi' ? '0.15 NDVI' : mapLayer === 'moisture' ? (language === 'en' ? '65% Soil' : '65% Solo') : (language === 'en' ? 'HQ' : 'Sede')}
-            </SvgText>
-          </G>
-
-          <G
-            onPress={() => setSelectedZone('tomatoes')}
-            transform="translate(136, 14)"
-          >
-            <Rect
-              x="0"
-              y="0"
-              width="210"
-              height="96"
-              rx="12"
-              fill={mapLayer === 'ndvi' ? '#059669' : mapLayer === 'moisture' ? '#0284C7' : 'url(#soilTomatoes)'}
-              stroke={selectedZone === 'tomatoes' ? '#EF4444' : '#B45309'}
-              strokeWidth={selectedZone === 'tomatoes' ? 3 : 1}
-            />
-            {[26, 44, 62, 80].map((y, rowIdx) => (
-              <G key={rowIdx}>
-                <Line x1="10" y1={y} x2="200" y2={y} stroke={mapLayer === 'standard' ? '#5C452B' : '#047857'} strokeWidth="2" />
-                {[20, 42, 64, 86, 108, 130, 152, 174, 194].map((x, colIdx) => (
-                  <G key={colIdx}>
-                    <Circle cx={x} cy={y} r="4.5" fill="#22C55E" />
-                    <Circle cx={x + 1.5} cy={y + 1} r="2" fill="#EF4444" />
-                  </G>
-                ))}
-              </G>
-            ))}
-            <Rect x="60" y="6" width="90" height="18" rx="9" fill="#FFFFFF" opacity="0.95" />
-            <SvgText x="68" y="19" fill="#1E293B" fontSize="9" fontWeight="bold">
-              {mapLayer === 'ndvi'
-                ? (language === 'en' ? 'Tomatoes · 0.88' : 'Tomates · 0.88')
-                : mapLayer === 'moisture'
-                ? (language === 'en' ? 'Tomatoes · 82%' : 'Tomates · 82%')
-                : (language === 'en' ? 'Tomatoes' : 'Tomates')}
-            </SvgText>
-          </G>
-
-          <G
-            onPress={() => setSelectedZone('vegetables')}
-            transform="translate(14, 126)"
-          >
-            <Rect
-              x="0"
-              y="0"
-              width="100"
-              height="94"
-              rx="12"
-              fill={mapLayer === 'ndvi' ? '#047857' : mapLayer === 'moisture' ? '#0369A1' : 'url(#soilVeg)'}
-              stroke={selectedZone === 'vegetables' ? '#10B981' : '#A16207'}
-              strokeWidth={selectedZone === 'vegetables' ? 3 : 1}
-            />
-            {[26, 46, 66, 82].map((y, rowIdx) => (
-              <G key={rowIdx}>
-                {[18, 38, 58, 78].map((x, colIdx) => (
-                  <Circle key={colIdx} cx={x} cy={y} r="5" fill="#4ADE80" />
-                ))}
-              </G>
-            ))}
-            <Rect x="12" y="6" width="76" height="18" rx="9" fill="#FFFFFF" opacity="0.95" />
-            <SvgText x="18" y="19" fill="#1E293B" fontSize="9" fontWeight="bold">
-              {mapLayer === 'ndvi'
-                ? (language === 'en' ? 'Garden · 0.94' : 'Horta · 0.94')
-                : mapLayer === 'moisture'
-                ? (language === 'en' ? 'Garden · 88%' : 'Horta · 88%')
-                : (language === 'en' ? 'Garden' : 'Horta')}
-            </SvgText>
-          </G>
-
-          <G
-            onPress={() => setSelectedZone('corn')}
-            transform="translate(136, 126)"
-          >
-            <Rect
-              x="0"
-              y="0"
-              width="210"
-              height="94"
-              rx="12"
-              fill={mapLayer === 'ndvi' ? '#65A30D' : mapLayer === 'moisture' ? '#38BDF8' : '#FEF08A'}
-              stroke={selectedZone === 'corn' ? '#F59E0B' : '#EAB308'}
-              strokeWidth={selectedZone === 'corn' ? 3 : 1}
-            />
-            {[20, 36, 52, 68, 84].map((x, colIdx) => (
-              <G key={colIdx}>
-                <Line x1={x} y1="20" x2={x} y2="88" stroke="#15803D" strokeWidth="3" />
-                {[26, 42, 58, 74].map((y, leafIdx) => (
-                  <Path
-                    key={leafIdx}
-                    d={`M ${x} ${y} Q ${x - 5} ${y - 4} ${x - 8} ${y} M ${x} ${y} Q ${x + 5} ${y - 4} ${x + 8} ${y}`}
-                    stroke="#16A34A"
-                    strokeWidth="2"
-                    fill="none"
-                  />
-                ))}
-              </G>
-            ))}
-            <Rect x="175" y="45" width="22" height="16" rx="4" fill="#DC2626" />
-            <Circle cx="180" cy="62" r="4.5" fill="#1E293B" />
-            <Circle cx="194" cy="62" r="3.5" fill="#1E293B" />
-            <Rect x="70" y="6" width="76" height="18" rx="9" fill="#FFFFFF" opacity="0.95" />
-            <SvgText x="78" y="19" fill="#1E293B" fontSize="9" fontWeight="bold">
-              {mapLayer === 'ndvi'
-                ? (language === 'en' ? 'Corn · 0.74' : 'Milho · 0.74')
-                : mapLayer === 'moisture'
-                ? (language === 'en' ? 'Corn · 74%' : 'Milho · 74%')
-                : (language === 'en' ? 'Corn' : 'Milho')}
-            </SvgText>
-          </G>
-
-          <G
-            onPress={() => setSelectedZone('animals')}
-            transform="translate(14, 236)"
-          >
-            <Rect
-              x="0"
-              y="0"
-              width="170"
-              height="90"
-              rx="12"
-              fill={mapLayer === 'ndvi' ? '#CA8A04' : mapLayer === 'moisture' ? '#7DD3FC' : '#BBF7D0'}
-              stroke={selectedZone === 'animals' ? '#F97316' : '#86EFAC'}
-              strokeWidth={selectedZone === 'animals' ? 3 : 1}
-            />
-            <Rect x="12" y="24" width="34" height="28" fill="#DC2626" />
-            <Polygon points="10,24 29,12 48,24" fill="#B91C1C" />
-            <Rect x="22" y="34" width="14" height="18" fill="#FFFFFF" />
-            <G transform="translate(68, 30)">
-              <Rect x="0" y="2" width="14" height="9" rx="2" fill="#FFFFFF" />
-              <Circle cx="4" cy="5" r="2.5" fill="#1E293B" />
-              <Circle cx="9" cy="4" r="2" fill="#1E293B" />
-              <Rect x="12" y="1" width="5" height="6" rx="1.5" fill="#FFFFFF" />
-            </G>
-            <G transform="translate(110, 42)">
-              <Rect x="0" y="2" width="14" height="9" rx="2" fill="#FFFFFF" />
-              <Circle cx="5" cy="6" r="2.5" fill="#1E293B" />
-              <Rect x="12" y="1" width="5" height="6" rx="1.5" fill="#FFFFFF" />
-            </G>
-            <Rect x="85" y="65" width="22" height="10" rx="3" fill="#38BDF8" />
-            <Rect x="44" y="6" width="80" height="18" rx="9" fill="#FFFFFF" opacity="0.95" />
-            <SvgText x="50" y="19" fill="#1E293B" fontSize="9" fontWeight="bold">
-              {mapLayer === 'ndvi'
-                ? (language === 'en' ? 'Pasture · 0.62' : 'Pasto · 0.62')
-                : mapLayer === 'moisture'
-                ? (language === 'en' ? 'Pasture · 70%' : 'Pasto · 70%')
-                : (language === 'en' ? 'Livestock' : 'Animais')}
-            </SvgText>
-          </G>
-
-          <G
-            onPress={() => setSelectedZone('storage')}
-            transform="translate(194, 236)"
-          >
-            <Rect
-              x="0"
-              y="0"
-              width="152"
-              height="90"
-              rx="12"
-              fill={mapLayer === 'ndvi' ? '#1E3A8A' : mapLayer === 'moisture' ? '#0C4A6E' : '#E0F2FE'}
-              stroke={selectedZone === 'storage' ? '#06B6D4' : '#BAE6FD'}
-              strokeWidth={selectedZone === 'storage' ? 3 : 1}
-            />
-            <Circle cx="110" cy="46" r="24" fill="#38BDF8" />
-            <Circle cx="110" cy="46" r="16" fill="#0284C7" opacity="0.4" />
-            <Rect x="16" y="20" width="18" height="40" rx="6" fill="#CBD5E1" />
-            <Path d="M 16 24 Q 25 12 34 24 Z" fill="#94A3B8" />
-            <Rect x="40" y="26" width="18" height="34" rx="6" fill="#CBD5E1" />
-            <Rect x="64" y="32" width="30" height="28" rx="3" fill="#64748B" />
-            <Rect x="36" y="6" width="82" height="18" rx="9" fill="#FFFFFF" opacity="0.95" />
-            <SvgText x="42" y="19" fill="#1E293B" fontSize="9" fontWeight="bold">
-              {mapLayer === 'ndvi'
-                ? (language === 'en' ? 'Dam / Silos' : 'Represa / Silos')
-                : mapLayer === 'moisture'
-                ? (language === 'en' ? 'Dam · 96%' : 'Represa · 96%')
-                : (language === 'en' ? 'Storage' : 'Armazém')}
-            </SvgText>
-          </G>
-        </Svg>
-
-        <View style={styles.explorePill}>
+        {/* Explore Help Pill */}
+        <View style={[styles.explorePill, isDark && styles.explorePillDark]}>
           <MaterialCommunityIcons
             name={mapLayer === 'ndvi' ? 'satellite-variant' : mapLayer === 'moisture' ? 'water-percent' : 'gesture-tap'}
-            size={16}
-            color="#059669"
+            size={15}
+            color={isDark ? '#4ADE80' : '#059669'}
           />
-          <Text style={styles.exploreText}>
+          <Text style={[styles.exploreText, isDark && styles.exploreTextDark]}>
             {mapLayer === 'ndvi'
               ? (language === 'en'
-                  ? 'Sentinel-2 Satellite · NDVI Vegetative Vigour (0.0 to 1.0)'
-                  : 'Satélite Sentinel-2 · Vigor Vegetativo NDVI (0.0 a 1.0)')
+                  ? 'Sentinel-2 Satellite · NDVI Biomass Index (0.0 to 1.0)'
+                  : 'Satélite Sentinel-2 · Índice de Biomassa NDVI (0.0 a 1.0)')
               : mapLayer === 'moisture'
               ? (language === 'en'
-                  ? 'LoRaWAN FDR Telemetry · Soil Moisture (%)'
-                  : 'Telemetria FDR LoRaWAN · Umidade do Solo (%)')
+                  ? 'FDR Telemetry Sensors · Soil Moisture Capacity (%)'
+                  : 'Sensores FDR Telemetria · Umidade do Solo (%)')
               : (language === 'en'
-                  ? 'Tap an area to explore · 6 farm zones · 4 crops'
-                  : 'Toque em uma área para explorar · 6 zonas rurais · 4 culturas')}
+                  ? 'Tap any parcel to inspect or tap "Customize" to change crop'
+                  : 'Toque em qualquer talhão para inspecionar ou personalizar')}
           </Text>
         </View>
 
+        {/* Map Legend */}
         <View style={styles.legendBar}>
-          {mapLayer === 'ndvi' ? (
-            <Text style={styles.legendText}>
-              {language === 'en'
-                ? 'NDVI Legend: 0.15 (Soil/Building) ── 0.62 (Pasture) ── 0.94 (Max Biomass)'
-                : 'Legenda NDVI: 0.15 (Solo/Construção) ── 0.62 (Pastagem) ── 0.94 (Biomassa Máxima)'}
-            </Text>
-          ) : mapLayer === 'moisture' ? (
-            <Text style={styles.legendText}>
-              {language === 'en'
-                ? 'Soil Legend: 50% (Water Deficit) ── 75% (Optimal) ── 95% (Field Capacity)'
-                : 'Legenda Solo: 50% (Déficit Hídrico) ── 75% (Ideal) ── 95% (Capacidade de Campo)'}
-            </Text>
-          ) : (
-            <Text style={styles.legendText}>
-              {language === 'en'
-                ? 'Zones: Green (Crops) · Brown (Prepared Soil) · Blue (Dam) · Orange (Livestock)'
-                : 'Zonas: Verde (Lavoura) · Marrom (Solo Preparado) · Azul (Represa) · Laranja (Pecuária)'}
-            </Text>
-          )}
+          <Text style={[styles.legendText, isDark && styles.legendTextDark]}>
+            {mapLayer === 'ndvi'
+              ? (language === 'en' ? 'NDVI: 0.15 (Bare Soil) ── 0.65 (Medium) ── 0.94 (Max Biomass)' : 'NDVI: 0.15 (Solo/Sede) ── 0.65 (Médio) ── 0.94 (Biomassa Máxima)')
+              : mapLayer === 'moisture'
+              ? (language === 'en' ? 'Moisture: <65% (Irrigate) ── 70-85% (Optimal) ── >90% (Field Capacity)' : 'Solo: <65% (Irrigar) ── 70-85% (Ideal) ── >90% (Capacidade de Campo)')
+              : (language === 'en' ? 'Active Farm: 6 Managed Sectors · GPS RTK Guided Lines' : 'Fazenda Ativa: 6 Setores Produtivos · Linhas Guiadas por GPS RTK')}
+          </Text>
         </View>
       </View>
 
+      {/* Selected Sector Telemetry & Management Card */}
       <View style={[styles.zoneCard, isDark && styles.zoneCardDark]}>
         <View style={styles.zoneHeaderRow}>
           <View style={styles.zoneTitleLeft}>
-            <View style={[styles.zoneIconWrap, { backgroundColor: activeDetail.statusColor + '20' }]}>
-              <MaterialCommunityIcons name={activeDetail.icon} size={22} color={activeDetail.statusColor} />
+            <View style={[styles.zoneIconWrap, { backgroundColor: currentCrop.color + '20' }]}>
+              <MaterialCommunityIcons name={currentCrop.icon} size={22} color={currentCrop.color} />
             </View>
-            <View>
-              <Text style={[styles.zoneTitle, isDark && styles.zoneTitleDark]}>{activeDetail.name}</Text>
-              <Text style={[styles.zoneCategory, isDark && styles.zoneCategoryDark]}>{activeDetail.category}</Text>
+            <View style={styles.zoneTextContainer}>
+              <Text style={[styles.zoneTitle, isDark && styles.zoneTitleDark]}>{currentName}</Text>
+              <Text style={[styles.zoneCategory, isDark && styles.zoneCategoryDark]}>{currentCategory}</Text>
             </View>
           </View>
 
-          <View style={[styles.healthBadge, { backgroundColor: activeDetail.statusColor + '15' }]}>
-            <Text style={[styles.healthBadgeText, { color: activeDetail.statusColor }]}>
-              {activeDetail.health}% {language === 'en' ? 'Health' : 'Saúde'}
+          <View style={[styles.healthBadge, { backgroundColor: currentCrop.color + '20' }]}>
+            <Text style={[styles.healthBadgeText, { color: currentCrop.color }]}>
+              {currentCrop.defaultHealth}% {language === 'en' ? 'Vigor' : 'Vigor'}
             </Text>
           </View>
         </View>
 
-        <View style={styles.metricsRow}>
+        {/* Big Action Button to Customize This Specific Zone */}
+        <TouchableOpacity
+          style={styles.customizeZoneButton}
+          onPress={() => openEditModal(currentSector)}
+          activeOpacity={0.8}
+        >
+          <MaterialCommunityIcons name="pencil-outline" size={16} color="#FFFFFF" />
+          <Text style={styles.customizeZoneButtonText}>
+            {language === 'en' ? 'Change Crop / Edit Parcel' : 'Trocar Cultura / Editar Este Talhão'}
+          </Text>
+        </TouchableOpacity>
+
+        {/* Metrics Grid */}
+        <View style={[styles.metricsRow, isDark && styles.metricsRowDark]}>
           <View style={[styles.metricItem, isDark && styles.metricItemDark]}>
-            <Text style={styles.metricLabel}>{language === 'en' ? 'Total Area' : 'Área Total'}</Text>
-            <Text style={[styles.metricVal, isDark && styles.metricValDark]}>{activeDetail.area}</Text>
+            <Text style={[styles.metricLabel, isDark && styles.metricLabelDark]}>{language === 'en' ? 'Parcel Area' : 'Área do Talhão'}</Text>
+            <Text style={[styles.metricVal, isDark && styles.metricValDark]}>{currentArea}</Text>
           </View>
           <View style={[styles.metricItem, isDark && styles.metricItemDark]}>
-            <Text style={styles.metricLabel}>{language === 'en' ? 'Soil Moisture' : 'Umidade Solo'}</Text>
-            <Text style={[styles.metricVal, isDark && styles.metricValDark]}>{activeDetail.moisture}%</Text>
+            <Text style={[styles.metricLabel, isDark && styles.metricLabelDark]}>{language === 'en' ? 'Soil Moisture' : 'Umidade Solo'}</Text>
+            <Text style={[styles.metricVal, isDark && styles.metricValDark]}>{currentCrop.defaultMoisture}%</Text>
           </View>
           <View style={[styles.metricItem, isDark && styles.metricItemDark]}>
-            <Text style={styles.metricLabel}>{language === 'en' ? 'NDVI Vigour' : 'Vigor NDVI'}</Text>
-            <Text style={[styles.metricVal, isDark && styles.metricValDark]}>{activeDetail.ndviIndex.toFixed(2)}</Text>
+            <Text style={[styles.metricLabel, isDark && styles.metricLabelDark]}>{language === 'en' ? 'NDVI Index' : 'Índice NDVI'}</Text>
+            <Text style={[styles.metricVal, isDark && styles.metricValDark]}>{currentCrop.defaultNdvi.toFixed(2)}</Text>
           </View>
         </View>
 
-        <Text style={[styles.zoneNote, isDark && styles.zoneNoteDark]}>{activeDetail.telemetryNote}</Text>
+        {/* Stage and Agronomic Note */}
+        <Text style={[styles.zoneNote, isDark && styles.zoneNoteDark]}>
+          <Text style={styles.zoneNoteBold}>{language === 'en' ? 'Stage: ' : 'Estágio: '}</Text>
+          {currentStage}
+          {'\n'}
+          {currentNote}
+        </Text>
 
+        {/* Quick Management Shortcuts */}
         <View style={styles.actionButtonsGrid}>
           <TouchableOpacity
-            style={styles.actionBtn}
+            style={[styles.actionBtn, isDark && styles.actionBtnDark]}
             onPress={() => navigation.navigate('IrrigationSilos' as never)}
             activeOpacity={0.8}
           >
             <MaterialCommunityIcons name="water-pump" size={16} color="#059669" />
-            <Text style={styles.actionBtnText}>{language === 'en' ? 'Start Pivot' : 'Ligar Pivô'}</Text>
+            <Text style={[styles.actionBtnText, isDark && styles.actionBtnTextDark]}>
+              {language === 'en' ? 'Irrigation' : 'Irrigação'}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.actionBtn}
+            style={[styles.actionBtn, isDark && styles.actionBtnDark]}
             onPress={() => navigation.navigate('PestScouting' as never)}
             activeOpacity={0.8}
           >
             <MaterialCommunityIcons name="bug-outline" size={16} color="#EF4444" />
-            <Text style={styles.actionBtnText}>{language === 'en' ? 'Scouting' : 'Amostragem'}</Text>
+            <Text style={[styles.actionBtnText, isDark && styles.actionBtnTextDark]}>
+              {language === 'en' ? 'Scouting' : 'Pragas'}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.actionBtn}
+            style={[styles.actionBtn, isDark && styles.actionBtnDark]}
             onPress={() => navigation.navigate('SprayDiary' as never)}
             activeOpacity={0.8}
           >
             <MaterialCommunityIcons name="spray" size={16} color="#3B82F6" />
-            <Text style={styles.actionBtnText}>{language === 'en' ? 'Spraying' : 'Pulverização'}</Text>
+            <Text style={[styles.actionBtnText, isDark && styles.actionBtnTextDark]}>
+              {language === 'en' ? 'Spraying' : 'Pulverização'}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.actionBtn}
+            style={[styles.actionBtn, isDark && styles.actionBtnDark]}
             onPress={() => navigation.navigate('FarmFinances' as never)}
             activeOpacity={0.8}
           >
             <MaterialCommunityIcons name="cash-multiple" size={16} color="#F59E0B" />
-            <Text style={styles.actionBtnText}>{language === 'en' ? 'Crop P&L' : 'DRE Safra'}</Text>
+            <Text style={[styles.actionBtnText, isDark && styles.actionBtnTextDark]}>
+              {language === 'en' ? 'Financials' : 'Financeiro'}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* MODAL 1: Customize Selected Plot / Change Crop */}
+      <Modal
+        visible={editModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setEditModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, isDark && styles.modalContentDark]}>
+            <View style={[styles.modalHeader, isDark && styles.modalHeaderDark]}>
+              <View>
+                <Text style={[styles.modalTitle, isDark && styles.modalTitleDark]}>
+                  {language === 'en' ? 'Customize Agricultural Plot' : 'Personalizar Talhão Agrícola'}
+                </Text>
+                <Text style={[styles.modalSubtitle, isDark && styles.modalSubtitleDark]}>
+                  {language === 'en' ? 'Select the crop type or infrastructure for this parcel' : 'Escolha a cultura ou uso do solo deste setor'}
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={[styles.modalCloseBtn, isDark && styles.modalCloseBtnDark]}
+                onPress={() => setEditModalVisible(false)}
+              >
+                <MaterialCommunityIcons name="close" size={18} color={isDark ? '#FFFFFF' : '#0F172A'} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.modalScrollArea} showsVerticalScrollIndicator={false}>
+              {/* Plot Name and Area Fields */}
+              <View style={styles.rowInputs}>
+                <View style={[styles.inputGroup, styles.flex1]}>
+                  <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>
+                    {language === 'en' ? 'Plot Label / Name' : 'Nome / Identificação'}
+                  </Text>
+                  <TextInput
+                    style={[styles.textInput, isDark && styles.textInputDark]}
+                    value={formName}
+                    onChangeText={setFormName}
+                    placeholder="Ex: Talhão 02 - Soja"
+                    placeholderTextColor="#94A3B8"
+                  />
+                </View>
+
+                <View style={styles.inputGroup}>
+                  <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>
+                    {language === 'en' ? 'Area (ha)' : 'Área (ha)'}
+                  </Text>
+                  <TextInput
+                    style={[styles.textInput, isDark && styles.textInputDark, { width: 90 }]}
+                    value={formArea}
+                    onChangeText={setFormArea}
+                    placeholder="3.5 ha"
+                    placeholderTextColor="#94A3B8"
+                  />
+                </View>
+              </View>
+
+              {/* Crop Catalog Grid */}
+              <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>
+                {language === 'en' ? 'Select Crop / Infrastructure' : 'Selecione a Cultura ou Infraestrutura'}
+              </Text>
+              <View style={styles.cropCatalogGrid}>
+                {Object.values(CROP_CATALOG).map((cropItem) => {
+                  const isSelected = formCropKey === cropItem.key;
+                  return (
+                    <TouchableOpacity
+                      key={cropItem.key}
+                      style={[
+                        styles.cropCard,
+                        isDark && styles.cropCardDark,
+                        isSelected && (isDark ? styles.cropCardActiveDark : styles.cropCardActive),
+                      ]}
+                      onPress={() => {
+                        setFormCropKey(cropItem.key);
+                        setFormName(language === 'en' ? cropItem.nameEn : cropItem.namePt);
+                        setFormStage(language === 'en' ? cropItem.defaultStageEn : cropItem.defaultStagePt);
+                        triggerHaptic('selection');
+                      }}
+                      activeOpacity={0.7}
+                    >
+                      <View style={[styles.cropIconBadge, { backgroundColor: cropItem.color + '20' }]}>
+                        <MaterialCommunityIcons name={cropItem.icon} size={18} color={cropItem.color} />
+                      </View>
+                      <Text style={[styles.cropCardName, isDark && styles.cropCardNameDark]}>
+                        {language === 'en' ? cropItem.nameEn : cropItem.namePt}
+                      </Text>
+                      <Text style={[styles.cropCardCategory, isDark && styles.cropCardCategoryDark]}>
+                        {language === 'en' ? cropItem.categoryEn : cropItem.categoryPt}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              {/* Phenological Stage Quick Chips */}
+              <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>
+                {language === 'en' ? 'Phenological Growth Stage' : 'Estágio Fenológico'}
+              </Text>
+              <View style={styles.stageChipsRow}>
+                {[
+                  language === 'en' ? 'Vegetative (V4)' : 'Vegetativo (V4)',
+                  language === 'en' ? 'Flowering (R2)' : 'Floração (R2)',
+                  language === 'en' ? 'Grain Filling (R5)' : 'Enchimento de Grãos (R5)',
+                  language === 'en' ? 'Ready for Harvest' : 'Pronto p/ Colheita',
+                  language === 'en' ? 'Continuous Harvest' : 'Colheita Contínua',
+                  language === 'en' ? 'Soil Preparation' : 'Preparo de Solo',
+                ].map((stg) => {
+                  const isStgActive = formStage === stg;
+                  return (
+                    <TouchableOpacity
+                      key={stg}
+                      style={[
+                        styles.stageChip,
+                        isDark && styles.stageChipDark,
+                        isStgActive && styles.stageChipActive,
+                      ]}
+                      onPress={() => {
+                        setFormStage(stg);
+                        triggerHaptic('light');
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.stageChipText,
+                          isDark && styles.stageChipTextDark,
+                          isStgActive && styles.stageChipTextActive,
+                        ]}
+                      >
+                        {stg}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </ScrollView>
+
+            <View style={styles.modalFooter}>
+              <TouchableOpacity
+                style={[styles.modalResetBtn, isDark && styles.modalResetBtnDark]}
+                onPress={resetToDefault}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.modalResetBtnText, isDark && styles.modalResetBtnTextDark]}>
+                  {language === 'en' ? 'Reset' : 'Restaurar'}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.modalPrimaryBtn}
+                onPress={saveEditedSector}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.modalPrimaryBtnText}>
+                  {language === 'en' ? 'Save Changes' : 'Salvar no Mapa'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* MODAL 2: Farm Presets (Quick Templates) */}
+      <Modal
+        visible={presetsModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setPresetsModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, isDark && styles.modalContentDark]}>
+            <View style={[styles.modalHeader, isDark && styles.modalHeaderDark]}>
+              <View>
+                <Text style={[styles.modalTitle, isDark && styles.modalTitleDark]}>
+                  {language === 'en' ? 'Farm Layout Templates' : 'Modelos de Fazenda Prontos'}
+                </Text>
+                <Text style={[styles.modalSubtitle, isDark && styles.modalSubtitleDark]}>
+                  {language === 'en' ? 'Apply an entire agronomic configuration with one tap' : 'Configure a fazenda inteira com um único toque'}
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={[styles.modalCloseBtn, isDark && styles.modalCloseBtnDark]}
+                onPress={() => setPresetsModalVisible(false)}
+              >
+                <MaterialCommunityIcons name="close" size={18} color={isDark ? '#FFFFFF' : '#0F172A'} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.presetList} showsVerticalScrollIndicator={false}>
+              {FARM_PRESETS.map((preset) => (
+                <TouchableOpacity
+                  key={preset.id}
+                  style={[styles.presetCard, isDark && styles.presetCardDark]}
+                  onPress={() => applyPreset(preset)}
+                  activeOpacity={0.8}
+                >
+                  <View style={styles.presetHeaderRow}>
+                    <Text style={[styles.presetTitle, isDark && styles.presetTitleDark]}>
+                      {language === 'en' ? preset.titleEn : preset.titlePt}
+                    </Text>
+                    <MaterialCommunityIcons name="arrow-right-circle" size={20} color="#059669" />
+                  </View>
+
+                  <Text style={[styles.presetDesc, isDark && styles.presetDescDark]}>
+                    {language === 'en' ? preset.descEn : preset.descPt}
+                  </Text>
+
+                  <View style={styles.presetTagsRow}>
+                    {preset.sectors.map((cropKey, cIdx) => {
+                      const cItem = CROP_CATALOG[cropKey];
+                      return (
+                        <View key={cIdx} style={[styles.presetTag, isDark && styles.presetTagDark]}>
+                          <Text style={[styles.presetTagText, isDark && styles.presetTagTextDark]}>
+                            {language === 'en' ? cItem.nameEn : cItem.namePt}
+                          </Text>
+                        </View>
+                      );
+                    })}
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
-
