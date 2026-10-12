@@ -74,12 +74,6 @@ jobs:
           node-version: 20
           cache: 'npm'
 
-      - name: Setup Expo CLI
-        uses: expo/expo-github-action@v8
-        with:
-          expo-version: latest
-          eas-version: latest
-
       - name: Install dependencies
         run: npm ci
 
@@ -88,7 +82,7 @@ jobs:
 
       - name: Verify EAS Config
         if: ${{ secrets.EXPO_TOKEN != '' }}
-        run: eas config --profile preview
+        run: npx --yes eas-cli@latest config --profile preview
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
@@ -108,6 +102,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Prepare artifact directories
+        run: mkdir -p coverage test-results playwright-report
 
       - name: Build Web Application for E2E
         run: npx expo export --platform web
