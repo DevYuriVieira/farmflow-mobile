@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   TouchableOpacity,
   ListRenderItem,
@@ -24,7 +23,8 @@ import { EmptyState } from '../../../components/EmptyState';
 import { ErrorState } from '../../../components/ErrorState';
 import { PlantationFormModal } from './PlantationFormModal';
 import { AppNavigationProp } from '../../../navigation/types';
-import { colors, radii, spacing, typography } from '../../../theme';
+import { colors } from '../../../theme';
+import { styles } from '../styles/plantationList.styles';
 
 export const PlantationListScreen: React.FC = () => {
   const navigation = useNavigation<AppNavigationProp>();
@@ -246,150 +246,3 @@ export const PlantationListScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  header: {
-    paddingHorizontal: spacing.base,
-    paddingTop: spacing.xl + 4,
-    paddingBottom: spacing.sm,
-    backgroundColor: '#F6F7F2',
-  },
-  headerDark: {
-    backgroundColor: '#0B1410',
-  },
-  headerTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: spacing.md,
-  },
-  titleWithBack: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  backBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: radii.pill,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: spacing.sm,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  backBtnDark: {
-    backgroundColor: '#182C23',
-    borderColor: '#2C493A',
-  },
-  headerTitle: {
-    ...typography.h2,
-    color: '#172B23',
-  },
-  headerTitleDark: {
-    color: '#FFFFFF',
-  },
-  qrHeaderBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  qrHeaderBtnDark: {
-    backgroundColor: '#182C23',
-    borderColor: '#2C493A',
-  },
-  searchContainer: {
-    marginBottom: spacing.xs,
-  },
-  filterRow: {
-    flexDirection: 'row',
-    paddingVertical: spacing.xs,
-    flexWrap: 'wrap',
-  },
-  filterChip: {
-    backgroundColor: 'rgba(27, 77, 62, 0.08)',
-    borderRadius: radii.pill,
-    borderWidth: 1,
-    borderColor: 'rgba(74, 138, 98, 0.25)',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs + 2,
-    marginRight: spacing.xs + 2,
-    marginBottom: spacing.xs,
-  },
-  filterChipDark: {
-    backgroundColor: 'rgba(34, 197, 94, 0.15)',
-    borderColor: 'rgba(74, 138, 98, 0.4)',
-  },
-  filterChipActive: {
-    backgroundColor: '#1B4D3E',
-    borderColor: '#1B4D3E',
-  },
-  filterChipActiveDark: {
-    backgroundColor: '#22C55E',
-    borderColor: '#22C55E',
-  },
-  filterChipText: {
-    ...typography.micro,
-    color: '#1B4D3E',
-    fontWeight: '600',
-  },
-  filterChipTextDark: {
-    color: '#E2E8F0',
-  },
-  filterChipTextActive: {
-    color: '#FFFFFF',
-    fontWeight: '700',
-  },
-  listContent: {
-    paddingHorizontal: spacing.base,
-    paddingTop: spacing.xs,
-    paddingBottom: 90,
-  },
-  floatingButtonContainer: {
-    position: 'absolute',
-    bottom: 20,
-    left: spacing.base,
-    right: spacing.base,
-  },
-  addHubButton: {
-    backgroundColor: '#1B4D3E',
-    borderRadius: radii.pill,
-    borderWidth: 1.5,
-    borderColor: 'rgba(74, 138, 98, 0.4)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.md,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  addHubButtonDark: {
-    backgroundColor: '#16A34A',
-    borderColor: '#22C55E',
-  },
-  addHubButtonText: {
-    ...typography.bodyBold,
-    color: '#FFFFFF',
-    letterSpacing: 0.8,
-    marginLeft: spacing.sm,
-    fontSize: 13,
-  },
-});

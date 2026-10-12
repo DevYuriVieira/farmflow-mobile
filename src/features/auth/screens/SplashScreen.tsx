@@ -1,9 +1,10 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
+import { View, Text, Animated } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuth } from '../../../contexts/AuthContext';
 import { AnimatedFarmBackground } from '../../../components/AnimatedFarmBackground';
-import { colors, radii, spacing, typography } from '../../../theme';
+import { colors } from '../../../theme';
+import { styles } from '../styles/splash.styles';
 
 export const SplashScreen: React.FC = () => {
   const { status } = useAuth();
@@ -56,55 +57,3 @@ export const SplashScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  content: {
-    alignItems: 'center',
-    zIndex: 10,
-  },
-  logoCircle: {
-    width: 96,
-    height: 96,
-    borderRadius: radii.xxl,
-    backgroundColor: 'rgba(16, 40, 27, 0.92)',
-    borderWidth: 1.5,
-    borderColor: 'rgba(74, 138, 98, 0.5)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.35,
-    shadowRadius: 16,
-    elevation: 10,
-    marginBottom: spacing.base,
-  },
-  brandTitle: {
-    ...typography.hero,
-    color: colors.textPrimary,
-    letterSpacing: -0.5,
-    marginBottom: spacing.xs,
-  },
-  tagline: {
-    ...typography.captionMedium,
-    color: colors.primaryLight,
-    letterSpacing: 0.3,
-  },
-  statusRow: {
-    marginTop: spacing.xxl,
-    backgroundColor: 'rgba(12, 30, 21, 0.7)',
-    paddingHorizontal: spacing.base,
-    paddingVertical: spacing.xs + 2,
-    borderRadius: radii.pill,
-    borderWidth: 1,
-    borderColor: 'rgba(74, 138, 98, 0.25)',
-  },
-  statusText: {
-    ...typography.micro,
-    color: colors.textSecondary,
-  },
-});

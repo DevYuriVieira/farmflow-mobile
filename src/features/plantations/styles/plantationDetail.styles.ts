@@ -1,0 +1,166 @@
+import { StyleSheet } from 'react-native';
+import { colors, radii, spacing, typography } from '../../../theme';
+
+export const styles = StyleSheet.create({
+  imageHeader: {
+    height: 240,
+    position: 'relative',
+    backgroundColor: colors.surfaceInput,
+  },
+  headerImage: {
+    width: '100%',
+    height: '100%',
+  },
+  placeholderHeader: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(16, 40, 27, 0.7)',
+  },
+  navBarOverlay: {
+    position: 'absolute',
+    top: 50,
+    left: spacing.base,
+    right: spacing.base,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  rightActionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  circleBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: 'rgba(7, 21, 14, 0.75)',
+    borderWidth: 1,
+    borderColor: 'rgba(74, 138, 98, 0.4)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: spacing.xs + 2,
+  },
+  statusBadge: {
+    position: 'absolute',
+    bottom: spacing.md,
+    left: spacing.base,
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 4,
+    borderRadius: radii.pill,
+  },
+  statusBadgeText: {
+    ...typography.micro,
+    color: colors.textInverse,
+    fontWeight: '700',
+  },
+  content: {
+    padding: spacing.base,
+  },
+  title: {
+    ...typography.h1,
+    color: colors.textPrimary,
+    marginBottom: spacing.xs,
+  },
+  farmRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+  },
+  farmName: {
+    ...typography.captionMedium,
+    color: colors.textSecondary,
+    marginLeft: 5,
+  },
+  propsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginBottom: spacing.lg,
+  },
+  propCard: {
+    width: '48%',
+    backgroundColor: colors.surfaceCard,
+    borderRadius: radii.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(74, 138, 98, 0.25)',
+    padding: spacing.md,
+    marginBottom: spacing.md,
+  },
+  propLabel: {
+    ...typography.micro,
+    color: colors.textMuted,
+    marginTop: spacing.xs,
+    marginBottom: 2,
+  },
+  propValue: {
+    ...typography.captionMedium,
+    color: colors.textPrimary,
+    fontWeight: '700',
+  },
+  notesCard: {
+    backgroundColor: colors.surfaceCard,
+    borderRadius: radii.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(74, 138, 98, 0.25)',
+    padding: spacing.base,
+    marginBottom: spacing.lg,
+  },
+  notesHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.xs + 2,
+  },
+  notesTitle: {
+    ...typography.captionMedium,
+    color: colors.textPrimary,
+    marginLeft: 6,
+  },
+  notesText: {
+    ...typography.body,
+    color: colors.textSecondary,
+    lineHeight: 22,
+  },
+  activitiesSection: {
+    marginTop: spacing.sm,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: spacing.md,
+  },
+  sectionTitle: {
+    ...typography.h3,
+    color: colors.textPrimary,
+  },
+  addActivityBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm + 2,
+    borderRadius: radii.pill,
+    backgroundColor: 'rgba(34, 197, 94, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(74, 138, 98, 0.3)',
+  },
+  addActivityBtnText: {
+    ...typography.micro,
+    color: colors.primaryLight,
+    fontWeight: '600',
+    marginLeft: 2,
+  },
+  emptyActivitiesBox: {
+    backgroundColor: colors.surfaceCard,
+    borderRadius: radii.lg,
+    padding: spacing.lg,
+    alignItems: 'center',
+  },
+  emptyActivitiesText: {
+    ...typography.caption,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
+});

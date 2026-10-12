@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   TextInput,
   Alert,
@@ -18,7 +17,8 @@ import { usePreferences } from '../../../contexts/PreferencesContext';
 import { Screen } from '../../../components/Screen';
 import { Button } from '../../../components/Button';
 import { AppNavigationProp } from '../../../navigation/types';
-import { colors, radii, spacing, typography } from '../../../theme';
+import { colors } from '../../../theme';
+import { styles } from '../styles/qrScanner.styles';
 
 export const QrScannerScreen: React.FC = () => {
   const navigation = useNavigation<AppNavigationProp>();
@@ -159,178 +159,3 @@ export const QrScannerScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  header: {
-    paddingHorizontal: spacing.base,
-    paddingTop: spacing.xl + 6,
-    paddingBottom: spacing.sm,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F6F7F2',
-  },
-  headerDark: {
-    backgroundColor: '#0B1410',
-  },
-  backBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    marginRight: spacing.md,
-  },
-  backBtnDark: {
-    backgroundColor: '#182C23',
-    borderColor: '#2C493A',
-  },
-  title: {
-    ...typography.h2,
-    color: '#172B23',
-  },
-  titleDark: {
-    color: '#FFFFFF',
-  },
-  content: {
-    flex: 1,
-    padding: spacing.base,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  viewfinderContainer: {
-    width: 260,
-    height: 260,
-    backgroundColor: 'rgba(12, 30, 21, 0.7)',
-    borderRadius: radii.xl,
-    borderWidth: 1,
-    borderColor: 'rgba(74, 138, 98, 0.3)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-    marginBottom: spacing.xl,
-  },
-  cornerTL: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    width: 24,
-    height: 24,
-    borderTopWidth: 3,
-    borderLeftWidth: 3,
-    borderColor: colors.primary,
-  },
-  cornerTR: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    width: 24,
-    height: 24,
-    borderTopWidth: 3,
-    borderRightWidth: 3,
-    borderColor: colors.primary,
-  },
-  cornerBL: {
-    position: 'absolute',
-    bottom: 10,
-    left: 10,
-    width: 24,
-    height: 24,
-    borderBottomWidth: 3,
-    borderLeftWidth: 3,
-    borderColor: colors.primary,
-  },
-  cornerBR: {
-    position: 'absolute',
-    bottom: 10,
-    right: 10,
-    width: 24,
-    height: 24,
-    borderBottomWidth: 3,
-    borderRightWidth: 3,
-    borderColor: colors.primary,
-  },
-  scanLaser: {
-    position: 'absolute',
-    top: '50%',
-    left: 20,
-    right: 20,
-    height: 2,
-    backgroundColor: colors.primaryLight,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 6,
-  },
-  viewfinderHelp: {
-    ...typography.caption,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    maxWidth: 200,
-    marginTop: spacing.md,
-  },
-  quickTestBox: {
-    width: '100%',
-    marginBottom: spacing.lg,
-    backgroundColor: colors.surfaceCard,
-    padding: spacing.md,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(74, 138, 98, 0.25)',
-  },
-  quickTestTitle: {
-    ...typography.micro,
-    color: colors.textMuted,
-    marginBottom: spacing.xs,
-  },
-  quickButtonsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  quickChip: {
-    backgroundColor: colors.surfaceInput,
-    paddingHorizontal: spacing.sm + 2,
-    paddingVertical: 4,
-    borderRadius: radii.pill,
-    marginRight: spacing.xs,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  quickChipText: {
-    ...typography.micro,
-    color: colors.primaryLight,
-  },
-  manualCard: {
-    width: '100%',
-    backgroundColor: colors.surfaceCard,
-    borderRadius: radii.xl,
-    padding: spacing.base,
-    borderWidth: 1,
-    borderColor: 'rgba(74, 138, 98, 0.3)',
-  },
-  manualLabel: {
-    ...typography.captionMedium,
-    color: colors.textSecondary,
-    marginBottom: spacing.xs,
-  },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  input: {
-    flex: 1,
-    backgroundColor: colors.surfaceInput,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    color: colors.textPrimary,
-    marginRight: spacing.sm,
-    ...typography.body,
-  },
-  searchBtn: {
-    minWidth: 90,
-  },
-});
