@@ -37,6 +37,7 @@ export type AppDrawerParamList = {
   IrrigationSilos: undefined;
   SprayDiary: undefined;
   MachineryFleet: undefined;
+  InventoryWarehouse: undefined;
   Settings: undefined;
   WeatherScreen: undefined;
   FarmDetail: { farmId: string };
