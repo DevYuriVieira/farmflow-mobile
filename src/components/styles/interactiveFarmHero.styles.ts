@@ -24,6 +24,76 @@ export const styles = StyleSheet.create({
     backgroundColor: '#5BC0F8',
     ...shadow,
   },
+  weatherOverlay: {
+    position: 'absolute',
+    top: 14,
+    left: 14,
+    zIndex: 30,
+  },
+  tempGroup: {
+    marginBottom: 4,
+  },
+  tempRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  bigTemp: {
+    fontSize: 36,
+    fontWeight: '800',
+    color: '#0F172A',
+    lineHeight: 40,
+    letterSpacing: -1,
+  },
+  bigTempLight: {
+    color: '#F8FAFC',
+  },
+  tempUnit: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#0F172A',
+    marginLeft: 1,
+    marginTop: 2,
+  },
+  tempUnitLight: {
+    color: '#F8FAFC',
+  },
+  conditionText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#334155',
+    marginTop: -2,
+    marginBottom: 8,
+  },
+  conditionTextLight: {
+    color: '#E2E8F0',
+  },
+  modeCapsule: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.88)',
+    paddingHorizontal: 4,
+    paddingVertical: 4,
+    borderRadius: 24,
+    gap: 3,
+    alignSelf: 'flex-start',
+    ...shadow,
+  },
+  modeCapsuleDark: {
+    backgroundColor: 'rgba(15, 23, 42, 0.82)',
+  },
+  capsuleBtn: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  capsuleBtnActive: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#1E5338',
+  },
   tempBadge: {
     position: 'absolute',
     top: 10,

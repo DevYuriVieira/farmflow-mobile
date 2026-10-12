@@ -41,9 +41,9 @@ export const styles = StyleSheet.create({
     color: '#0F172A',
   },
   hourlyContainer: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: 10,
+    paddingVertical: 6,
     gap: 8,
+    marginBottom: spacing.md,
   },
   hourlyPill: {
     backgroundColor: '#FFFFFF',
@@ -85,6 +85,14 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E5EADF',
     paddingBottom: 90,
+  },
+  sheetHandle: {
+    width: 44,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#CBD5E1',
+    alignSelf: 'center',
+    marginBottom: 12,
   },
   sheetHeader: {
     marginBottom: spacing.md,

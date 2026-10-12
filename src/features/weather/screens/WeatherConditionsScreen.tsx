@@ -202,49 +202,54 @@ export const WeatherConditionsScreen: React.FC = () => {
         temperature={weatherData.temp}
       />
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.hourlyContainer}
-      >
-        {[
-          { hour: 'Agora', temp: 28, active: true },
-          { hour: '11:00', temp: 29 },
-          { hour: '12:00', temp: 30 },
-          { hour: '13:00', temp: 31 },
-          { hour: '14:00', temp: 31 },
-          { hour: '15:00', temp: 30 },
-          { hour: '16:00', temp: 29 },
-          { hour: '17:00', temp: 27 },
-        ].map((item, idx) => (
-          <View
-            key={idx}
-            style={[
-              styles.hourlyPill,
-              item.active && styles.hourlyPillActive,
-            ]}
-          >
-            <Text style={[styles.hourlyTemp, item.active && styles.hourlyTempActive]}>
-              {item.temp}°
-            </Text>
-            <Text style={[styles.hourlyTime, item.active && styles.hourlyTimeActive]}>
-              {item.hour}
-            </Text>
-          </View>
-        ))}
-      </ScrollView>
-
       <View style={styles.sheetContainer}>
+        <View style={styles.sheetHandle} />
         <View style={styles.sheetHeader}>
           <View style={styles.sheetHeaderLeft}>
-            <Text style={styles.sheetTitle}>Condições de Hoje</Text>
+            <Text style={styles.sheetTitle}>
+              {language === 'en' ? "Today's conditions" : 'Condições de Hoje'}
+            </Text>
             <View style={styles.liveBadge}>
               <View style={styles.liveDot} />
-              <Text style={styles.liveText}>Ao Vivo</Text>
+              <Text style={styles.liveText}>
+                {language === 'en' ? 'Live' : 'Ao Vivo'}
+              </Text>
             </View>
           </View>
           <Text style={styles.sheetSubtitle}>{weatherData.description}</Text>
         </View>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.hourlyContainer}
+        >
+          {[
+            { hour: language === 'en' ? 'Now' : 'Agora', temp: 28, active: true },
+            { hour: '11:00', temp: 29 },
+            { hour: '12:00', temp: 30 },
+            { hour: '13:00', temp: 31 },
+            { hour: '14:00', temp: 31 },
+            { hour: '15:00', temp: 30 },
+            { hour: '16:00', temp: 29 },
+            { hour: '17:00', temp: 27 },
+          ].map((item, idx) => (
+            <View
+              key={idx}
+              style={[
+                styles.hourlyPill,
+                item.active && styles.hourlyPillActive,
+              ]}
+            >
+              <Text style={[styles.hourlyTemp, item.active && styles.hourlyTempActive]}>
+                {item.temp}°
+              </Text>
+              <Text style={[styles.hourlyTime, item.active && styles.hourlyTimeActive]}>
+                {item.hour}
+              </Text>
+            </View>
+          ))}
+        </ScrollView>
 
         <View style={styles.bentoGrid}>
           <View style={styles.bentoCard}>
