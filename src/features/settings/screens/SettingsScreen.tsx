@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -22,11 +22,15 @@ import { Button } from '../../../components/Button';
 import { UserAvatar } from '../../../components/UserAvatar';
 import { colors } from '../../../theme';
 import { checkBiometricSupport, authenticateWithBiometrics } from '../../../services/security/biometrics.service';
+import { SyncQueueModal } from '../../../components/SyncQueueModal';
+import { AgroDevToolsModal } from '../../../components/AgroDevToolsModal';
 import { styles } from '../styles/settings.styles';
 
 export const SettingsScreen: React.FC = () => {
   const navigation = useNavigation<AppNavigationProp>();
   const { user, signOut } = useAuth();
+  const [syncModalVisible, setSyncModalVisible] = useState(false);
+  const [devToolsVisible, setDevToolsVisible] = useState(false);
   const {
     preferences,
     selectedFarmId,
@@ -409,6 +413,74 @@ export const SettingsScreen: React.FC = () => {
           </View>
         </View>
 
+        <View style={[styles.sectionCard, isDark && styles.sectionCardDark]}>
+          <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>
+            {language === 'en' ? 'Field Engineering & DevTools' : 'Engenharia de Campo & DevTools'}
+          </Text>
+
+          <View style={[styles.settingRow, isDark && styles.settingRowDark]}>
+            <View style={styles.settingTextWrapper}>
+              <View style={styles.settingLabelRow}>
+                <MaterialCommunityIcons name="sync" size={20} color="#38BDF8" />
+                <Text style={[styles.settingLabel, isDark && styles.settingLabelDark]}>
+                  {language === 'en' ? 'Offline Mutation Queue' : 'Fila de Mutações Offline'}
+                </Text>
+              </View>
+              <Text style={[styles.settingDesc, isDark && styles.settingDescDark]}>
+                {language === 'en'
+                  ? 'Audit transactional local mutations and trigger forced cloud drain'
+                  : 'Inspecione a fila FIFO transacional e force sincronização em lote'}
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => setSyncModalVisible(true)}
+              style={{
+                backgroundColor: 'rgba(56, 189, 248, 0.2)',
+                paddingHorizontal: 12,
+                paddingVertical: 8,
+                borderRadius: 8,
+                borderWidth: 1,
+                borderColor: '#38BDF8',
+              }}
+            >
+              <Text style={{ color: '#38BDF8', fontWeight: '700', fontSize: 12 }}>
+                {language === 'en' ? 'Inspect' : 'Inspecionar'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={[styles.settingRow, { borderBottomWidth: 0 }, isDark && styles.settingRowDark]}>
+            <View style={styles.settingTextWrapper}>
+              <View style={styles.settingLabelRow}>
+                <MaterialCommunityIcons name="flask-outline" size={20} color="#FACC15" />
+                <Text style={[styles.settingLabel, isDark && styles.settingLabelDark]}>
+                  {language === 'en' ? 'Agro Field Simulator' : 'Simulador de Cenários Agro'}
+                </Text>
+              </View>
+              <Text style={[styles.settingDesc, isDark && styles.settingDescDark]}>
+                {language === 'en'
+                  ? 'Inject failure boundaries, frost alerts, and burst offline loads'
+                  : 'Injete alertas de geada, simulação de estresse e falhas de sensores'}
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => setDevToolsVisible(true)}
+              style={{
+                backgroundColor: 'rgba(250, 204, 21, 0.2)',
+                paddingHorizontal: 12,
+                paddingVertical: 8,
+                borderRadius: 8,
+                borderWidth: 1,
+                borderColor: '#FACC15',
+              }}
+            >
+              <Text style={{ color: '#FACC15', fontWeight: '700', fontSize: 12 }}>
+                {language === 'en' ? 'Open' : 'Abrir'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
         <View style={styles.actionSection}>
           <Button
             title={language === 'en' ? 'Reset Demo Database' : 'Restaurar Dados de Fábrica'}
@@ -428,6 +500,9 @@ export const SettingsScreen: React.FC = () => {
           FarmFlow v1.0.0 · SDK 54 · Offline-First Engine
         </Text>
       </View>
+
+      <SyncQueueModal visible={syncModalVisible} onClose={() => setSyncModalVisible(false)} />
+      <AgroDevToolsModal visible={devToolsVisible} onClose={() => setDevToolsVisible(false)} />
     </Screen>
   );
 };
