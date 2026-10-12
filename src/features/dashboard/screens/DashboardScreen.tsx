@@ -287,6 +287,7 @@ export const DashboardScreen: React.FC = () => {
         </View>
 
         <InteractiveFarmHero
+          variant="home"
           farmHealthPercentage={92}
           temperature={weatherData?.temperatureCelsius || 28}
           onWeatherCardPress={() => navigation.navigate('WeatherScreen')}

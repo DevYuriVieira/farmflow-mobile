@@ -197,6 +197,7 @@ export const WeatherConditionsScreen: React.FC = () => {
       </View>
 
       <InteractiveFarmHero
+        variant="weather"
         currentMode={activeWeather}
         onModeChange={(mode) => setActiveWeather(mode)}
         temperature={weatherData.temp}
