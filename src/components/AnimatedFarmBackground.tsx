@@ -1,11 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import {
-  StyleSheet,
   View,
   Dimensions,
   Animated,
   Easing,
+  StyleSheet,
 } from 'react-native';
+import { styles } from './styles/animatedFarmBackground.styles';
 import Svg, {
   Path,
   Defs,
@@ -337,35 +338,3 @@ export const AnimatedFarmBackground: React.FC<AnimatedFarmBackgroundProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    width: SCREEN_WIDTH,
-    top: 0,
-    left: 0,
-    right: 0,
-    overflow: 'hidden',
-    backgroundColor: '#07150E',
-    zIndex: 0,
-  },
-  cloudWrapper: {
-    position: 'absolute',
-  },
-  mistLayer: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-  },
-  foregroundSwayContainer: {
-    position: 'absolute',
-    left: -15,
-    right: -15,
-    transformOrigin: 'bottom center',
-  },
-  bottomVignette: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(7, 21, 14, 0.45)',
-  },
-});

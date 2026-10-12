@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
-import { colors, spacing, typography } from '../theme';
+import { View, Text, ActivityIndicator } from 'react-native';
+import { colors } from '../theme';
 import { usePreferences } from '../contexts/PreferencesContext';
+import { styles } from './styles/loadingState.styles';
 
 export interface LoadingStateProps {
   message?: string;
@@ -22,25 +23,4 @@ export const LoadingState: React.FC<LoadingStateProps> = ({ message }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.xl,
-    backgroundColor: 'transparent',
-  },
-  containerDark: {
-    backgroundColor: 'transparent',
-  },
-  message: {
-    ...typography.captionMedium,
-    color: colors.textSecondary,
-    marginTop: spacing.md,
-    textAlign: 'center',
-  },
-  messageDark: {
-    color: '#CBD5E1',
-  },
-});
 

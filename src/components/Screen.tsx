@@ -2,7 +2,6 @@ import React from 'react';
 import {
   View,
   ScrollView,
-  StyleSheet,
   ViewStyle,
   RefreshControl,
   KeyboardAvoidingView,
@@ -13,6 +12,7 @@ import { StatusBar } from 'expo-status-bar';
 import { colors } from '../theme';
 import { usePreferences } from '../contexts/PreferencesContext';
 import { OfflineBanner } from './OfflineBanner';
+import { styles } from './styles/screen.styles';
 
 export interface ScreenProps {
   children: React.ReactNode;
@@ -84,14 +84,3 @@ export const Screen: React.FC<ScreenProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  fixed: {
-    flex: 1,
-  },
-});

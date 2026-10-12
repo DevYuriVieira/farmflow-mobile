@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Animated,
   Easing,
@@ -10,6 +9,7 @@ import {
   LayoutChangeEvent,
   ViewStyle,
   StyleProp,
+  StyleSheet,
 } from 'react-native';
 import Svg, {
   Path,
@@ -25,8 +25,8 @@ import Svg, {
   Ellipse,
 } from 'react-native-svg';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { radii, spacing } from '../theme';
 import { usePreferences } from '../contexts/PreferencesContext';
+import { styles } from './styles/interactiveFarmHero.styles';
 
 export type WeatherMode = 'sunny' | 'cloudy' | 'windy' | 'rain' | 'rainbow' | 'night';
 
@@ -943,122 +943,3 @@ export const InteractiveFarmHero: React.FC<InteractiveFarmHeroProps> = ({
   );
 };
 
-const shadow = Platform.select({
-  ios: { shadowColor: '#0F291E', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.1, shadowRadius: 14 },
-  android: { elevation: 4 },
-  default: { shadowColor: '#0F291E', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.1, shadowRadius: 14 },
-});
-
-const styles = StyleSheet.create({
-  container: {
-    marginHorizontal: spacing.md,
-    marginTop: spacing.sm,
-    marginBottom: spacing.md,
-  },
-  canvas: {
-    width: '100%',
-    aspectRatio: VB_W / VB_H,
-    borderRadius: radii.xxl,
-    overflow: 'hidden',
-    backgroundColor: SKY.sunny[0],
-    ...shadow,
-  },
-  tempBadge: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(255,255,255,0.88)',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: radii.pill,
-  },
-  tempBadgeDark: {
-    backgroundColor: 'rgba(15, 23, 42, 0.85)',
-    borderWidth: 1,
-    borderColor: '#334155',
-  },
-  tempBadgeText: { fontSize: 11, fontWeight: '800', color: '#0F172A' },
-  tempBadgeTextDark: { color: '#F1F5F9' },
-  cardsRow: {
-    flexDirection: 'row',
-    gap: 10,
-    marginTop: -30,
-    paddingHorizontal: 8,
-  },
-  card: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: radii.xl,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: '#EEF2E8',
-    ...shadow,
-  },
-  cardDark: {
-    backgroundColor: '#182A22',
-    borderColor: '#23382E',
-  },
-  gauge: { width: 48, height: 48, justifyContent: 'center', alignItems: 'center', marginRight: 8 },
-  gaugeText: { position: 'absolute', fontSize: 12, fontWeight: '800', color: '#065F46' },
-  gaugeTextDark: { color: '#4ADE80' },
-  cardInfo: { flex: 1 },
-  cardLabel: { fontSize: 10, color: '#6B7280', fontWeight: '500' },
-  cardLabelDark: { color: '#94A3B8' },
-  cardTitle: { fontSize: 14, fontWeight: '800', color: '#1F2937' },
-  cardTitleDark: { color: '#F8FAFC' },
-  okRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 },
-  okDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#10B981' },
-  okText: { fontSize: 10, color: '#059669', fontWeight: '600' },
-  weatherIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#FEF3C7',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 8,
-  },
-  weatherIconDark: {
-    backgroundColor: '#1E293B',
-  },
-  weatherTemp: { fontSize: 17, fontWeight: '800', color: '#111827' },
-  weatherTempDark: { color: '#F8FAFC' },
-  weatherLabel: { fontSize: 11, fontWeight: '600', color: '#4B5563' },
-  weatherLabelDark: { color: '#CBD5E1' },
-  weatherMeta: { fontSize: 9, color: '#6B7280', fontWeight: '500', marginTop: 2 },
-  weatherMetaDark: { color: '#94A3B8' },
-  switcher: {
-    flexDirection: 'row',
-    gap: 4,
-    marginTop: 12,
-    backgroundColor: '#FFFFFF',
-    padding: 5,
-    borderRadius: radii.pill,
-    borderWidth: 1,
-    borderColor: '#EEF2E8',
-  },
-  switcherDark: {
-    backgroundColor: '#13211B',
-    borderColor: '#23382E',
-  },
-  modePill: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 3,
-    paddingVertical: 7,
-    borderRadius: radii.pill,
-  },
-  modePillActive: { backgroundColor: '#1B4D3E' },
-  modePillActiveDark: { backgroundColor: '#22C55E' },
-  modeLabel: { fontSize: 10, fontWeight: '700', color: '#475569' },
-  modeLabelDark: { color: '#94A3B8' },
-  modeLabelActive: { color: '#FFFFFF' },
-});

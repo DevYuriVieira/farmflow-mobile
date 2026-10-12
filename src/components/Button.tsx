@@ -2,13 +2,13 @@ import React from 'react';
 import {
   TouchableOpacity,
   Text,
-  StyleSheet,
   ActivityIndicator,
   ViewStyle,
   TextStyle,
   TouchableOpacityProps,
 } from 'react-native';
 import { colors, radii, spacing, typography } from '../theme';
+import { styles } from './styles/button.styles';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
@@ -156,11 +156,3 @@ export const Button: React.FC<ButtonProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  textWithLeftIcon: {
-    marginLeft: spacing.sm,
-  },
-  textWithRightIcon: {
-    marginRight: spacing.sm,
-  },
-});
