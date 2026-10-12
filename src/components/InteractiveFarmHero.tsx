@@ -39,6 +39,7 @@ export interface InteractiveFarmHeroProps {
   onModeChange?: (mode: WeatherMode) => void;
   /** Automatically cycles weather. Defaults to false (only changes on user interaction). */
   autoPlay?: boolean;
+  variant?: 'home' | 'weather';
 }
 
 // Scene coordinate system. Every sprite is placed in these units and converted to %,
@@ -187,14 +188,20 @@ export const InteractiveFarmHero: React.FC<InteractiveFarmHeroProps> = ({
   currentMode: externalMode,
   onModeChange,
   autoPlay: _autoPlay = false,
+  variant,
 }) => {
+  const isHome = variant === 'home' || (!variant && (Boolean(onWeatherCardPress) || Boolean(onHealthCardPress)));
   const { isDark, language, t } = usePreferences();
   const [mode, setMode] = useState<WeatherMode>(externalMode || (isDark ? 'night' : 'sunny'));
   const [size, setSize] = useState({ w: 360, h: 252 });
 
   useEffect(() => {
-    if (externalMode) setMode(externalMode);
-  }, [externalMode]);
+    if (externalMode) {
+      setMode(externalMode);
+    } else {
+      setMode(isDark ? 'night' : 'sunny');
+    }
+  }, [externalMode, isDark]);
 
   useEffect(() => {
     onModeChange?.(mode);
@@ -262,6 +269,8 @@ export const InteractiveFarmHero: React.FC<InteractiveFarmHeroProps> = ({
   const birdFlap = useLoop(260, { pingPong: true });
   const spray = useLoop(1600, { pingPong: true });
   const ripple = useLoop(2400);
+  const farmerBreath = useLoop(2200, { pingPong: true });
+  const tabletGlow = useLoop(1500, { pingPong: true });
 
   const rot = (v: Animated.Value, deg = 360) =>
     v.interpolate({ inputRange: [0, 1], outputRange: ['0deg', `${deg}deg`] });
@@ -503,238 +512,411 @@ export const InteractiveFarmHero: React.FC<InteractiveFarmHeroProps> = ({
 
           <Path d="M0 140 Q60 108 130 128 T260 118 T400 124 L400 280 L0 280 Z" fill="url(#hillFar)" />
           <Path d="M0 158 Q100 136 210 154 T400 146 L400 280 L0 280 Z" fill="url(#field)" />
+          {isHome ? (
+            <>
+              <Polygon points="88,68 86,134 90,134" fill="#F8FAFC" />
+              <Polygon points="126,86 124,138 128,138" fill="#F1F5F9" />
+              <Polygon points="352,78 350,136 354,136" fill="#F8FAFC" />
 
-          {/* Wind turbines in background: one in middle, one on right */}
-          <Polygon points="168,70 166,138 170,138" fill="#F8FAFC" />
-          <Polygon points="372,80 369,138 375,138" fill="#F8FAFC" />
+              <Path d="M18 152 Q70 146 110 152 L98 170 L8 170 Z" fill="#E6D095" opacity="0.9" />
+              <G>
+                <Rect x="26" y="146" width="4" height="12" fill="#78350F" />
+                <Circle cx="28" cy="138" r="14" fill="#15803D" />
+                <Circle cx="35" cy="144" r="9" fill="#16A34A" />
 
-          <G>
-            <Rect x="20" y="128" width="4" height="14" fill="#78350F" />
-            <Circle cx="22" cy="120" r="13" fill="#166534" />
-            <Circle cx="30" cy="127" r="8" fill="#15803D" />
-
-            <Rect x="47" y="132" width="3" height="9" fill="#78350F" />
-            <Polygon points="37,132 48.5,116 60,132" fill="#14532D" />
-            <Polygon points="40,122 48.5,108 57,122" fill="#166534" />
-            <Polygon points="43,112 48.5,100 54,112" fill="#15803D" />
-
-            <Rect x="79" y="132" width="3.5" height="10" fill="#78350F" />
-            <Circle cx="81" cy="124" r="11" fill="#15803D" />
-            <Circle cx="74" cy="129" r="7" fill="#166534" />
-            <Circle cx="89" cy="128" r="8" fill="#22C55E" opacity="0.85" />
-
-            <Rect x="111" y="130" width="3" height="10" fill="#78350F" />
-            <Polygon points="102,130 112.5,114 123,130" fill="#14532D" />
-            <Polygon points="105,120 112.5,107 120,120" fill="#166534" />
-            <Polygon points="107,110 112.5,99 118,110" fill="#15803D" />
-
-            <Rect x="136" y="127" width="4" height="14" fill="#78350F" />
-            <Circle cx="138" cy="118" r="14" fill="#166534" />
-            <Circle cx="130" cy="125" r="9" fill="#15803D" />
-            <Circle cx="147" cy="123" r="10" fill="#22C55E" opacity="0.8" />
-
-            <Rect x="193" y="132" width="3" height="10" fill="#78350F" />
-            <Circle cx="194" cy="123" r="11" fill="#15803D" />
-            <Circle cx="187" cy="128" r="7" fill="#166534" />
-
-            <Rect x="347" y="128" width="4" height="13" fill="#78350F" />
-            <Circle cx="349" cy="120" r="12" fill="#166534" />
-            <Circle cx="356" cy="126" r="8" fill="#15803D" />
-
-            <Rect x="375" y="126" width="4" height="14" fill="#78350F" />
-            <Circle cx="377" cy="118" r="13" fill="#166534" />
-            <Circle cx="385" cy="125" r="8" fill="#15803D" />
-          </G>
-
-          <Rect x="320" y="92" width="24" height="62" rx="4" fill="#CBD5E1" />
-          <Path d="M320 96 Q332 78 344 96 Z" fill="#94A3B8" />
-          <Line x1="320" y1="112" x2="344" y2="112" stroke="#94A3B8" />
-          <Line x1="320" y1="128" x2="344" y2="128" stroke="#94A3B8" />
-
-          <Polygon points="230,112 275,84 320,112" fill="#991B1B" />
-          <Rect x="234" y="112" width="82" height="44" fill="#DC2626" />
-          <Polygon points="226,114 275,80 324,114 320,116 275,86 230,116" fill="#7F1D1D" />
-          <Rect x="260" y="126" width="30" height="30" fill="#FFFFFF" />
-          <Rect x="263" y="129" width="24" height="27" fill="#B91C1C" />
-          <Line x1="263" y1="129" x2="287" y2="156" stroke="#FFFFFF" strokeWidth="2.5" />
-          <Line x1="287" y1="129" x2="263" y2="156" stroke="#FFFFFF" strokeWidth="2.5" />
-          <Rect x="268" y="96" width="14" height="11" fill="#FFFFFF" />
-          <Rect x="270" y="98" width="10" height="7" fill={mode === 'night' ? '#FDE047' : '#1E3A8A'} />
-
-          <Path d="M400 206 L196 182 L170 280 L400 280 Z" fill="url(#soil)" />
-          {[214, 230, 248, 266].map((fy, i) => (
-            <Path
-              key={fy}
-              d={`M400 ${fy} Q300 ${fy - 10 - i} ${196 - i * 7} ${fy - 24 - i * 2}`}
-              stroke="#5C3D22"
-              strokeWidth={2 + i * 0.6}
-              fill="none"
-            />
-          ))}
-
-          <Path d="M170 280 L196 182 Q100 172 0 180 L0 280 Z" fill="#5DBB4F" />
-
-          <G>
-            <Line x1="0" y1="168" x2="198" y2="168" stroke="#CA8A04" strokeWidth="2.4" />
-            <Line x1="0" y1="167.2" x2="198" y2="167.2" stroke="#FEF08A" strokeWidth="0.8" opacity="0.6" />
-            <Line x1="0" y1="174" x2="198" y2="174" stroke="#B45309" strokeWidth="2.4" />
-
-            <Line x1="198" y1="168" x2="170" y2="280" stroke="#CA8A04" strokeWidth="2.4" />
-            <Line x1="197.2" y1="167.2" x2="169.2" y2="279.2" stroke="#FEF08A" strokeWidth="0.8" opacity="0.6" />
-            <Line x1="198" y1="174" x2="170" y2="286" stroke="#B45309" strokeWidth="2.4" />
-
-            {[8, 32, 56, 80, 104, 128, 152, 175].map((px) => (
-              <G key={px}>
-                <Rect x={px - 2} y="162" width="4" height="17" rx="1" fill="#92400E" />
-                <Polygon points={`${px - 2},162 ${px},159 ${px + 2},162`} fill="#78350F" />
-                <Line x1={px - 1} y1="163" x2={px - 1} y2="178" stroke="#B45309" strokeWidth="0.8" opacity="0.8" />
+                <Rect x="54" y="150" width="3.5" height="10" fill="#78350F" />
+                <Circle cx="56" cy="143" r="11" fill="#166534" />
+                <Circle cx="62" cy="148" r="7" fill="#15803D" />
               </G>
-            ))}
 
-            {[
-              { x: 198, y: 168 },
-              { x: 191, y: 196 },
-              { x: 184, y: 224 },
-              { x: 177, y: 252 },
-              { x: 170, y: 280 },
-            ].map((p, idx) => (
-              <G key={idx}>
-                <Rect x={p.x - 2} y={p.y - 7} width="4.5" height="18" rx="1" fill="#92400E" />
-                <Polygon points={`${p.x - 2},${p.y - 7} ${p.x + 0.25},${p.y - 10} ${p.x + 2.5},${p.y - 7}`} fill="#78350F" />
-                <Line x1={p.x - 1} y1={p.y - 6} x2={p.x - 1} y2={p.y + 10} stroke="#B45309" strokeWidth="0.8" opacity="0.8" />
+              <G>
+                <Polygon points="140,140 152,98 164,140" fill="#14532D" />
+                <Polygon points="143,126 152,94 161,126" fill="#166534" />
+                <Polygon points="145,114 152,90 159,114" fill="#15803D" />
+
+                <Polygon points="154,142 165,106 176,142" fill="#14532D" />
+                <Polygon points="156,130 165,102 174,130" fill="#166534" />
               </G>
-            ))}
-          </G>
 
-          {/* Cattails / Reeds beside the pond */}
-          <G>
-            {[
-              { x: 92, y: 216, h: 22 },
-              { x: 97, y: 211, h: 27 },
-              { x: 102, y: 215, h: 23 },
-              { x: 107, y: 220, h: 18 },
-            ].map((reed, idx) => (
-              <G key={idx}>
-                <Line
-                  x1={reed.x}
-                  y1={reed.y + reed.h}
-                  x2={reed.x}
-                  y2={reed.y}
-                  stroke="#15803D"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                />
+              <G>
+                <Rect x="338" y="132" width="3.5" height="11" fill="#78350F" />
+                <Circle cx="340" cy="124" r="11" fill="#15803D" />
+                <Circle cx="346" cy="128" r="7.5" fill="#22C55E" opacity="0.85" />
+
+                <Rect x="362" y="134" width="3" height="8" fill="#78350F" />
+                <Polygon points="353,134 363.5,118 374,134" fill="#14532D" />
+                <Polygon points="355,124 363.5,111 372,124" fill="#166534" />
+                <Polygon points="358,114 363.5,103 369,114" fill="#15803D" />
+
+                <Rect x="382" y="130" width="4" height="12" fill="#78350F" />
+                <Circle cx="384" cy="122" r="12" fill="#166534" />
+                <Circle cx="391" cy="127" r="8" fill="#15803D" />
+                <Circle cx="378" cy="126" r="7" fill="#14532D" />
+              </G>
+
+              <Rect x="250" y="96" width="24" height="58" rx="4" fill="#CBD5E1" />
+              <Path d="M250 100 Q262 82 274 100 Z" fill="#94A3B8" />
+              <Line x1="250" y1="114" x2="274" y2="114" stroke="#94A3B8" />
+              <Line x1="250" y1="130" x2="274" y2="130" stroke="#94A3B8" />
+
+              <Polygon points="160,112 205,84 250,112" fill="#991B1B" />
+              <Rect x="164" y="112" width="82" height="44" fill="#DC2626" />
+              <Polygon points="156,114 205,80 254,114 250,116 205,86 160,116" fill="#7F1D1D" />
+              <Rect x="190" y="126" width="30" height="30" fill="#FFFFFF" />
+              <Rect x="193" y="129" width="24" height="27" fill="#B91C1C" />
+              <Line x1="193" y1="129" x2="217" y2="156" stroke="#FFFFFF" strokeWidth="2.5" />
+              <Line x1="217" y1="129" x2="193" y2="156" stroke="#FFFFFF" strokeWidth="2.5" />
+              <Rect x="198" y="96" width="14" height="11" fill="#FFFFFF" />
+              <Rect x="200" y="98" width="10" height="7" fill={mode === 'night' ? '#FDE047' : '#1E3A8A'} />
+
+              <G stroke="#F5DEB3" strokeWidth="2.2">
+                <Line x1="222" y1="168" x2="345" y2="168" />
+                <Line x1="222" y1="176" x2="345" y2="176" />
+              </G>
+              <G stroke="#B45309" strokeWidth="2.6">
+                {[226, 256, 286, 316, 342].map((fx) => (
+                  <Line key={fx} x1={fx} y1="164" x2={fx} y2="182" />
+                ))}
+              </G>
+
+              <Path d="M0 206 L196 186 L222 280 L0 280 Z" fill="url(#soil)" />
+              {[214, 230, 248, 266].map((fy, i) => (
                 <Path
-                  d={`M${reed.x} ${reed.y + reed.h - 4} Q${reed.x - 4} ${reed.y + 8} ${reed.x - 2} ${reed.y + 4}`}
-                  stroke="#22C55E"
-                  strokeWidth="1.2"
+                  key={fy}
+                  d={`M0 ${fy} Q100 ${fy - 10 - i} ${200 + i * 6} ${fy - 18 - i * 2}`}
+                  stroke="#5C3D22"
+                  strokeWidth={2 + i * 0.6}
                   fill="none"
                 />
-                <Rect
-                  x={reed.x - 1.6}
-                  y={reed.y + 2}
-                  width="3.2"
-                  height="8"
-                  rx="1.6"
-                  fill="#78350F"
-                />
-                <Line
-                  x1={reed.x}
-                  y1={reed.y + 2}
-                  x2={reed.x}
-                  y2={reed.y - 1}
-                  stroke="#15803D"
-                  strokeWidth="1"
-                />
+              ))}
+
+              <Path d="M222 280 L196 186 Q300 176 400 184 L400 280 Z" fill="#5DBB4F" />
+
+              <Ellipse cx="324" cy="220" rx="98" ry="33" fill="url(#pond)" />
+              <Ellipse cx="300" cy="212" rx="48" ry="9" fill="#E0F2FE" opacity="0.65" />
+              <Ellipse cx="350" cy="228" rx="36" ry="6" fill="#E0F2FE" opacity="0.45" />
+
+              <Line x1="120" y1="222" x2="120" y2="200" stroke="#64748B" strokeWidth="2" />
+            </>
+          ) : (
+            <>
+              <Polygon points="168,70 166,138 170,138" fill="#F8FAFC" />
+              <Polygon points="372,80 369,138 375,138" fill="#F8FAFC" />
+
+              <G>
+                <Rect x="20" y="128" width="4" height="14" fill="#78350F" />
+                <Circle cx="22" cy="120" r="13" fill="#166534" />
+                <Circle cx="30" cy="127" r="8" fill="#15803D" />
+
+                <Rect x="47" y="132" width="3" height="9" fill="#78350F" />
+                <Polygon points="37,132 48.5,116 60,132" fill="#14532D" />
+                <Polygon points="40,122 48.5,108 57,122" fill="#166534" />
+                <Polygon points="43,112 48.5,100 54,112" fill="#15803D" />
+
+                <Rect x="79" y="132" width="3.5" height="10" fill="#78350F" />
+                <Circle cx="81" cy="124" r="11" fill="#15803D" />
+                <Circle cx="74" cy="129" r="7" fill="#166534" />
+                <Circle cx="89" cy="128" r="8" fill="#22C55E" opacity="0.85" />
+
+                <Rect x="111" y="130" width="3" height="10" fill="#78350F" />
+                <Polygon points="102,130 112.5,114 123,130" fill="#14532D" />
+                <Polygon points="105,120 112.5,107 120,120" fill="#166534" />
+                <Polygon points="107,110 112.5,99 118,110" fill="#15803D" />
+
+                <Rect x="136" y="127" width="4" height="14" fill="#78350F" />
+                <Circle cx="138" cy="118" r="14" fill="#166534" />
+                <Circle cx="130" cy="125" r="9" fill="#15803D" />
+                <Circle cx="147" cy="123" r="10" fill="#22C55E" opacity="0.8" />
+
+                <Rect x="193" y="132" width="3" height="10" fill="#78350F" />
+                <Circle cx="194" cy="123" r="11" fill="#15803D" />
+                <Circle cx="187" cy="128" r="7" fill="#166534" />
+
+                <Rect x="347" y="128" width="4" height="13" fill="#78350F" />
+                <Circle cx="349" cy="120" r="12" fill="#166534" />
+                <Circle cx="356" cy="126" r="8" fill="#15803D" />
+
+                <Rect x="375" y="126" width="4" height="14" fill="#78350F" />
+                <Circle cx="377" cy="118" r="13" fill="#166534" />
+                <Circle cx="385" cy="125" r="8" fill="#15803D" />
               </G>
-            ))}
-          </G>
 
-          <Ellipse cx="56" cy="232" rx="50" ry="15" fill="url(#pond)" />
-          <Ellipse cx="48" cy="228" rx="20" ry="3" fill="#E0F2FE" opacity="0.6" />
+              <Rect x="320" y="92" width="24" height="62" rx="4" fill="#CBD5E1" />
+              <Path d="M320 96 Q332 78 344 96 Z" fill="#94A3B8" />
+              <Line x1="320" y1="112" x2="344" y2="112" stroke="#94A3B8" />
+              <Line x1="320" y1="128" x2="344" y2="128" stroke="#94A3B8" />
 
-          {/* Water tank metal stilts and dark irrigation pipe */}
-          <Line x1="205" y1="174" x2="204" y2="194" stroke="#475569" strokeWidth="2" strokeLinecap="round" />
-          <Line x1="223" y1="174" x2="224" y2="194" stroke="#475569" strokeWidth="2" strokeLinecap="round" />
-          <Line x1="205" y1="184" x2="223" y2="184" stroke="#64748B" strokeWidth="1.5" />
-          <Path d="M214 174 Q218 202 212 230" stroke="#1E293B" strokeWidth="2.8" strokeLinecap="round" fill="none" />
-          <Line x1="212" y1="230" x2="400" y2="230" stroke="#1E293B" strokeWidth="2.4" />
+              <Polygon points="230,112 275,84 320,112" fill="#991B1B" />
+              <Rect x="234" y="112" width="82" height="44" fill="#DC2626" />
+              <Polygon points="226,114 275,80 324,114 320,116 275,86 230,116" fill="#7F1D1D" />
+              <Rect x="260" y="126" width="30" height="30" fill="#FFFFFF" />
+              <Rect x="263" y="129" width="24" height="27" fill="#B91C1C" />
+              <Line x1="263" y1="129" x2="287" y2="156" stroke="#FFFFFF" strokeWidth="2.5" />
+              <Line x1="287" y1="129" x2="263" y2="156" stroke="#FFFFFF" strokeWidth="2.5" />
+              <Rect x="268" y="96" width="14" height="11" fill="#FFFFFF" />
+              <Rect x="270" y="98" width="10" height="7" fill={mode === 'night' ? '#FDE047' : '#1E3A8A'} />
+
+              <Path d="M400 206 L196 182 L170 280 L400 280 Z" fill="url(#soil)" />
+              {[214, 230, 248, 266].map((fy, i) => (
+                <Path
+                  key={fy}
+                  d={`M400 ${fy} Q300 ${fy - 10 - i} ${196 - i * 7} ${fy - 24 - i * 2}`}
+                  stroke="#5C3D22"
+                  strokeWidth={2 + i * 0.6}
+                  fill="none"
+                />
+              ))}
+
+              <Path d="M170 280 L196 182 Q100 172 0 180 L0 280 Z" fill="#5DBB4F" />
+
+              <G>
+                <Line x1="0" y1="168" x2="198" y2="168" stroke="#CA8A04" strokeWidth="2.4" />
+                <Line x1="0" y1="167.2" x2="198" y2="167.2" stroke="#FEF08A" strokeWidth="0.8" opacity="0.6" />
+                <Line x1="0" y1="174" x2="198" y2="174" stroke="#B45309" strokeWidth="2.4" />
+
+                <Line x1="198" y1="168" x2="170" y2="280" stroke="#CA8A04" strokeWidth="2.4" />
+                <Line x1="197.2" y1="167.2" x2="169.2" y2="279.2" stroke="#FEF08A" strokeWidth="0.8" opacity="0.6" />
+                <Line x1="198" y1="174" x2="170" y2="286" stroke="#B45309" strokeWidth="2.4" />
+
+                {[8, 32, 56, 80, 104, 128, 152, 175].map((px) => (
+                  <G key={px}>
+                    <Rect x={px - 2} y="162" width="4" height="17" rx="1" fill="#92400E" />
+                    <Polygon points={`${px - 2},162 ${px},159 ${px + 2},162`} fill="#78350F" />
+                    <Line x1={px - 1} y1="163" x2={px - 1} y2="178" stroke="#B45309" strokeWidth="0.8" opacity="0.8" />
+                  </G>
+                ))}
+
+                {[
+                  { x: 198, y: 168 },
+                  { x: 191, y: 196 },
+                  { x: 184, y: 224 },
+                  { x: 177, y: 252 },
+                  { x: 170, y: 280 },
+                ].map((p, idx) => (
+                  <G key={idx}>
+                    <Rect x={p.x - 2} y={p.y - 7} width="4.5" height="18" rx="1" fill="#92400E" />
+                    <Polygon points={`${p.x - 2},${p.y - 7} ${p.x + 0.25},${p.y - 10} ${p.x + 2.5},${p.y - 7}`} fill="#78350F" />
+                    <Line x1={p.x - 1} y1={p.y - 6} x2={p.x - 1} y2={p.y + 10} stroke="#B45309" strokeWidth="0.8" opacity="0.8" />
+                  </G>
+                ))}
+              </G>
+
+              <G>
+                {[
+                  { x: 92, y: 216, h: 22 },
+                  { x: 97, y: 211, h: 27 },
+                  { x: 102, y: 215, h: 23 },
+                  { x: 107, y: 220, h: 18 },
+                ].map((reed, idx) => (
+                  <G key={idx}>
+                    <Line
+                      x1={reed.x}
+                      y1={reed.y + reed.h}
+                      x2={reed.x}
+                      y2={reed.y}
+                      stroke="#15803D"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                    />
+                    <Path
+                      d={`M${reed.x} ${reed.y + reed.h - 4} Q${reed.x - 4} ${reed.y + 8} ${reed.x - 2} ${reed.y + 4}`}
+                      stroke="#22C55E"
+                      strokeWidth="1.2"
+                      fill="none"
+                    />
+                    <Rect
+                      x={reed.x - 1.6}
+                      y={reed.y + 2}
+                      width="3.2"
+                      height="8"
+                      rx="1.6"
+                      fill="#78350F"
+                    />
+                    <Line
+                      x1={reed.x}
+                      y1={reed.y + 2}
+                      x2={reed.x}
+                      y2={reed.y - 1}
+                      stroke="#15803D"
+                      strokeWidth="1"
+                    />
+                  </G>
+                ))}
+              </G>
+
+              <Ellipse cx="56" cy="232" rx="50" ry="15" fill="url(#pond)" />
+              <Ellipse cx="48" cy="228" rx="20" ry="3" fill="#E0F2FE" opacity="0.6" />
+
+              <Line x1="205" y1="174" x2="204" y2="194" stroke="#475569" strokeWidth="2" strokeLinecap="round" />
+              <Line x1="223" y1="174" x2="224" y2="194" stroke="#475569" strokeWidth="2" strokeLinecap="round" />
+              <Line x1="205" y1="184" x2="223" y2="184" stroke="#64748B" strokeWidth="1.5" />
+              <Path d="M214 174 Q218 202 212 230" stroke="#1E293B" strokeWidth="2.8" strokeLinecap="round" fill="none" />
+              <Line x1="212" y1="230" x2="400" y2="230" stroke="#1E293B" strokeWidth="2.4" />
+            </>
+          )}
         </FullLayer>
 
-        <FullLayer style={{ opacity: across(wetness, 0, 0.55) }}>
-          <Path d="M400 206 L196 182 L170 280 L400 280 Z" fill="#2B1A0E" />
-          <Path d="M170 280 L196 182 Q100 172 0 180 L0 280 Z" fill="#1F5F2A" opacity="0.5" />
-        </FullLayer>
-        <Sprite
-          x={4}
-          y={216}
-          w={104}
-          h={32}
-          style={{ opacity: wetness, transform: [{ scale: across(wetness, 0.8, 1.12) }] }}
-        >
-          <Ellipse cx="48" cy="16" rx="46" ry="14" fill="#38BDF8" opacity="0.6" />
-        </Sprite>
-        <Sprite x={300} y={250} w={60} h={12} style={{ opacity: wetness, transform: [{ scaleX: across(wetness, 0.3, 1) }] }}>
-          <Ellipse cx="30" cy="6" rx="28" ry="5" fill="#7DD3FC" opacity="0.75" />
-        </Sprite>
-        <Sprite x={110} y={256} w={54} h={10} style={{ opacity: wetness, transform: [{ scaleX: across(wetness, 0.3, 1) }] }}>
-          <Ellipse cx="27" cy="5" rx="25" ry="4" fill="#7DD3FC" opacity="0.7" />
-        </Sprite>
-        <View
-          pointerEvents="none"
-          style={{
-            position: 'absolute',
-            left: `${(203 / VB_W) * 100}%`,
-            top: `${(134 / VB_H) * 100}%`,
-            width: `${(22 / VB_W) * 100}%`,
-            height: `${(40 / VB_H) * 100}%`,
-            borderRadius: 5,
-            overflow: 'hidden',
-            backgroundColor: '#E2E8F0',
-            borderWidth: 1.5,
-            borderColor: '#94A3B8',
-          }}
-        >
-          <Animated.View
-            style={{
-              ...StyleSheet.absoluteFillObject,
-              backgroundColor: '#38BDF8',
-              transform: [
-                {
-                  translateY: across(
-                    wetness,
-                    ((size.h * 40) / VB_H) * 0.55,
-                    ((size.h * 40) / VB_H) * 0.06
-                  ),
-                },
-              ],
-            }}
-          />
-        </View>
+        {isHome ? (
+          <>
+            <FullLayer style={{ opacity: across(wetness, 0, 0.55) }}>
+              <Path d="M0 206 L196 186 L222 280 L0 280 Z" fill="#2B1A0E" />
+              <Path d="M222 280 L196 186 Q300 176 400 184 L400 280 Z" fill="#1F5F2A" opacity="0.5" />
+            </FullLayer>
+            <Sprite
+              x={224}
+              y={184}
+              w={200}
+              h={72}
+              style={{ opacity: wetness, transform: [{ scale: across(wetness, 0.8, 1.12) }] }}
+            >
+              <Ellipse cx="100" cy="36" rx="98" ry="33" fill="#38BDF8" opacity="0.6" />
+            </Sprite>
+            <Sprite x={40} y={244} w={60} h={12} style={{ opacity: wetness, transform: [{ scaleX: across(wetness, 0.3, 1) }] }}>
+              <Ellipse cx="30" cy="6" rx="28" ry="5" fill="#7DD3FC" opacity="0.75" />
+            </Sprite>
+            <Sprite x={100} y={260} w={54} h={10} style={{ opacity: wetness, transform: [{ scaleX: across(wetness, 0.3, 1) }] }}>
+              <Ellipse cx="27" cy="5" rx="25" ry="4" fill="#7DD3FC" opacity="0.7" />
+            </Sprite>
+            <View
+              pointerEvents="none"
+              style={{
+                position: 'absolute',
+                left: `${(278 / VB_W) * 100}%`,
+                top: `${(116 / VB_H) * 100}%`,
+                width: `${(22 / VB_W) * 100}%`,
+                height: `${(40 / VB_H) * 100}%`,
+                borderRadius: 5,
+                overflow: 'hidden',
+                backgroundColor: '#E2E8F0',
+                borderWidth: 1.5,
+                borderColor: '#94A3B8',
+              }}
+            >
+              <Animated.View
+                style={{
+                  ...StyleSheet.absoluteFillObject,
+                  backgroundColor: '#38BDF8',
+                  transform: [
+                    {
+                      translateY: across(
+                        wetness,
+                        ((size.h * 40) / VB_H) * 0.55,
+                        ((size.h * 40) / VB_H) * 0.06
+                      ),
+                    },
+                  ],
+                }}
+              />
+            </View>
 
-        <Sprite x={148} y={50} w={40} h={40} style={{ transform: [{ rotate: rot(turbine) }] }}>
-          <Blades />
-        </Sprite>
-        <Sprite x={354} y={62} w={36} h={36} style={{ transform: [{ rotate: rot(turbine) }] }}>
-          <G transform="scale(0.9)">
-            <Blades />
-          </G>
-        </Sprite>
+            <Sprite x={68} y={48} w={40} h={40} style={{ transform: [{ rotate: rot(turbine) }] }}>
+              <Blades />
+            </Sprite>
+            <Sprite x={112} y={72} w={28} h={28} style={{ transform: [{ rotate: rot(turbine, -360) }] }}>
+              <G transform="scale(0.7)">
+                <Blades />
+              </G>
+            </Sprite>
+            <Sprite x={334} y={60} w={36} h={36} style={{ transform: [{ rotate: rot(turbine) }] }}>
+              <G transform="scale(0.9)">
+                <Blades />
+              </G>
+            </Sprite>
 
-        <Sprite
-          x={30}
-          y={224}
-          w={52}
-          h={16}
-          style={{ opacity: across(ripple, 0.8, 0), transform: [{ scale: across(ripple, 0.4, 1.3) }] }}
-        >
-          <Ellipse cx="26" cy="8" rx="24" ry="6" stroke="#FFFFFF" strokeWidth="1.4" fill="none" />
-        </Sprite>
+            <Sprite
+              x={270}
+              y={202}
+              w={108}
+              h={36}
+              style={{ opacity: across(ripple, 0.8, 0), transform: [{ scale: across(ripple, 0.4, 1.3) }] }}
+            >
+              <Ellipse cx="54" cy="18" rx="50" ry="14" stroke="#FFFFFF" strokeWidth="1.5" fill="none" />
+            </Sprite>
+          </>
+        ) : (
+          <>
+            <FullLayer style={{ opacity: across(wetness, 0, 0.55) }}>
+              <Path d="M400 206 L196 182 L170 280 L400 280 Z" fill="#2B1A0E" />
+              <Path d="M170 280 L196 182 Q100 172 0 180 L0 280 Z" fill="#1F5F2A" opacity="0.5" />
+            </FullLayer>
+            <Sprite
+              x={4}
+              y={216}
+              w={104}
+              h={32}
+              style={{ opacity: wetness, transform: [{ scale: across(wetness, 0.8, 1.12) }] }}
+            >
+              <Ellipse cx="48" cy="16" rx="46" ry="14" fill="#38BDF8" opacity="0.6" />
+            </Sprite>
+            <Sprite x={300} y={250} w={60} h={12} style={{ opacity: wetness, transform: [{ scaleX: across(wetness, 0.3, 1) }] }}>
+              <Ellipse cx="30" cy="6" rx="28" ry="5" fill="#7DD3FC" opacity="0.75" />
+            </Sprite>
+            <Sprite x={110} y={256} w={54} h={10} style={{ opacity: wetness, transform: [{ scaleX: across(wetness, 0.3, 1) }] }}>
+              <Ellipse cx="27" cy="5" rx="25" ry="4" fill="#7DD3FC" opacity="0.7" />
+            </Sprite>
+            <View
+              pointerEvents="none"
+              style={{
+                position: 'absolute',
+                left: `${(203 / VB_W) * 100}%`,
+                top: `${(134 / VB_H) * 100}%`,
+                width: `${(22 / VB_W) * 100}%`,
+                height: `${(40 / VB_H) * 100}%`,
+                borderRadius: 5,
+                overflow: 'hidden',
+                backgroundColor: '#E2E8F0',
+                borderWidth: 1.5,
+                borderColor: '#94A3B8',
+              }}
+            >
+              <Animated.View
+                style={{
+                  ...StyleSheet.absoluteFillObject,
+                  backgroundColor: '#38BDF8',
+                  transform: [
+                    {
+                      translateY: across(
+                        wetness,
+                        ((size.h * 40) / VB_H) * 0.55,
+                        ((size.h * 40) / VB_H) * 0.06
+                      ),
+                    },
+                  ],
+                }}
+              />
+            </View>
 
-        {[
-          { x: 20, y: 176, walk: 14, graze: cowGraze, dark: true },
-          { x: 96, y: 182, walk: -12, graze: cowGraze2, dark: false },
-        ].map((c, i) => (
+            <Sprite x={148} y={50} w={40} h={40} style={{ transform: [{ rotate: rot(turbine) }] }}>
+              <Blades />
+            </Sprite>
+            <Sprite x={354} y={62} w={36} h={36} style={{ transform: [{ rotate: rot(turbine) }] }}>
+              <G transform="scale(0.9)">
+                <Blades />
+              </G>
+            </Sprite>
+
+            <Sprite
+              x={30}
+              y={224}
+              w={52}
+              h={16}
+              style={{ opacity: across(ripple, 0.8, 0), transform: [{ scale: across(ripple, 0.4, 1.3) }] }}
+            >
+              <Ellipse cx="26" cy="8" rx="24" ry="6" stroke="#FFFFFF" strokeWidth="1.4" fill="none" />
+            </Sprite>
+          </>
+        )}
+
+        {(isHome
+          ? [
+              { x: 236, y: 146, walk: 18, graze: cowGraze, dark: true },
+              { x: 292, y: 152, walk: -14, graze: cowGraze2, dark: false },
+            ]
+          : [
+              { x: 20, y: 176, walk: 14, graze: cowGraze, dark: true },
+              { x: 96, y: 182, walk: -12, graze: cowGraze2, dark: false },
+            ]
+        ).map((c, i) => (
           <Animated.View
             key={i}
             pointerEvents="none"
@@ -793,7 +975,7 @@ export const InteractiveFarmHero: React.FC<InteractiveFarmHeroProps> = ({
         ].map(([cx, cy, alt], i) => (
           <Sprite
             key={i}
-            x={380 - cx}
+            x={isHome ? cx : 380 - cx}
             y={cy - 14}
             w={20}
             h={30}
@@ -804,25 +986,72 @@ export const InteractiveFarmHero: React.FC<InteractiveFarmHeroProps> = ({
         ))}
 
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: sprinklerOn }]}>
-          {[236, 316].map((sx, i) => (
+          {isHome ? (
             <Sprite
-              key={i}
-              x={sx}
-              y={210}
-              w={64}
-              h={34}
-              style={{ opacity: across(spray, 0.4, 1), transform: [{ scaleX: across(spray, 0.85, 1.1) }] }}
+              x={84}
+              y={168}
+              w={72}
+              h={36}
+              style={{ opacity: across(spray, 0.35, 1), transform: [{ scaleX: across(spray, 0.85, 1.1) }] }}
             >
-              <G stroke="#BAE6FD" strokeWidth="1.6" strokeDasharray="2 3" fill="none" strokeLinecap="round">
-                <Path d="M32 32 Q18 6 4 28" />
-                <Path d="M32 32 Q46 6 60 28" />
-                <Path d="M32 32 Q24 0 12 20" />
-                <Path d="M32 32 Q40 0 52 20" />
+              <G stroke="#93C5FD" strokeWidth="1.6" strokeDasharray="2 3" fill="none" strokeLinecap="round">
+                <Path d="M36 34 Q20 6 4 30" />
+                <Path d="M36 34 Q52 6 68 30" />
+                <Path d="M36 34 Q28 0 14 22" />
+                <Path d="M36 34 Q44 0 58 22" />
               </G>
-              <Circle cx="32" cy="32" r="2.2" fill="#475569" />
+              <Circle cx="36" cy="34" r="2.4" fill="#475569" />
             </Sprite>
-          ))}
+          ) : (
+            [236, 316].map((sx, i) => (
+              <Sprite
+                key={i}
+                x={sx}
+                y={210}
+                w={64}
+                h={34}
+                style={{ opacity: across(spray, 0.4, 1), transform: [{ scaleX: across(spray, 0.85, 1.1) }] }}
+              >
+                <G stroke="#BAE6FD" strokeWidth="1.6" strokeDasharray="2 3" fill="none" strokeLinecap="round">
+                  <Path d="M32 32 Q18 6 4 28" />
+                  <Path d="M32 32 Q46 6 60 28" />
+                  <Path d="M32 32 Q24 0 12 20" />
+                  <Path d="M32 32 Q40 0 52 20" />
+                </G>
+                <Circle cx="32" cy="32" r="2.2" fill="#475569" />
+              </Sprite>
+            ))
+          )}
         </Animated.View>
+
+        {isHome && (
+          <>
+            <Sprite
+              x={318}
+              y={168}
+              w={72}
+              h={112}
+              style={{ transform: [{ translateY: across(farmerBreath, 0, -2) }] }}
+            >
+              <Path d="M14 40 Q36 30 60 40 L66 112 L8 112 Z" fill="#EA580C" />
+              <Path d="M26 40 L36 60 L46 40" fill="#FDBA74" />
+              <Circle cx="36" cy="26" r="12" fill="#F2B98A" />
+              <Circle cx="32" cy="25" r="1.3" fill="#1E293B" />
+              <Circle cx="40" cy="25" r="1.3" fill="#1E293B" />
+              <Path d="M32 31 Q36 34 40 31" stroke="#7C2D12" strokeWidth="1.2" fill="none" />
+              <Ellipse cx="36" cy="16" rx="30" ry="6" fill="#D97706" />
+              <Path d="M20 16 Q36 -2 52 16 Z" fill="#F59E0B" />
+              <Rect x="22" y="14" width="28" height="3" fill="#92400E" />
+              <G transform="rotate(-10 18 74)">
+                <Rect x="4" y="58" width="26" height="34" rx="4" fill="#0F172A" />
+                <Rect x="7" y="61" width="20" height="28" rx="2" fill="#38BDF8" />
+              </G>
+            </Sprite>
+            <Sprite x={322} y={226} w={24} h={30} style={{ opacity: across(tabletGlow, 0.15, 0.55) }}>
+              <Rect x="2" y="2" width="20" height="26" rx="3" fill="#E0F2FE" transform="rotate(-10 12 15)" />
+            </Sprite>
+          </>
+        )}
 
 
         <Animated.View
@@ -913,73 +1142,83 @@ export const InteractiveFarmHero: React.FC<InteractiveFarmHeroProps> = ({
           style={[StyleSheet.absoluteFill, { backgroundColor: '#FFFFFF', opacity: flash }]}
         />
 
-        {/* Weather Info & Mode Switcher Overlay directly inside the image */}
-        <View style={styles.weatherOverlay} pointerEvents="box-none">
-          <View style={styles.tempGroup} pointerEvents="none">
-            <View style={styles.tempRow}>
-              <Text style={[styles.bigTemp, mode === 'night' && styles.bigTempLight]}>
-                {temp}
-              </Text>
-              <Text style={[styles.tempUnit, mode === 'night' && styles.tempUnitLight]}>
-                °C
+        {!isHome && (
+          <View style={styles.weatherOverlay} pointerEvents="box-none">
+            <View style={styles.tempGroup} pointerEvents="none">
+              <View style={styles.tempRow}>
+                <Text style={[styles.bigTemp, mode === 'night' && styles.bigTempLight]}>
+                  {temp}
+                </Text>
+                <Text style={[styles.tempUnit, mode === 'night' && styles.tempUnitLight]}>
+                  °C
+                </Text>
+              </View>
+              <Text style={[styles.conditionText, mode === 'night' && styles.conditionTextLight]}>
+                {language === 'en' ? meta.labelEn : meta.labelPt}
               </Text>
             </View>
-            <Text style={[styles.conditionText, mode === 'night' && styles.conditionTextLight]}>
-              {language === 'en' ? meta.labelEn : meta.labelPt}
+
+            <View style={[styles.modeCapsule, mode === 'night' && styles.modeCapsuleDark]}>
+              {(['sunny', 'cloudy', 'windy', 'rain', 'rainbow'] as WeatherMode[]).map((m) => {
+                const active = mode === m;
+                return (
+                  <TouchableOpacity
+                    key={m}
+                    style={[styles.capsuleBtn, active && styles.capsuleBtnActive]}
+                    onPress={() => selectMode(m)}
+                    activeOpacity={0.7}
+                    accessibilityLabel={`Clima: ${MODE_LABEL[m].pt}`}
+                  >
+                    {m === 'rainbow' ? (
+                      <Svg width={18} height={18} viewBox="0 0 24 24">
+                        <Path
+                          d="M4 18 A8 8 0 0 1 20 18"
+                          stroke={active ? '#FFFFFF' : '#64748B'}
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          fill="none"
+                        />
+                        <Path
+                          d="M7 18 A5 5 0 0 1 17 18"
+                          stroke={active ? '#FFFFFF' : '#64748B'}
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          fill="none"
+                        />
+                      </Svg>
+                    ) : (
+                      <MaterialCommunityIcons
+                        name={
+                          m === 'sunny'
+                            ? 'white-balance-sunny'
+                            : m === 'cloudy'
+                            ? 'weather-cloudy'
+                            : m === 'windy'
+                            ? 'weather-windy'
+                            : 'weather-pouring'
+                        }
+                        size={active ? 18 : 17}
+                        color={active ? '#FFFFFF' : '#64748B'}
+                      />
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+        )}
+
+        {isHome && (
+          <View style={[styles.tempBadge, isDark && styles.tempBadgeDark]}>
+            <MaterialCommunityIcons name={meta.icon} size={14} color={isDark ? '#F1F5F9' : '#0F172A'} />
+            <Text style={[styles.tempBadgeText, isDark && styles.tempBadgeTextDark]}>
+              {temp}°C · {language === 'en' ? meta.labelEn : meta.labelPt}
             </Text>
           </View>
-
-          <View style={[styles.modeCapsule, mode === 'night' && styles.modeCapsuleDark]}>
-            {(['sunny', 'cloudy', 'windy', 'rain', 'rainbow'] as WeatherMode[]).map((m) => {
-              const active = mode === m;
-              return (
-                <TouchableOpacity
-                  key={m}
-                  style={[styles.capsuleBtn, active && styles.capsuleBtnActive]}
-                  onPress={() => selectMode(m)}
-                  activeOpacity={0.7}
-                  accessibilityLabel={`Clima: ${MODE_LABEL[m].pt}`}
-                >
-                  {m === 'rainbow' ? (
-                    <Svg width={18} height={18} viewBox="0 0 24 24">
-                      <Path
-                        d="M4 18 A8 8 0 0 1 20 18"
-                        stroke={active ? '#FFFFFF' : '#64748B'}
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        fill="none"
-                      />
-                      <Path
-                        d="M7 18 A5 5 0 0 1 17 18"
-                        stroke={active ? '#FFFFFF' : '#64748B'}
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        fill="none"
-                      />
-                    </Svg>
-                  ) : (
-                    <MaterialCommunityIcons
-                      name={
-                        m === 'sunny'
-                          ? 'white-balance-sunny'
-                          : m === 'cloudy'
-                          ? 'weather-cloudy'
-                          : m === 'windy'
-                          ? 'weather-windy'
-                          : 'weather-pouring'
-                      }
-                      size={active ? 18 : 17}
-                      color={active ? '#FFFFFF' : '#64748B'}
-                    />
-                  )}
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </View>
+        )}
       </View>
 
-      {(onHealthCardPress || onWeatherCardPress) && (
+      {isHome && (onHealthCardPress || onWeatherCardPress) && (
         <View style={styles.cardsRow}>
           {onHealthCardPress && (
             <TouchableOpacity
