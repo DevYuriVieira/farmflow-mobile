@@ -18,11 +18,14 @@ import { Screen } from '../../../components/Screen';
 import { EmptyState } from '../../../components/EmptyState';
 import { LoadingState } from '../../../components/LoadingState';
 import { usePreferences } from '../../../contexts/PreferencesContext';
+import { useToast } from '../../../contexts/ToastContext';
 import { triggerHaptic } from '../../../utils/haptics';
+import { generateAndShareSprayMapaReport } from '../../../services/pdfReport.service';
 
 export const SprayDiaryScreen: React.FC = () => {
   const navigation = useNavigation();
   const { isDark, language } = usePreferences();
+  const { showSuccess, showError } = useToast();
   const {
     applications,
     isLoading,
@@ -57,6 +60,43 @@ export const SprayDiaryScreen: React.FC = () => {
     }
   };
 
+  const handleExportMapaPdf = async (item?: SprayApplication) => {
+    await triggerHaptic('selection');
+    const target = item || applications[0];
+    if (!target) {
+      showError(language === 'en' ? 'No applications to export.' : 'Nenhuma aplicação para exportar.');
+      return;
+    }
+
+    try {
+      await generateAndShareSprayMapaReport({
+        farmName: 'Fazenda Santa Fé — Agroprodutiva',
+        farmLocation: 'Rio Verde - GO',
+        plantationName: target.plantationName,
+        cropType: 'Soja / Milho Safrinha',
+        targetPest: target.targetPest,
+        productName: target.productName,
+        activeIngredient: target.activeIngredient,
+        dosagePerHectare: target.dosePerHectare,
+        sprayVolumeLPerHa: target.sprayVolumeLPerHa,
+        totalTreatedAreaHa: target.totalTreatedAreaHa,
+        nozzleType: target.nozzleType,
+        windSpeedKmH: target.windSpeedKmH,
+        temperatureC: target.temperatureC,
+        humidityPercent: target.humidityPercent,
+        withdrawalPeriodDays: target.withdrawalPeriodDays,
+        operatorName: target.operatorName,
+        appliedAt: target.appliedAt,
+        notes: target.notes,
+        language: language === 'en' ? 'en' : 'pt',
+      });
+      await triggerHaptic('success');
+      showSuccess(language === 'en' ? 'MAPA report generated successfully!' : 'Laudo oficial MAPA gerado com sucesso!');
+    } catch {
+      showError(language === 'en' ? 'Failed to generate PDF' : 'Falha ao gerar laudo PDF');
+    }
+  };
+
   const handleSave = async () => {
     const wind = parseFloat(windKmH) || 5;
     const hum = parseFloat(humidity) || 60;
@@ -83,6 +123,8 @@ export const SprayDiaryScreen: React.FC = () => {
       notes,
     });
 
+    await triggerHaptic('success');
+    showSuccess(language === 'en' ? 'Spray application recorded!' : 'Aplicação registrada no caderno de campo!');
     setModalVisible(false);
   };
 
@@ -174,13 +216,28 @@ export const SprayDiaryScreen: React.FC = () => {
             {new Date(item.appliedAt).toLocaleDateString(language === 'en' ? 'en-US' : 'pt-BR')} · {item.operatorName}
           </Text>
 
-          <TouchableOpacity
-            onPress={() => deleteApplication(item.id)}
-            style={styles.deleteBtn}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            <MaterialCommunityIcons name="trash-can-outline" size={18} color="#94A3B8" />
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity
+              onPress={() => handleExportMapaPdf(item)}
+              style={{ marginRight: 12 }}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              accessibilityLabel="Exportar Laudo MAPA"
+            >
+              <MaterialCommunityIcons name="file-pdf-box" size={20} color="#10B981" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={async () => {
+                await triggerHaptic('warning');
+                deleteApplication(item.id);
+              }}
+              style={styles.deleteBtn}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              accessibilityLabel="Excluir Aplicação"
+            >
+              <MaterialCommunityIcons name="trash-can-outline" size={18} color="#94A3B8" />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     );
@@ -221,17 +278,28 @@ export const SprayDiaryScreen: React.FC = () => {
             </View>
           </View>
 
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => {
-              void triggerHaptic('light');
-              setModalVisible(true);
-            }}
-            style={styles.addBtn}
-            accessibilityLabel="Nova Aplicação"
-          >
-            <MaterialCommunityIcons name="plus" size={20} color="#FFFFFF" />
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => handleExportMapaPdf()}
+              style={[styles.addBtn, { backgroundColor: '#059669', marginRight: 8 }]}
+              accessibilityLabel="Exportar Laudo Geral MAPA"
+            >
+              <MaterialCommunityIcons name="file-pdf-box" size={20} color="#FFFFFF" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => {
+                void triggerHaptic('light');
+                setModalVisible(true);
+              }}
+              style={styles.addBtn}
+              accessibilityLabel="Nova Aplicação"
+            >
+              <MaterialCommunityIcons name="plus" size={20} color="#FFFFFF" />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.kpiContainer}>
