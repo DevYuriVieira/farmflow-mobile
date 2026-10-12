@@ -193,7 +193,10 @@ export const MachineryFleetScreen: React.FC = () => {
 
           <TouchableOpacity
             activeOpacity={0.8}
-            onPress={() => toggleMachineOperation(item.id)}
+            onPress={async () => {
+              await triggerHaptic(isOperating ? 'medium' : 'success');
+              toggleMachineOperation(item.id);
+            }}
             style={[
               styles.actionBtn,
               isOperating ? styles.actionBtnStop : styles.actionBtnStart,

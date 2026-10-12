@@ -13,6 +13,7 @@ import { usePlantations } from '../../plantations/hooks/usePlantations';
 import { useFarms } from '../../farms/hooks/useFarms';
 import { useToast } from '../../../contexts/ToastContext';
 import { usePreferences } from '../../../contexts/PreferencesContext';
+import { triggerHaptic } from '../../../utils/haptics';
 
 import { Screen } from '../../../components/Screen';
 import { Button } from '../../../components/Button';
@@ -62,6 +63,7 @@ export const QrScannerScreen: React.FC = () => {
       if (entityType === 'farm') {
         const farm = farms?.find((f) => f.id === entityId);
         if (farm) {
+          void triggerHaptic('success');
           showSuccess(language === 'en' ? `Farm "${farm.name}" found!` : `Fazenda "${farm.name}" identificada!`);
           navigation.navigate('FarmDetail', { farmId: farm.id });
           return;
@@ -69,12 +71,14 @@ export const QrScannerScreen: React.FC = () => {
       } else {
         const plantation = plantations?.find((p) => p.id === entityId);
         if (plantation) {
+          void triggerHaptic('success');
           showSuccess(language === 'en' ? `Field "${plantation.name}" found!` : `Talhão "${plantation.name}" identificado!`);
           navigation.navigate('PlantationDetail', { plantationId: plantation.id });
           return;
         }
       }
 
+      void triggerHaptic('error');
       Alert.alert(
         language === 'en' ? 'Batch Not Found' : 'Lote Não Encontrado',
         language === 'en'
@@ -83,6 +87,7 @@ export const QrScannerScreen: React.FC = () => {
         [{ text: 'OK' }]
       );
     } catch {
+      void triggerHaptic('error');
       showError(language === 'en' ? 'Invalid QR code.' : 'Código QR inválido ou ilegível.');
     }
   };
