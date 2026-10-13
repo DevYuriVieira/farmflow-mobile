@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { ToastProvider } from '../contexts/ToastContext';
 import { PreferencesProvider } from '../contexts/PreferencesContext';
+import { WeatherProvider } from '../contexts/WeatherContext';
 import { AuthProvider } from '../contexts/AuthContext';
 
 export interface AppProvidersProps {
@@ -31,7 +32,9 @@ export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
       <QueryClientProvider client={queryClient}>
         <ToastProvider>
           <PreferencesProvider>
-            <AuthProvider>{children}</AuthProvider>
+            <WeatherProvider>
+              <AuthProvider>{children}</AuthProvider>
+            </WeatherProvider>
           </PreferencesProvider>
         </ToastProvider>
       </QueryClientProvider>
