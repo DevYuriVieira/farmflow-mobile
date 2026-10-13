@@ -35,15 +35,14 @@ export interface InteractiveFarmHeroProps {
   onHealthCardPress?: () => void;
   farmHealthPercentage?: number;
   temperature?: number;
+  humidity?: number;
+  rainProbability?: number;
   currentMode?: WeatherMode;
   onModeChange?: (mode: WeatherMode) => void;
-  /** Automatically cycles weather. Defaults to false (only changes on user interaction). */
   autoPlay?: boolean;
   variant?: 'home' | 'weather';
 }
 
-// Scene coordinate system. Every sprite is placed in these units and converted to %,
-// so animated layers stay aligned with the static landscape at any screen width.
 const VB_W = 400;
 const VB_H = 280;
 const ND = Platform.OS !== 'web';
@@ -184,7 +183,9 @@ export const InteractiveFarmHero: React.FC<InteractiveFarmHeroProps> = ({
   onWeatherCardPress,
   onHealthCardPress,
   farmHealthPercentage = 92,
-  temperature = 28,
+  temperature,
+  humidity,
+  rainProbability,
   currentMode: externalMode,
   onModeChange,
   autoPlay: _autoPlay = false,
@@ -192,25 +193,17 @@ export const InteractiveFarmHero: React.FC<InteractiveFarmHeroProps> = ({
 }) => {
   const isHome = variant === 'home' || (!variant && (Boolean(onWeatherCardPress) || Boolean(onHealthCardPress)));
   const { isDark, language, t } = usePreferences();
-  const [mode, setMode] = useState<WeatherMode>(externalMode || (isDark ? 'night' : 'sunny'));
+  const [internalMode, setInternalMode] = useState<WeatherMode>(() => externalMode || (isDark ? 'night' : 'sunny'));
   const [size, setSize] = useState({ w: 360, h: 252 });
 
-  useEffect(() => {
-    if (externalMode) {
-      setMode(externalMode);
-    } else {
-      setMode(isDark ? 'night' : 'sunny');
-    }
-  }, [externalMode, isDark]);
+  const mode = externalMode ?? internalMode;
 
-  useEffect(() => {
-    onModeChange?.(mode);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode]);
-
-  // Weather mode change is strictly user-driven; it never changes on its own
   const selectMode = (m: WeatherMode) => {
-    setMode(m);
+    if (onModeChange) {
+      onModeChange(m);
+    } else {
+      setInternalMode(m);
+    }
   };
 
   const onLayout = (e: LayoutChangeEvent) => {
@@ -281,7 +274,6 @@ export const InteractiveFarmHero: React.FC<InteractiveFarmHeroProps> = ({
 
   const swayAmp = mode === 'windy' ? 14 : 5;
 
-  /* deterministic rain drops (tile repeated twice vertically for seamless loop) */
   const drops = useMemo(() => {
     const arr: { x: number; y: number; l: number }[] = [];
     let seed = 7;
@@ -310,7 +302,7 @@ export const InteractiveFarmHero: React.FC<InteractiveFarmHeroProps> = ({
   );
 
   const meta = MODE_META[mode];
-  const temp = temperature + meta.delta;
+  const temp = temperature !== undefined ? temperature : 28 + meta.delta;
 
   return (
     <View style={styles.container}>
@@ -1274,7 +1266,7 @@ export const InteractiveFarmHero: React.FC<InteractiveFarmHeroProps> = ({
                   {language === 'en' ? meta.labelEn : meta.labelPt}
                 </Text>
                 <Text style={[styles.weatherMeta, isDark && styles.weatherMetaDark]}>
-                  💧 {meta.hum} · 🌧️ {meta.rain}
+                  💧 {humidity !== undefined ? `${humidity}%` : meta.hum} · 🌧️ {rainProbability !== undefined ? `${rainProbability}%` : meta.rain}
                 </Text>
               </View>
             </TouchableOpacity>
