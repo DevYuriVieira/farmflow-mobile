@@ -14,7 +14,7 @@ import { triggerHaptic } from '../../../utils/haptics';
 import { useFarms } from '../../farms/hooks/useFarms';
 import { usePlantations } from '../../plantations/hooks/usePlantations';
 import { useActivities, useToggleActivityComplete } from '../../activities/hooks/useActivities';
-import { weatherService, FarmWeatherData } from '../../../services/weather.service';
+import { useWeather } from '../../../contexts/WeatherContext';
 
 import { Screen } from '../../../components/Screen';
 import { UserAvatar } from '../../../components/UserAvatar';
@@ -47,39 +47,32 @@ export const DashboardScreen: React.FC = () => {
   const { unreadCount } = useAlerts();
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [weatherData, setWeatherData] = useState<FarmWeatherData | null>(null);
-  const [isLocating, setIsLocating] = useState(false);
+  const {
+    weatherData,
+    liveMode,
+    liveTemperature,
+    liveConditionDetails,
+    isLocating,
+    updateLocationGps,
+    refreshWeather,
+    getTimeGreeting,
+  } = useWeather();
 
   const activeFarm = farms?.find((f) => f.id === selectedFarmId) || farms?.[0];
 
-  React.useEffect(() => {
-    void (async () => {
-      const data = await weatherService.getWeatherForLocation(activeFarm?.location || 'Ribeirão Preto, SP');
-      setWeatherData(data);
-    })();
-  }, [activeFarm]);
-
   const handleGpsUpdate = async () => {
     try {
-      setIsLocating(true);
       await triggerHaptic('medium');
-      const gps = await weatherService.getCurrentGpsLocation();
-      if (gps) {
-        const live = await weatherService.getWeatherForCoordinates(gps.latitude, gps.longitude, gps.name);
-        setWeatherData(live);
-        await triggerHaptic('success');
-      } else {
-        await triggerHaptic('warning');
-      }
+      await updateLocationGps();
+      await triggerHaptic('success');
     } catch {
-    } finally {
-      setIsLocating(false);
+      await triggerHaptic('warning');
     }
   };
 
   const onRefresh = async () => {
     await triggerHaptic('light');
-    await Promise.all([refetchPlantations(), refetchActivities()]);
+    await Promise.all([refetchPlantations(), refetchActivities(), refreshWeather()]);
   };
 
   if (loadingFarms || loadingPlantations || loadingActivities) {
@@ -217,7 +210,7 @@ export const DashboardScreen: React.FC = () => {
             style={styles.farmSelectorCenter}
           >
             <Text style={[styles.greetingText, isDark && styles.greetingTextDark]}>
-              {t('greeting')}, {language === 'en' ? 'Guest' : (user?.name?.split(' ')[0] || 'Produtor')} 👋
+              {getTimeGreeting(language)}, {language === 'en' ? 'Guest' : (user?.name?.split(' ')[0] || 'Produtor')} 👋
             </Text>
             <View style={styles.farmNameRow}>
               <Text style={[styles.farmNameText, isDark && styles.farmNameTextDark]} numberOfLines={1}>
@@ -288,8 +281,11 @@ export const DashboardScreen: React.FC = () => {
 
         <InteractiveFarmHero
           variant="home"
+          currentMode={liveMode}
           farmHealthPercentage={92}
-          temperature={weatherData?.temperatureCelsius || 28}
+          temperature={liveTemperature}
+          humidity={liveConditionDetails.humidity}
+          rainProbability={liveConditionDetails.rainChance}
           onWeatherCardPress={() => navigation.navigate('WeatherScreen')}
           onHealthCardPress={() => navigation.navigate('Reports' as never)}
         />
@@ -297,7 +293,7 @@ export const DashboardScreen: React.FC = () => {
         <QuickStatsGrid
           cropsCount={totalCropsCount}
           animalsCount={48}
-          soilMoisture={weatherData?.humidityPercent || 72}
+          soilMoisture={liveConditionDetails.soilMoisture}
           harvestKg={1280}
           onCropsPress={() => navigation.navigate('Plantations' as never)}
           onAnimalsPress={() => navigation.navigate('Farm' as never)}
