@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -12,14 +12,21 @@ import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Svg, { Path, Circle, Line } from 'react-native-svg';
 
-import { InteractiveFarmHero, WeatherMode } from '../../../components/InteractiveFarmHero';
+import { InteractiveFarmHero } from '../../../components/InteractiveFarmHero';
 import { usePreferences } from '../../../contexts/PreferencesContext';
+import { useWeather } from '../../../contexts/WeatherContext';
 import { styles } from '../styles/weatherConditions.styles';
 
 export const WeatherConditionsScreen: React.FC = () => {
   const navigation = useNavigation();
   const { isDark, language, t } = usePreferences();
-  const [activeWeather, setActiveWeather] = useState<WeatherMode>(isDark ? 'night' : 'sunny');
+  const {
+    currentMode: activeWeather,
+    setCurrentMode: setActiveWeather,
+    conditionDetails: weatherData,
+    hourlyForecast,
+    refreshWeather,
+  } = useWeather();
 
   const windAnim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
@@ -39,123 +46,6 @@ export const WeatherConditionsScreen: React.FC = () => {
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
   });
-
-  const weatherData = {
-    sunny: {
-      temp: 28,
-      feels: 30,
-      title: 'Ensolarado',
-      description: 'Céu aberto com brisa leve sobre os campos e lavouras.',
-      humidity: 72,
-      dewPoint: 22,
-      windSpeed: 12,
-      windDir: 'NE',
-      windGusts: 18,
-      rainChance: 10,
-      rainExpected: '0.0 mm',
-      soilMoisture: 88,
-      soilStatus: 'Bem irrigado',
-      waterTank: 92,
-      waterVolume: '9.200 L',
-      uvIndex: 5,
-      uvLabel: 'Moderado (FPS 30+)',
-    },
-    cloudy: {
-      temp: 25,
-      feels: 26,
-      title: 'Parcialmente Nublado',
-      description: 'Nuvens esparsas bloqueando radiação solar direta.',
-      humidity: 78,
-      dewPoint: 21,
-      windSpeed: 16,
-      windDir: 'E',
-      windGusts: 24,
-      rainChance: 35,
-      rainExpected: '0.5 mm',
-      soilMoisture: 84,
-      soilStatus: 'Adequado',
-      waterTank: 90,
-      waterVolume: '9.000 L',
-      uvIndex: 3,
-      uvLabel: 'Baixo (FPS 15+)',
-    },
-    windy: {
-      temp: 27,
-      feels: 26,
-      title: 'Ventania',
-      description: 'Rajadas moderadas a fortes, atenção para pulverizações aéreas.',
-      humidity: 65,
-      dewPoint: 19,
-      windSpeed: 34,
-      windDir: 'NW',
-      windGusts: 48,
-      rainChance: 20,
-      rainExpected: '0.0 mm',
-      soilMoisture: 80,
-      soilStatus: 'Adequado',
-      waterTank: 89,
-      waterVolume: '8.900 L',
-      uvIndex: 4,
-      uvLabel: 'Moderado',
-    },
-    rain: {
-      temp: 21,
-      feels: 20,
-      title: 'Pancadas de Chuva',
-      description: 'Chuva sobre a fazenda. O solo e os reservatórios estão enchendo.',
-      humidity: 94,
-      dewPoint: 20,
-      windSpeed: 22,
-      windDir: 'SW',
-      windGusts: 32,
-      rainChance: 95,
-      rainExpected: '18.4 mm',
-      soilMoisture: 98,
-      soilStatus: 'Saturado',
-      waterTank: 99,
-      waterVolume: '9.900 L',
-      uvIndex: 1,
-      uvLabel: 'Mínimo',
-    },
-    rainbow: {
-      temp: 24,
-      feels: 25,
-      title: 'Pós-Chuva / Arco-íris',
-      description: 'A chuva passou. O solo está úmido e o arco-íris se abriu no horizonte.',
-      humidity: 82,
-      dewPoint: 21,
-      windSpeed: 10,
-      windDir: 'N',
-      windGusts: 15,
-      rainChance: 15,
-      rainExpected: '0.1 mm',
-      soilMoisture: 92,
-      soilStatus: 'Ótimo',
-      waterTank: 96,
-      waterVolume: '9.600 L',
-      uvIndex: 4,
-      uvLabel: 'Moderado',
-    },
-    night: {
-      temp: 20,
-      feels: 19,
-      title: language === 'en' ? 'Clear Night' : 'Noite Limpa',
-      description: language === 'en' ? 'Starry night and cool temperature over the farm.' : 'Céu estrelado e temperatura amena sobre os talhões.',
-      humidity: 88,
-      dewPoint: 18,
-      windSpeed: 6,
-      windDir: 'N',
-      windGusts: 10,
-      rainChance: 5,
-      rainExpected: '0.0 mm',
-      soilMoisture: 90,
-      soilStatus: language === 'en' ? 'Optimal rest' : 'Descanso Noturno',
-      waterTank: 94,
-      waterVolume: '9.400 L',
-      uvIndex: 0,
-      uvLabel: language === 'en' ? 'None' : 'Nenhum',
-    },
-  }[activeWeather];
 
   const handleBack = () => {
     if (navigation.canGoBack()) {
@@ -186,9 +76,7 @@ export const WeatherConditionsScreen: React.FC = () => {
         <TouchableOpacity
           style={[styles.iconButton, isDark && styles.iconButtonDark]}
           onPress={() => {
-            const modes: WeatherMode[] = ['sunny', 'cloudy', 'windy', 'rain', 'rainbow', 'night'];
-            const next = modes[(modes.indexOf(activeWeather) + 1) % modes.length];
-            setActiveWeather(next);
+            void refreshWeather();
           }}
           activeOpacity={0.7}
         >
@@ -201,6 +89,8 @@ export const WeatherConditionsScreen: React.FC = () => {
         currentMode={activeWeather}
         onModeChange={(mode) => setActiveWeather(mode)}
         temperature={weatherData.temp}
+        humidity={weatherData.humidity}
+        rainProbability={weatherData.rainChance}
       />
 
       <View style={styles.sheetContainer}>
@@ -225,16 +115,7 @@ export const WeatherConditionsScreen: React.FC = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.hourlyContainer}
         >
-          {[
-            { hour: language === 'en' ? 'Now' : 'Agora', temp: 28, active: true },
-            { hour: '11:00', temp: 29 },
-            { hour: '12:00', temp: 30 },
-            { hour: '13:00', temp: 31 },
-            { hour: '14:00', temp: 31 },
-            { hour: '15:00', temp: 30 },
-            { hour: '16:00', temp: 29 },
-            { hour: '17:00', temp: 27 },
-          ].map((item, idx) => (
+          {hourlyForecast.map((item, idx) => (
             <View
               key={idx}
               style={[
