@@ -49,9 +49,10 @@ export const DashboardScreen: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const {
     weatherData,
-    liveMode,
-    liveTemperature,
-    liveConditionDetails,
+    currentMode,
+    setCurrentMode,
+    temperature,
+    conditionDetails,
     isLocating,
     updateLocationGps,
     refreshWeather,
@@ -186,7 +187,7 @@ export const DashboardScreen: React.FC = () => {
   ];
 
   return (
-    <Screen scrollable refreshing={false} onRefresh={onRefresh} withTopInset={false}>
+    <Screen scrollable refreshing={false} onRefresh={onRefresh}>
       <View style={[styles.content, isDark && styles.contentDark]}>
         <View style={styles.topBar}>
           <TouchableOpacity
@@ -281,11 +282,12 @@ export const DashboardScreen: React.FC = () => {
 
         <InteractiveFarmHero
           variant="home"
-          currentMode={liveMode}
+          currentMode={currentMode}
+          onModeChange={setCurrentMode}
           farmHealthPercentage={92}
-          temperature={liveTemperature}
-          humidity={liveConditionDetails.humidity}
-          rainProbability={liveConditionDetails.rainChance}
+          temperature={temperature}
+          humidity={conditionDetails.humidity}
+          rainProbability={conditionDetails.rainChance}
           onWeatherCardPress={() => navigation.navigate('WeatherScreen')}
           onHealthCardPress={() => navigation.navigate('Reports' as never)}
         />
@@ -293,7 +295,7 @@ export const DashboardScreen: React.FC = () => {
         <QuickStatsGrid
           cropsCount={totalCropsCount}
           animalsCount={48}
-          soilMoisture={liveConditionDetails.soilMoisture}
+          soilMoisture={conditionDetails.soilMoisture}
           harvestKg={1280}
           onCropsPress={() => navigation.navigate('Plantations' as never)}
           onAnimalsPress={() => navigation.navigate('Farm' as never)}

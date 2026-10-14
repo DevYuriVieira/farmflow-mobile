@@ -3,7 +3,7 @@ import { radii, spacing } from '../../../theme';
 
 export const styles = StyleSheet.create({
   content: {
-    paddingTop: Platform.OS === 'ios' ? 48 : 20,
+    paddingTop: 4,
     paddingBottom: 90,
   },
   contentDark: {
