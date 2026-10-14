@@ -5,7 +5,10 @@ import {
   Image,
   TouchableOpacity,
   Alert,
+  Platform,
+  StatusBar,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -40,6 +43,9 @@ export const PlantationDetailScreen: React.FC = () => {
   const deleteMutation = useDeletePlantation();
   const toggleCompleteMutation = useToggleActivityComplete();
 
+  const insets = useSafeAreaInsets();
+  const baseTop = Math.max(insets.top, Platform.OS === 'android' ? (StatusBar.currentHeight ?? 24) : 0);
+  const topOverlay = baseTop > 0 ? baseTop + 16 : (Platform.OS === 'android' ? 48 : 24);
   const [editModalVisible, setEditModalVisible] = useState(false);
 
   const handleBack = () => {
@@ -110,7 +116,7 @@ export const PlantationDetailScreen: React.FC = () => {
           </View>
         )}
 
-        <View style={styles.navBarOverlay}>
+        <View style={[styles.navBarOverlay, { top: topOverlay }]}>
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={handleBack}
