@@ -124,7 +124,6 @@ export const PestDiagnosisScreen: React.FC = () => {
 
   return (
     <Screen scrollable contentContainerStyle={styles.container}>
-      {/* Top Header Bar */}
       <View style={styles.topBar}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -141,9 +140,8 @@ export const PestDiagnosisScreen: React.FC = () => {
           </Text>
         </View>
       </View>
-        {/* Photo Input Controls */}
-        <View
-          style={[
+      <View
+        style={[
             styles.card,
             {
               backgroundColor: themeColors.surfaceCard,
@@ -206,7 +204,6 @@ export const PestDiagnosisScreen: React.FC = () => {
             </View>
           )}
 
-          {/* Quick Sample Selector */}
           <Text style={[styles.sampleLabel, { color: themeColors.textMuted }]}>
             Ou teste com amostras do catálogo:
           </Text>
@@ -241,7 +238,6 @@ export const PestDiagnosisScreen: React.FC = () => {
           </ScrollView>
         </View>
 
-        {/* Diagnosis Result Card */}
         <View
           style={[
             styles.card,
@@ -300,7 +296,6 @@ export const PestDiagnosisScreen: React.FC = () => {
             </View>
           </View>
 
-          {/* Symptoms */}
           <Text style={[styles.subHeading, { color: themeColors.textPrimary }]}>
             {language === 'en' ? 'Identified Symptoms:' : 'Sintomatologia Identificada:'}
           </Text>
@@ -313,7 +308,6 @@ export const PestDiagnosisScreen: React.FC = () => {
             </View>
           ))}
 
-          {/* Agronomic Prescription */}
           <View
             style={[
               styles.prescriptionBox,
@@ -344,14 +338,12 @@ export const PestDiagnosisScreen: React.FC = () => {
             </Text>
           </View>
 
-          {/* Signature Pad */}
           <SignaturePad
             title="Assinatura Digital do Responsável Técnico"
             onSaveSignature={(svg) => setDigitalSignature(svg)}
             onClearSignature={() => setDigitalSignature(null)}
           />
 
-          {/* Action Buttons */}
           <TouchableOpacity
             onPress={handleSaveToScouting}
             disabled={isSaved}
