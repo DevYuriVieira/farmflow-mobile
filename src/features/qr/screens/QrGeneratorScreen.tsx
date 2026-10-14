@@ -45,7 +45,7 @@ export const QrGeneratorScreen: React.FC = () => {
   };
 
   return (
-    <Screen withTopInset={false}>
+    <Screen>
       <View style={[styles.header, isDark && styles.headerDark]}>
         <TouchableOpacity
           onPress={handleBack}
