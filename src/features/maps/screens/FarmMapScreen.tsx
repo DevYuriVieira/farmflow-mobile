@@ -42,7 +42,7 @@ export const FarmMapScreen: React.FC = () => {
   const activeFarm = selectedFarm || farmsWithCoords[0] || null;
 
   return (
-    <Screen withTopInset={false}>
+    <Screen>
       <View style={styles.header}>
         <Text style={styles.title}>
           {language === 'en' ? 'Farm GPS Mapping' : 'Mapeamento das Fazendas'}

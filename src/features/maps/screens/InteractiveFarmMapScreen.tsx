@@ -6,7 +6,10 @@ import {
   ScrollView,
   Modal,
   TextInput,
+  Platform,
+  StatusBar as RNStatusBar,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -345,8 +348,13 @@ const FARM_PRESETS: FarmPreset[] = [
 const STORAGE_KEY = '@farmflow_custom_farm_map_v2';
 
 export const InteractiveFarmMapScreen: React.FC = () => {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation<AppNavigationProp>();
   const { isDark, language, t } = usePreferences();
+
+  const androidStatusBar = Platform.OS === 'android' ? (RNStatusBar.currentHeight ?? 24) : 0;
+  const baseTop = Math.max(insets.top, androidStatusBar);
+  const topPadding = baseTop > 0 ? baseTop + 16 : (Platform.OS === 'android' ? 48 : 24);
 
   const [sectors, setSectors] = useState<SectorZone[]>(DEFAULT_SECTORS);
   const [selectedSectorId, setSelectedSectorId] = useState<string>('sector_2');
@@ -459,8 +467,7 @@ export const InteractiveFarmMapScreen: React.FC = () => {
 
   return (
     <ScrollView style={[styles.container, isDark && styles.containerDark]} showsVerticalScrollIndicator={false}>
-      {/* Header Bar */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: topPadding }]}>
         <View style={styles.headerLeft}>
           <TouchableOpacity
             style={[styles.backButton, isDark && styles.backButtonDark]}

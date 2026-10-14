@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: spacing.md,
-    paddingTop: Platform.OS === 'ios' ? 52 : 24,
+    paddingTop: 4,
     paddingBottom: spacing.xs,
   },
   headerLeft: {
