@@ -93,7 +93,7 @@ export const FarmDetailScreen: React.FC = () => {
   };
 
   return (
-    <Screen scrollable withTopInset={false}>
+    <Screen scrollable>
       <View style={[styles.header, isDark && styles.headerDark]}>
         <TouchableOpacity
           onPress={handleBack}
