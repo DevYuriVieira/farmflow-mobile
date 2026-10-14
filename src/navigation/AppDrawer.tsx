@@ -4,6 +4,8 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
+  Platform,
+  StatusBar,
 } from 'react-native';
 import {
   createDrawerNavigator,
@@ -80,11 +82,14 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
     { name: 'Settings', label: language === 'en' ? 'Settings' : 'Configurações', icon: 'cog-outline' },
   ];
 
+  const baseTop = Math.max(insets.top, Platform.OS === 'android' ? (StatusBar.currentHeight ?? 24) : 0);
+  const safeTop = baseTop > 0 ? baseTop + spacing.md : (Platform.OS === 'android' ? 48 : 24);
+
   return (
     <View
       style={[
         styles.drawerContainer,
-        { paddingTop: insets.top + spacing.lg, paddingBottom: insets.bottom + spacing.md },
+        { paddingTop: safeTop, paddingBottom: insets.bottom + spacing.md },
       ]}
     >
       <View style={styles.drawerHeader}>

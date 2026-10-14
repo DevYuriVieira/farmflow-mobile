@@ -6,6 +6,7 @@ import {
   RefreshControl,
   KeyboardAvoidingView,
   Platform,
+  StatusBar as RNStatusBar,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -44,10 +45,14 @@ export const Screen: React.FC<ScreenProps> = ({
 
   const resolvedBg = backgroundColor || (isDark ? '#0B1410' : colors.background);
 
+  const androidStatusBar = Platform.OS === 'android' ? (RNStatusBar.currentHeight ?? 24) : 0;
+  const baseTop = Math.max(insets.top, androidStatusBar);
+  const safeTop = withTopInset ? (baseTop > 0 ? baseTop + 16 : (Platform.OS === 'android' ? 48 : 24)) : 0;
+
   const containerStyle: ViewStyle = {
     flex: 1,
     backgroundColor: resolvedBg,
-    paddingTop: withTopInset ? insets.top : 0,
+    paddingTop: safeTop,
     paddingBottom: withBottomInset ? insets.bottom : 0,
   };
 

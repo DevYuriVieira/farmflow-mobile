@@ -46,3 +46,6 @@ playwright-report/
 test-results/
 cypress/screenshots/
 cypress/videos/
+
+.idea/
+
