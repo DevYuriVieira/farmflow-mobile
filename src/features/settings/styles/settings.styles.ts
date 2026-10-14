@@ -4,7 +4,7 @@ import { colors, radii, spacing, typography } from '../../../theme';
 export const styles = StyleSheet.create({
   header: {
     paddingHorizontal: spacing.md,
-    paddingTop: spacing.lg,
+    paddingTop: spacing.xs,
     paddingBottom: spacing.sm,
   },
   headerDark: {

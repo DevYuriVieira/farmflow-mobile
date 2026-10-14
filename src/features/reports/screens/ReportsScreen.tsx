@@ -117,7 +117,7 @@ export const ReportsScreen: React.FC = () => {
   };
 
   return (
-    <Screen scrollable withTopInset={false}>
+    <Screen scrollable>
       <View style={[styles.header, isDark && styles.headerDark]}>
         <View style={styles.titleRow}>
           <TouchableOpacity
