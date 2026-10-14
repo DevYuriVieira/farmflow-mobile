@@ -7,7 +7,9 @@ import {
   Animated,
   Easing,
   Alert,
+  StatusBar,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Svg, { Path, Circle, Line } from 'react-native-svg';
@@ -18,8 +20,10 @@ import { useWeather } from '../../../contexts/WeatherContext';
 import { styles } from '../styles/weatherConditions.styles';
 
 export const WeatherConditionsScreen: React.FC = () => {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const { isDark, language, t } = usePreferences();
+  const topPadding = Math.max(insets.top, StatusBar.currentHeight ?? 0, 20) + 8;
   const {
     currentMode: activeWeather,
     setCurrentMode: setActiveWeather,
@@ -57,7 +61,7 @@ export const WeatherConditionsScreen: React.FC = () => {
 
   return (
     <ScrollView style={[styles.container, isDark && styles.containerDark]} showsVerticalScrollIndicator={false}>
-      <View style={styles.topBar}>
+      <View style={[styles.topBar, { paddingTop: topPadding }]}>
         <TouchableOpacity
           style={[styles.iconButton, isDark && styles.iconButtonDark]}
           onPress={handleBack}

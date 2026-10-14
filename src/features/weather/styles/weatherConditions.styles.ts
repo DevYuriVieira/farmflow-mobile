@@ -1,4 +1,4 @@
-import { StyleSheet, Platform } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { radii, spacing } from '../../../theme';
 
 export const styles = StyleSheet.create({
@@ -11,7 +11,6 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: spacing.md,
-    paddingTop: Platform.OS === 'ios' ? 52 : 24,
     paddingBottom: spacing.sm,
   },
   iconButton: {
