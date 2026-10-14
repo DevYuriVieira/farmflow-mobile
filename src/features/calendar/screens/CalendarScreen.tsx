@@ -58,7 +58,7 @@ export const CalendarScreen: React.FC = () => {
   }
 
   return (
-    <Screen scrollable withTopInset={false}>
+    <Screen scrollable>
       <View style={[styles.header, isDark && { backgroundColor: '#0B1410' }]}>
         <View style={styles.titleRow}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>

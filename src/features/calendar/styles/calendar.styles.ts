@@ -3,7 +3,7 @@ import { colors, radii, spacing, typography } from '../../../theme';
 
 export const styles = StyleSheet.create({
   header: {
-    paddingTop: spacing.xl + 6,
+    paddingTop: spacing.xs,
     paddingBottom: spacing.md,
     backgroundColor: colors.background,
   },
