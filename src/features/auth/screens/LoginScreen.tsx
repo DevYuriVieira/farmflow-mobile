@@ -6,6 +6,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  StatusBar,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -73,6 +74,9 @@ export const LoginScreen: React.FC = () => {
     }
   };
 
+  const baseTop = Math.max(insets.top, Platform.OS === 'android' ? (StatusBar.currentHeight ?? 24) : 0);
+  const topPadding = baseTop > 0 ? baseTop + spacing.base : (Platform.OS === 'android' ? 48 : 24);
+
   return (
     <View style={styles.container}>
       <AnimatedFarmBackground variant="full" />
@@ -84,7 +88,7 @@ export const LoginScreen: React.FC = () => {
         <ScrollView
           contentContainerStyle={[
             styles.scrollContent,
-            { paddingTop: insets.top + spacing.xl, paddingBottom: insets.bottom + spacing.xl },
+            { paddingTop: topPadding, paddingBottom: insets.bottom + spacing.xl },
           ]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
