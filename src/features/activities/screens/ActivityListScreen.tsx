@@ -71,7 +71,7 @@ export const ActivityListScreen: React.FC = () => {
   );
 
   return (
-    <Screen withTopInset={false}>
+    <Screen>
       <View style={[styles.header, isDark && styles.headerDark]}>
         <View style={styles.titleRow}>
           <TouchableOpacity

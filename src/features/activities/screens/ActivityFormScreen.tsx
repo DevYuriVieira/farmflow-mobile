@@ -96,7 +96,7 @@ export const ActivityFormScreen: React.FC = () => {
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <Screen scrollable withTopInset={false}>
+    <Screen scrollable>
       <View style={[styles.header, isDark && { backgroundColor: '#0B1410' }]}>
         <TouchableOpacity
           onPress={handleBack}
