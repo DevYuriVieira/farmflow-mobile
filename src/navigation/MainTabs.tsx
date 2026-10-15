@@ -111,6 +111,7 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
 export const MainTabs: React.FC = () => {
   return (
     <Tab.Navigator
+      initialRouteName="Home"
       tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{
         headerShown: false,

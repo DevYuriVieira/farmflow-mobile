@@ -176,6 +176,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 export const AppDrawer: React.FC = () => {
   return (
     <Drawer.Navigator
+      initialRouteName="MainTabs"
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
         headerShown: false,
