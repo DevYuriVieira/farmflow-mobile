@@ -16,6 +16,13 @@ export const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingTop: 4,
     paddingBottom: spacing.xs,
+    zIndex: 10,
+  },
+  headerLight: {
+    backgroundColor: '#F8F9F5',
+  },
+  headerDark: {
+    backgroundColor: '#07150E',
   },
   headerLeft: {
     flexDirection: 'row',
@@ -320,7 +327,7 @@ export const styles = StyleSheet.create({
     borderRadius: radii.xxl,
     marginHorizontal: spacing.md,
     marginTop: spacing.md,
-    marginBottom: 80,
+    marginBottom: spacing.xs,
     padding: spacing.md,
     borderWidth: 1,
     borderColor: '#E2E8F0',

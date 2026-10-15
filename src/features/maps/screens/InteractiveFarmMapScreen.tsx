@@ -10,7 +10,7 @@ import {
   StatusBar as RNStatusBar,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, DrawerActions } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FarmIllustration } from '../components/FarmIllustration';
@@ -317,7 +317,7 @@ const FARM_PRESETS: FarmPreset[] = [
     titleEn: 'Grains & Commodities (Cerrado)',
     descPt: 'Ideal para produção em larga escala de Soja Safra, Milho Safrinha, Algodão e Silos.',
     descEn: 'Optimized for high-yield Soybeans, Corn, Cotton, and Commercial Grain Silos.',
-    sectors: ['headquarters', 'soybeans', 'wheat', 'corn', 'cotton', 'storage_silos'],
+    sectors: ['headquarters', 'soybeans', 'wheat', 'corn', 'cotton', 'reservoir_pivot', 'storage_silos'],
   },
   {
     id: 'hortifruti_green',
@@ -325,7 +325,7 @@ const FARM_PRESETS: FarmPreset[] = [
     titleEn: 'Horticulture & Fruit Belt',
     descPt: 'Vocacionada para Tomates de mesa, Horta folhosa comercial, Pomar de Citros e Represa.',
     descEn: 'Engineered for Table Tomatoes, Leafy Greens, Citrus Orchards, and Reservoir.',
-    sectors: ['headquarters', 'tomatoes', 'vegetables', 'citrus', 'pasture', 'reservoir_pivot'],
+    sectors: ['headquarters', 'tomatoes', 'vegetables', 'citrus', 'pasture', 'reservoir_pivot', 'storage_silos'],
   },
   {
     id: 'coffee_special',
@@ -333,7 +333,7 @@ const FARM_PRESETS: FarmPreset[] = [
     titleEn: 'Specialty Coffee & Grains',
     descPt: 'Focada em Cafezais Arábica, Lavoura de Milho, Trigo de Inverno e Silos de armazenagem.',
     descEn: 'Dedicated to Arabica Coffee, Corn, Winter Wheat, and On-Farm Grain Silos.',
-    sectors: ['headquarters', 'coffee', 'wheat', 'corn', 'pasture', 'storage_silos'],
+    sectors: ['headquarters', 'coffee', 'wheat', 'corn', 'pasture', 'reservoir_pivot', 'storage_silos'],
   },
   {
     id: 'ilpf_livestock',
@@ -341,7 +341,7 @@ const FARM_PRESETS: FarmPreset[] = [
     titleEn: 'Integrated Crop-Livestock (ILPF)',
     descPt: 'Manejo sinérgico entre Soja, Milho silagem, Pecuária rotacionada e Represa.',
     descEn: 'Synergistic rotation between Soybeans, Silage Corn, Pasture Cattle, and Dam.',
-    sectors: ['headquarters', 'pasture', 'corn', 'soybeans', 'pasture', 'reservoir_pivot'],
+    sectors: ['headquarters', 'pasture', 'corn', 'soybeans', 'pasture', 'reservoir_pivot', 'storage_silos'],
   },
 ];
 
@@ -400,7 +400,7 @@ export const InteractiveFarmMapScreen: React.FC = () => {
     if (navigation.canGoBack()) {
       navigation.goBack();
     } else {
-      (navigation as any).navigate('Home');
+      (navigation as any).navigate('MainTabs', { screen: 'Home' });
     }
   };
 
@@ -466,8 +466,14 @@ export const InteractiveFarmMapScreen: React.FC = () => {
 
 
   return (
-    <ScrollView style={[styles.container, isDark && styles.containerDark]} showsVerticalScrollIndicator={false}>
-      <View style={[styles.header, { paddingTop: topPadding }]}>
+    <View style={[styles.container, isDark && styles.containerDark]}>
+      <View
+        style={[
+          styles.header,
+          isDark ? styles.headerDark : styles.headerLight,
+          { paddingTop: topPadding },
+        ]}
+      >
         <View style={styles.headerLeft}>
           <TouchableOpacity
             style={[styles.backButton, isDark && styles.backButtonDark]}
@@ -493,16 +499,38 @@ export const InteractiveFarmMapScreen: React.FC = () => {
         <View style={styles.headerActions}>
           <TouchableOpacity
             style={[styles.headerIconBtn, isDark && styles.headerIconBtnDark]}
+            onPress={() => (navigation as any).navigate('MainTabs', { screen: 'Home' })}
+            activeOpacity={0.7}
+            accessibilityLabel="Ir para o Início"
+          >
+            <MaterialCommunityIcons name="home-outline" size={19} color={isDark ? '#FFFFFF' : '#1E293B'} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.headerIconBtn, isDark && styles.headerIconBtnDark]}
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+            activeOpacity={0.7}
+            accessibilityLabel="Abrir Menu Lateral"
+          >
+            <MaterialCommunityIcons name="menu" size={20} color={isDark ? '#FFFFFF' : '#1E293B'} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.headerIconBtn, isDark && styles.headerIconBtnDark]}
             onPress={() => navigation.navigate('WeatherScreen' as never)}
             activeOpacity={0.7}
+            accessibilityLabel="Condições Climáticas"
           >
             <MaterialCommunityIcons name="weather-partly-cloudy" size={18} color={isDark ? '#FFFFFF' : '#1E293B'} />
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Toolbar: Farmer Customization Shortcuts */}
-      <View style={styles.toolbarRow}>
+      <ScrollView
+        style={[styles.container, isDark && styles.containerDark]}
+        contentContainerStyle={{ paddingBottom: 95 }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Toolbar: Farmer Customization Shortcuts */}
+        <View style={styles.toolbarRow}>
         <TouchableOpacity
           style={[styles.toolbarBtn, isDark && styles.toolbarBtnDark]}
           onPress={() => openEditModal()}
@@ -1021,5 +1049,6 @@ export const InteractiveFarmMapScreen: React.FC = () => {
         </View>
       </Modal>
     </ScrollView>
-  );
+  </View>
+);
 };
