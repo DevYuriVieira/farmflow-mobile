@@ -53,7 +53,7 @@ export const styles = StyleSheet.create({
   content: {
     padding: spacing.md,
     gap: spacing.md,
-    paddingBottom: 60,
+    paddingBottom: 115,
   },
   profileCard: {
     backgroundColor: colors.surfaceCard,

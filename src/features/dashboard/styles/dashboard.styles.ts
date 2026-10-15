@@ -4,7 +4,7 @@ import { radii, spacing } from '../../../theme';
 export const styles = StyleSheet.create({
   content: {
     paddingTop: 4,
-    paddingBottom: 90,
+    paddingBottom: 100,
   },
   contentDark: {
     backgroundColor: '#0B1410',
@@ -204,6 +204,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#1B4D3E',
     marginHorizontal: spacing.md,
+    marginTop: spacing.sm,
     paddingVertical: 15,
     borderRadius: radii.pill,
     gap: 8,

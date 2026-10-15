@@ -113,11 +113,11 @@ export const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: spacing.base,
     paddingTop: spacing.xs,
-    paddingBottom: 90,
+    paddingBottom: 160,
   },
   floatingButtonContainer: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 92,
     left: spacing.base,
     right: spacing.base,
   },
