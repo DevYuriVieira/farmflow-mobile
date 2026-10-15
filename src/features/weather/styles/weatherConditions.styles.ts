@@ -12,6 +12,13 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing.md,
     paddingBottom: spacing.sm,
+    zIndex: 10,
+  },
+  topBarLight: {
+    backgroundColor: '#F8F9F5',
+  },
+  topBarDark: {
+    backgroundColor: '#07150E',
   },
   iconButton: {
     width: 40,
@@ -83,7 +90,8 @@ export const styles = StyleSheet.create({
     marginTop: 6,
     borderWidth: 1,
     borderColor: '#E5EADF',
-    paddingBottom: 90,
+    paddingBottom: 95,
+    flex: 1,
   },
   sheetHandle: {
     width: 44,
@@ -442,5 +450,90 @@ export const styles = StyleSheet.create({
   },
   farmPillTextDark: {
     color: '#F0FDF4',
+  },
+  sheetContainerDark: {
+    backgroundColor: '#111E18',
+    borderColor: '#1E382B',
+  },
+  sheetTitleDark: {
+    color: '#F0FDF4',
+  },
+  sheetSubtitleDark: {
+    color: '#94A3B8',
+  },
+  hourlyPillDark: {
+    backgroundColor: '#182A22',
+    borderColor: '#23382E',
+  },
+  hourlyTempDark: {
+    color: '#F0FDF4',
+  },
+  hourlyTimeDark: {
+    color: '#94A3B8',
+  },
+  bentoCardDark: {
+    backgroundColor: '#182A22',
+    borderColor: '#23382E',
+  },
+  cardLabelDark: {
+    color: '#94A3B8',
+  },
+  cardValueDark: {
+    color: '#F0FDF4',
+  },
+  cardSubtextDark: {
+    color: '#64748B',
+  },
+  uvBannerDark: {
+    backgroundColor: '#182A22',
+    borderColor: '#23382E',
+  },
+  uvValueTextDark: {
+    color: '#F0FDF4',
+  },
+  forecastCardDark: {
+    backgroundColor: '#182A22',
+    borderColor: '#23382E',
+  },
+  forecastTitleDark: {
+    color: '#F0FDF4',
+  },
+  dayTextDark: {
+    color: '#F0FDF4',
+  },
+  tempMinTextDark: {
+    color: '#94A3B8',
+  },
+  tempMaxTextDark: {
+    color: '#F0FDF4',
+  },
+  recSectionTitleDark: {
+    color: '#F0FDF4',
+  },
+  recSectionSubtitleDark: {
+    color: '#94A3B8',
+  },
+  recCardDark: {
+    backgroundColor: '#182A22',
+    borderColor: '#23382E',
+  },
+  recTitleDark: {
+    color: '#F0FDF4',
+  },
+  recDescDark: {
+    color: '#94A3B8',
+  },
+  recBtnOutlineDark: {
+    backgroundColor: '#111E18',
+    borderColor: '#2D4A3E',
+  },
+  recBtnOutlineTextDark: {
+    color: '#F0FDF4',
+  },
+  recBtnSoftDark: {
+    backgroundColor: '#1E382B',
+  },
+  recBtnSoftTextDark: {
+    color: '#86EFAC',
   },
 });

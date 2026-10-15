@@ -60,8 +60,14 @@ export const WeatherConditionsScreen: React.FC = () => {
   };
 
   return (
-    <ScrollView style={[styles.container, isDark && styles.containerDark]} showsVerticalScrollIndicator={false}>
-      <View style={[styles.topBar, { paddingTop: topPadding }]}>
+    <View style={[styles.container, isDark && styles.containerDark]}>
+      <View
+        style={[
+          styles.topBar,
+          isDark ? styles.topBarDark : styles.topBarLight,
+          { paddingTop: topPadding },
+        ]}
+      >
         <TouchableOpacity
           style={[styles.iconButton, isDark && styles.iconButtonDark]}
           onPress={handleBack}
@@ -88,7 +94,12 @@ export const WeatherConditionsScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      <InteractiveFarmHero
+      <ScrollView
+        style={[styles.container, isDark && styles.containerDark]}
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <InteractiveFarmHero
         variant="weather"
         currentMode={activeWeather}
         onModeChange={(mode) => setActiveWeather(mode)}
@@ -97,11 +108,11 @@ export const WeatherConditionsScreen: React.FC = () => {
         rainProbability={weatherData.rainChance}
       />
 
-      <View style={styles.sheetContainer}>
+      <View style={[styles.sheetContainer, isDark && styles.sheetContainerDark]}>
         <View style={styles.sheetHandle} />
         <View style={styles.sheetHeader}>
           <View style={styles.sheetHeaderLeft}>
-            <Text style={styles.sheetTitle}>
+            <Text style={[styles.sheetTitle, isDark && styles.sheetTitleDark]}>
               {language === 'en' ? "Today's conditions" : 'Condições de Hoje'}
             </Text>
             <View style={styles.liveBadge}>
@@ -111,7 +122,7 @@ export const WeatherConditionsScreen: React.FC = () => {
               </Text>
             </View>
           </View>
-          <Text style={styles.sheetSubtitle}>{weatherData.description}</Text>
+          <Text style={[styles.sheetSubtitle, isDark && styles.sheetSubtitleDark]}>{weatherData.description}</Text>
         </View>
 
         <ScrollView
@@ -125,12 +136,25 @@ export const WeatherConditionsScreen: React.FC = () => {
               style={[
                 styles.hourlyPill,
                 item.active && styles.hourlyPillActive,
+                isDark && !item.active && styles.hourlyPillDark,
               ]}
             >
-              <Text style={[styles.hourlyTemp, item.active && styles.hourlyTempActive]}>
+              <Text
+                style={[
+                  styles.hourlyTemp,
+                  item.active && styles.hourlyTempActive,
+                  isDark && !item.active && styles.hourlyTempDark,
+                ]}
+              >
                 {item.temp}°
               </Text>
-              <Text style={[styles.hourlyTime, item.active && styles.hourlyTimeActive]}>
+              <Text
+                style={[
+                  styles.hourlyTime,
+                  item.active && styles.hourlyTimeActive,
+                  isDark && !item.active && styles.hourlyTimeDark,
+                ]}
+              >
                 {item.hour}
               </Text>
             </View>
@@ -316,24 +340,32 @@ export const WeatherConditionsScreen: React.FC = () => {
         </View>
 
         <View style={styles.recommendationsSection}>
-          <Text style={styles.recSectionTitle}>Recomendações da Fazenda</Text>
-          <Text style={styles.recSectionSubtitle}>
-            Baseado em suas culturas e na previsão do tempo
+          <Text style={[styles.recSectionTitle, isDark && styles.recSectionTitleDark]}>
+            {language === 'en' ? 'Farm Recommendations' : 'Recomendações da Fazenda'}
+          </Text>
+          <Text style={[styles.recSectionSubtitle, isDark && styles.recSectionSubtitleDark]}>
+            {language === 'en' ? 'Based on your crops and weather forecast' : 'Baseado em suas culturas e na previsão do tempo'}
           </Text>
 
-          <View style={styles.recCard}>
+          <View style={[styles.recCard, isDark && styles.recCardDark]}>
             <View style={styles.recTopRow}>
-              <View style={[styles.recIconWrap, { backgroundColor: '#E0F2FE' }]}>
+              <View style={[styles.recIconWrap, { backgroundColor: isDark ? '#0C3247' : '#E0F2FE' }]}>
                 <MaterialCommunityIcons name="water-outline" size={22} color="#0284C7" />
               </View>
-              <View style={styles.recBadge}>
-                <Text style={styles.recBadgeText}>Amanhã · 06h às 08h</Text>
+              <View style={[styles.recBadge, isDark && { backgroundColor: '#0C3247' }]}>
+                <Text style={[styles.recBadgeText, isDark && { color: '#38BDF8' }]}>
+                  {language === 'en' ? 'Tomorrow · 6am to 8am' : 'Amanhã · 06h às 08h'}
+                </Text>
               </View>
             </View>
 
-            <Text style={styles.recTitle}>Irrigação recomendada amanhã cedo</Text>
-            <Text style={styles.recDesc}>
-              Dois dias secos e ensolarados pela frente. Irrigar cedo reduz a evaporação em até 30%.
+            <Text style={[styles.recTitle, isDark && styles.recTitleDark]}>
+              {language === 'en' ? 'Early morning irrigation recommended' : 'Irrigação recomendada amanhã cedo'}
+            </Text>
+            <Text style={[styles.recDesc, isDark && styles.recDescDark]}>
+              {language === 'en'
+                ? 'Two dry, sunny days ahead. Irrigating early reduces evaporation by up to 30%.'
+                : 'Dois dias secos e ensolarados pela frente. Irrigar cedo reduz a evaporação em até 30%.'}
             </Text>
 
             <TouchableOpacity
@@ -342,62 +374,81 @@ export const WeatherConditionsScreen: React.FC = () => {
               activeOpacity={0.8}
             >
               <MaterialCommunityIcons name="calendar-clock" size={18} color="#FFFFFF" />
-              <Text style={styles.recBtnPrimaryText}>Agendar Irrigação</Text>
+              <Text style={styles.recBtnPrimaryText}>
+                {language === 'en' ? 'Schedule Irrigation' : 'Agendar Irrigação'}
+              </Text>
             </TouchableOpacity>
           </View>
 
-          <View style={styles.recCard}>
+          <View style={[styles.recCard, isDark && styles.recCardDark]}>
             <View style={styles.recTopRow}>
-              <View style={[styles.recIconWrap, { backgroundColor: '#E0F2FE' }]}>
+              <View style={[styles.recIconWrap, { backgroundColor: isDark ? '#0C3247' : '#E0F2FE' }]}>
                 <MaterialCommunityIcons name="weather-pouring" size={22} color="#0284C7" />
               </View>
-              <View style={[styles.recBadge, { backgroundColor: '#E0F2FE' }]}>
-                <Text style={[styles.recBadgeText, { color: '#0369A1' }]}>Sexta · 80% chance</Text>
+              <View style={[styles.recBadge, isDark ? { backgroundColor: '#0C3247' } : { backgroundColor: '#E0F2FE' }]}>
+                <Text style={[styles.recBadgeText, isDark ? { color: '#38BDF8' } : { color: '#0369A1' }]}>
+                  {language === 'en' ? 'Friday · 80% chance' : 'Sexta · 80% chance'}
+                </Text>
               </View>
             </View>
 
-            <Text style={styles.recTitle}>Chuva volumosa prevista na sexta</Text>
-            <Text style={styles.recDesc}>
-              Previsão de até 18 mm. Pule a irrigação programada e deixe a chuva trabalhar por você.
+            <Text style={[styles.recTitle, isDark && styles.recTitleDark]}>
+              {language === 'en' ? 'Heavy rain forecast for Friday' : 'Chuva volumosa prevista na sexta'}
+            </Text>
+            <Text style={[styles.recDesc, isDark && styles.recDescDark]}>
+              {language === 'en'
+                ? 'Up to 18 mm expected. Skip scheduled irrigation and let rain work for you.'
+                : 'Previsão de até 18 mm. Pule a irrigação programada e deixe a chuva trabalhar por você.'}
             </Text>
 
             <TouchableOpacity
-              style={styles.recBtnOutline}
-              onPress={() => Alert.alert('Irrigação Pausada', 'Irrigação suspensa para sexta-feira economizando 1.200 L de água.')}
+              style={[styles.recBtnOutline, isDark && styles.recBtnOutlineDark]}
+              onPress={() => Alert.alert(language === 'en' ? 'Irrigation Paused' : 'Irrigação Pausada', language === 'en' ? 'Irrigation skipped for Friday saving 1,200 L.' : 'Irrigação suspensa para sexta-feira economizando 1.200 L de água.')}
               activeOpacity={0.8}
             >
-              <MaterialCommunityIcons name="water-off-outline" size={18} color="#1E293B" />
-              <Text style={styles.recBtnOutlineText}>Pular Irrigação</Text>
+              <MaterialCommunityIcons name="water-off-outline" size={18} color={isDark ? '#F0FDF4' : '#1E293B'} />
+              <Text style={[styles.recBtnOutlineText, isDark && styles.recBtnOutlineTextDark]}>
+                {language === 'en' ? 'Skip Irrigation' : 'Pular Irrigação'}
+              </Text>
             </TouchableOpacity>
           </View>
 
-          <View style={styles.recCard}>
+          <View style={[styles.recCard, isDark && styles.recCardDark]}>
             <View style={styles.recTopRow}>
-              <View style={[styles.recIconWrap, { backgroundColor: '#DCFCE7' }]}>
-                <MaterialCommunityIcons name="sprout" size={22} color="#16A34A" />
+              <View style={[styles.recIconWrap, { backgroundColor: isDark ? '#14532D' : '#DCFCE7' }]}>
+                <MaterialCommunityIcons name="sprout" size={22} color={isDark ? '#4ADE80' : '#16A34A'} />
               </View>
-              <View style={[styles.recBadge, { backgroundColor: '#DCFCE7' }]}>
-                <Text style={[styles.recBadgeText, { color: '#15803D' }]}>Esta semana</Text>
+              <View style={[styles.recBadge, { backgroundColor: isDark ? '#14532D' : '#DCFCE7' }]}>
+                <Text style={[styles.recBadgeText, { color: isDark ? '#86EFAC' : '#15803D' }]}>
+                  {language === 'en' ? 'This week' : 'Esta semana'}
+                </Text>
               </View>
             </View>
 
-            <Text style={styles.recTitle}>Boas condições para novo plantio</Text>
-            <Text style={styles.recDesc}>
-              Solo aquecido e umidade constante — momento ideal para semeadura de alface e cenoura.
+            <Text style={[styles.recTitle, isDark && styles.recTitleDark]}>
+              {language === 'en' ? 'Good conditions for new planting' : 'Boas condições para novo plantio'}
+            </Text>
+            <Text style={[styles.recDesc, isDark && styles.recDescDark]}>
+              {language === 'en'
+                ? 'Warm soil and steady moisture — ideal time for sowing lettuce and carrots.'
+                : 'Solo aquecido e umidade constante — momento ideal para semeadura de alface e cenoura.'}
             </Text>
 
             <TouchableOpacity
-              style={styles.recBtnSoft}
+              style={[styles.recBtnSoft, isDark && styles.recBtnSoftDark]}
               onPress={() => navigation.navigate('Plantations' as never)}
               activeOpacity={0.8}
             >
-              <MaterialCommunityIcons name="plus" size={18} color="#166534" />
-              <Text style={styles.recBtnSoftText}>Cadastrar Plantio</Text>
+              <MaterialCommunityIcons name="plus" size={18} color={isDark ? '#4ADE80' : '#166534'} />
+              <Text style={[styles.recBtnSoftText, isDark && styles.recBtnSoftTextDark]}>
+                {language === 'en' ? 'Register Crop' : 'Cadastrar Plantio'}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
     </ScrollView>
-  );
+  </View>
+);
 };
 
